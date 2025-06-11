@@ -12,7 +12,7 @@ kategorija = st.selectbox(
     "Kategorija",
     [" ", "Škola košarke", "U12", "U14", "U16", "SEN"]
 )
-broj_treninga = st.number_input("Broj treninga", step=1, min_value=)
+broj_treninga = st.number_input("Broj treninga", step=0, min_value=1)
 broj_igraca = st.number_input("Broj igrača na treningu", step=1, min_value=1)
 uvod = st.text_area("Uvod")
 glavni_dio = st.text_area("Glavni dio")
