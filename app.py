@@ -29,12 +29,12 @@ if st.button("Generiraj PDF"):
     page.insert_text((110, 30), f"{kategorija}", fontsize=18)
     page.insert_text((552, 30), f"{broj_treninga}", fontsize=14)
     page.insert_text((552, 62), f"{broj_igraca}", fontsize=14)
-    page.insert_text((220, 200), "Uvod:", fontsize=14)
-    page.insert_text((220, 215), uvod, fontsize=14)
-    page.insert_text((220, 250), "Glavni dio:", fontsize=14)
-    page.insert_text((220, 265), glavni_dio, fontsize=14)
-    page.insert_text((220, 600), "Završni dio:", fontsize=14)
-    page.insert_text((220, 615), zavrsni_dio, fontsize=14)
+    page.insert_text((220, 150), "Uvod:", fontsize=14)
+    page.insert_text((220, 165), uvod, fontsize=14)
+    page.insert_text((220, 300), "Glavni dio:", fontsize=14)
+    page.insert_text((220, 315), glavni_dio, fontsize=14)
+    page.insert_text((220, 560), "Završni dio:", fontsize=14)
+    page.insert_text((220, 575), zavrsni_dio, fontsize=14)
 
     # Spremanje u memoriju
     output_pdf = BytesIO()
