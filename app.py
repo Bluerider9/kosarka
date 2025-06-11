@@ -10,9 +10,9 @@ st.title("Kreiranje treninga")
 datum = st.date_input("Datum").strftime("%d.%m.%Y.")
 kategorija = st.selectbox(
     "Kategorija",
-    ["Škola košarke", "U12", "U14", "U16", "SEN"]
+    [" ", "Škola košarke", "U12", "U14", "U16", "SEN"]
 )
-broj_treninga = st.number_input("Broj treninga", step=1, min_value=1)
+broj_treninga = st.number_input("Broj treninga", step=1, min_value=)
 broj_igraca = st.number_input("Broj igrača na treningu", step=1, min_value=1)
 uvod = st.text_area("Uvod")
 glavni_dio = st.text_area("Glavni dio")
