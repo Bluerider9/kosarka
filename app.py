@@ -25,16 +25,16 @@ if st.button("Generiraj PDF"):
     page = doc[0]
 
     # Dodavanje teksta na okvirne pozicije (prilagodljivo)
-    page.insert_text((100, 100), f"Datum: {datum}", fontsize=12)
-    page.insert_text((100, 120), f"Kategorija: {kategorija}", fontsize=12)
-    page.insert_text((100, 140), f"Broj treninga: {broj_treninga}", fontsize=12)
-    page.insert_text((100, 160), f"Broj igrača: {broj_igraca}", fontsize=12)
-    page.insert_text((100, 200), "Uvod:", fontsize=12)
-    page.insert_text((100, 215), uvod, fontsize=11)
-    page.insert_text((100, 250), "Glavni dio:", fontsize=12)
-    page.insert_text((100, 265), glavni_dio, fontsize=11)
-    page.insert_text((100, 300), "Završni dio:", fontsize=12)
-    page.insert_text((100, 315), zavrsni_dio, fontsize=11)
+    page.insert_text((100, 100), f"Datum: {datum}", fontsize=14)
+    page.insert_text((100, 120), f"Kategorija: {kategorija}", fontsize=14)
+    page.insert_text((100, 140), f"Broj treninga: {broj_treninga}", fontsize=14)
+    page.insert_text((100, 160), f"Broj igrača: {broj_igraca}", fontsize=14)
+    page.insert_text((100, 200), "Uvod:", fontsize=14)
+    page.insert_text((100, 215), uvod, fontsize=14)
+    page.insert_text((100, 250), "Glavni dio:", fontsize=14)
+    page.insert_text((100, 265), glavni_dio, fontsize=14)
+    page.insert_text((100, 300), "Završni dio:", fontsize=14)
+    page.insert_text((100, 315), zavrsni_dio, fontsize=14)
 
     # Spremanje u memoriju
     output_pdf = BytesIO()
