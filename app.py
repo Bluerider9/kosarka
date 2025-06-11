@@ -3,8 +3,8 @@ import streamlit as st
 import fitz  # PyMuPDF
 from io import BytesIO
 
-st.set_page_config(page_title="PDF Generator", layout="centered")
-st.title("PDF Generator iz Šprance")
+st.set_page_config(page_title="Kreiranje treninga", layout="centered")
+st.title("Kreiranje treninga")
 
 # Korisnički unosi
 datum = st.date_input("Datum").strftime("%d.%m.%Y.")
