@@ -7,9 +7,13 @@ st.set_page_config(page_title="PDF Generator", layout="centered")
 st.title("PDF Generator iz Šprance")
 
 # Korisnički unosi
-ime = st.text_input("Ime i prezime")
-datum = st.text_input("Datum rođenja")
-napomena = st.text_area("Napomena")
+datum = st.date_input("Datum").strftime("%d.%m.%Y.")
+kategorija = st.text_input("Kategorija")
+broj_treninga = st.number_input("Broj treninga", step=1, min_value=1)
+broj_igraca = st.number_input("Broj igrača na treningu", step=1, min_value=1)
+uvod = st.text_area("Uvod")
+glavni_dio = st.text_area("Glavni dio")
+zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     # Učitavanje šprance
@@ -17,10 +21,17 @@ if st.button("Generiraj PDF"):
     doc = fitz.open(template_path)
     page = doc[0]
 
-    # Dodavanje teksta na definirane pozicije
-    page.insert_text((100, 100), f"Ime i prezime: {ime}", fontsize=12)
-    page.insert_text((100, 130), f"Datum rođenja: {datum}", fontsize=12)
-    page.insert_text((100, 160), f"Napomena: {napomena}", fontsize=12)
+    # Dodavanje teksta na okvirne pozicije (prilagodljivo)
+    page.insert_text((100, 100), f"Datum: {datum}", fontsize=12)
+    page.insert_text((100, 120), f"Kategorija: {kategorija}", fontsize=12)
+    page.insert_text((100, 140), f"Broj treninga: {broj_treninga}", fontsize=12)
+    page.insert_text((100, 160), f"Broj igrača: {broj_igraca}", fontsize=12)
+    page.insert_text((100, 200), "Uvod:", fontsize=12)
+    page.insert_text((100, 215), uvod, fontsize=11)
+    page.insert_text((100, 250), "Glavni dio:", fontsize=12)
+    page.insert_text((100, 265), glavni_dio, fontsize=11)
+    page.insert_text((100, 300), "Završni dio:", fontsize=12)
+    page.insert_text((100, 315), zavrsni_dio, fontsize=11)
 
     # Spremanje u memoriju
     output_pdf = BytesIO()
