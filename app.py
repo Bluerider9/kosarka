@@ -29,9 +29,7 @@ if st.button("Generiraj PDF"):
     page.insert_text((110, 30), f"{kategorija}", fontsize=18)
     page.insert_text((552, 30), f"{broj_treninga}", fontsize=14)
     page.insert_text((552, 62), f"{broj_igraca}", fontsize=14)
-    page.insert_text((220, 140), "Uvod:", fontsize=14)
     page.insert_text((220, 155), uvod, fontsize=14)
-    page.insert_text((220, 300), "Glavni dio:", fontsize=14)
     page.insert_text((220, 325), glavni_dio, fontsize=14)
     page.insert_text((220, 560), zavrsni_dio, fontsize=14)
 
