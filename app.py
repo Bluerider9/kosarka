@@ -19,9 +19,9 @@ glavni_dio = st.text_area("Glavni dio")
 zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
-    font_path = "Roboto.ttf"
-    # Učitavanje šprance
     template_path = "spranca.pdf"
+    font_path = "Roboto.ttf"  # mora biti u istom direktoriju
+
     doc = fitz.open(template_path)
     page = doc[0]
 
