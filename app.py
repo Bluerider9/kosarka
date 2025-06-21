@@ -18,7 +18,7 @@ uvod = st.text_area("Uvod")
 glavni_dio = st.text_area("Glavni dio")
 zavrsni_dio = st.text_area("Završni dio")
 
-if if st.button("Generiraj PDF"):
+if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
     font_path = "Roboto.ttf"  # mora biti u istom direktoriju
 
