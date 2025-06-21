@@ -19,10 +19,15 @@ glavni_dio = st.text_area("Glavni dio")
 zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
+    font_path = "Roboto.ttf"
     # Učitavanje šprance
     template_path = "spranca.pdf"
     doc = fitz.open(template_path)
     page = doc[0]
+
+    font = fitz.Font(fontfile=font_path)
+    fs_title = 18
+    fs_text = 14
 
     # Dodavanje teksta na okvirne pozicije (prilagodljivo)
     page.insert_text((110, 62), f"{datum}", fontsize=14)
