@@ -30,7 +30,7 @@ if st.button("Generiraj PDF"):
     fs_text = 14
 
     # Dodavanje teksta na okvirne pozicije (prilagodljivo)
-    page.insert_text((110, 62), f"{datum}", fontsize=14, font=font)
+    page.insert_text((110, 62), f"{datum}", fontsize=14, font=Roboto)
     page.insert_text((110, 30), f"{kategorija}", fontsize=fs_title, font=font)
     page.insert_text((552, 30), f"{broj_treninga}", fontsize=fs_text, font=font)
     page.insert_text((552, 62), f"{broj_igraca}", fontsize=fs_text, font=font)
