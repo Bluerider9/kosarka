@@ -25,7 +25,7 @@ if st.button("Generiraj PDF"):
 
     fs_title = 18
     fs_text = 14
-    fontname = "helv"  # možeš koristiti 'helv', 'times', 'courier', itd.
+    fontname = "times"  # možeš koristiti 'helv', 'times', 'courier', itd.
 
     # Dodavanje teksta na okvirne pozicije (prilagodljivo)
     page.insert_text((110, 62), f"{datum}", fontsize=fs_text, fontname=fontname)
