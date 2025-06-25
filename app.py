@@ -17,7 +17,7 @@ zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
-    font_path = "DejaVuSans.ttf"
+    font_path = "Roboto.ttf"
 
     # Provjera postoje li datoteke
     if not os.path.exists(template_path) or not os.path.exists(font_path):
