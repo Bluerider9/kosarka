@@ -27,7 +27,7 @@ if st.button("Generiraj PDF"):
         page = doc[0]
 
         # ISPRAVAN NAČIN za učitavanje fonta (na stranici, ne dokumentu)
-        page.insert_font(fontfile=font_path, fontname="dejavu")
+        page.insert_font(fontfile=font_path, fontname="roboto")
 
         fs_title = 18
         fs_text = 14
