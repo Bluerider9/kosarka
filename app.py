@@ -17,7 +17,7 @@ zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
-    
+    font_path = "Roboto.ttf"
 
     # Provjera postoje li datoteke
     if not os.path.exists(template_path) or not os.path.exists(font_path):
@@ -33,7 +33,7 @@ if st.button("Generiraj PDF"):
         fs_text = 14
         
         # Korištenje boljeg fonta
-        font_to_use = "dejavu"
+        font_to_use = "roboto"
 
         page.insert_textbox(fitz.Rect(110, 60, 300, 90), datum, fontsize=fs_text, fontname=font_to_use, align=fitz.TEXT_ALIGN_LEFT)
         page.insert_textbox(fitz.Rect(110, 20, 400, 60), kategorija, fontsize=fs_title, fontname=font_to_use, align=fitz.TEXT_ALIGN_LEFT)
