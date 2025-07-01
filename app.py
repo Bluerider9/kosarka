@@ -20,10 +20,12 @@ zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
-    font_path = "DejaVuSans.ttf"  # obavezno: stavi ovaj font u isti folder
+    font_path = "DejaVuSans.ttf"  # Font mora biti u istom folderu!
 
     if not os.path.isfile(font_path):
-        st.error("Nedostaje font DejaVuSans.ttf. Dodaj ga u direktorij aplikacije.")
+        st.error("Nedostaje font 'DejaVuSans.ttf'. Dodaj ga u direktorij aplikacije.")
+    elif not os.path.isfile(template_path):
+        st.error("Nedostaje špranca 'spranca.pdf'.")
     else:
         doc = fitz.open(template_path)
         page = doc[0]
@@ -31,11 +33,12 @@ if st.button("Generiraj PDF"):
         fs_title = 18
         fs_text = 14
 
-        # Dodavanje teksta
-        page.insert_text((110, 62), f"{datum}", fontsize=fs_text, fontfile=font_path)
-        page.insert_text((110, 30), f"{kategorija}", fontsize=fs_title, fontfile=font_path)
-        page.insert_text((552, 30), f"{broj_treninga}", fontsize=fs_text, fontfile=font_path)
-        page.insert_text((552, 62), f"{broj_igraca}", fontsize=fs_text, fontfile=font_path)
+        # Dodavanje teksta s podrškom za č, ć, ž, š, đ
+        page.insert_textbox(fitz.Rect(110, 25, 400, 60), f"{kategorija}", fontsize=fs_title, fontfile=font_path)
+        page.insert_textbox(fitz.Rect(110, 55, 300, 80), f"{datum}", fontsize=fs_text, fontfile=font_path)
+        page.insert_textbox(fitz.Rect(540, 25, 600, 50), f"{broj_treninga}", fontsize=fs_text, fontfile=font_path)
+        page.insert_textbox(fitz.Rect(540, 55, 600, 80), f"{broj_igraca}", fontsize=fs_text, fontfile=font_path)
+
         page.insert_textbox(fitz.Rect(230, 165, 500, 320), uvod, fontsize=fs_text, fontfile=font_path)
         page.insert_textbox(fitz.Rect(230, 325, 500, 550), glavni_dio, fontsize=fs_text, fontfile=font_path)
         page.insert_textbox(fitz.Rect(230, 570, 500, 750), zavrsni_dio, fontsize=fs_text, fontfile=font_path)
@@ -46,5 +49,6 @@ if st.button("Generiraj PDF"):
         doc.close()
         output_pdf.seek(0)
 
+        # Preuzimanje
         st.success("PDF je generiran!")
         st.download_button("Preuzmi PDF", output_pdf, file_name="generirani_izlaz.pdf", mime="application/pdf")
