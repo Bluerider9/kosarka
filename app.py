@@ -1,6 +1,7 @@
 import streamlit as st
 import fitz  # PyMuPDF
 from io import BytesIO
+import os
 
 st.set_page_config(page_title="Kreiranje treninga", layout="centered")
 st.title("Kreiranje treninga")
@@ -19,29 +20,31 @@ zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
+    font_path = "DejaVuSans.ttf"  # obavezno: stavi ovaj font u isti folder
 
-    doc = fitz.open(template_path)
-    page = doc[0]
+    if not os.path.isfile(font_path):
+        st.error("Nedostaje font DejaVuSans.ttf. Dodaj ga u direktorij aplikacije.")
+    else:
+        doc = fitz.open(template_path)
+        page = doc[0]
 
-    fs_title = 18
-    fs_text = 14
-    fontname = "helv"  # možeš koristiti 'helv', 'times', 'courier', itd.
+        fs_title = 18
+        fs_text = 14
 
-    # Dodavanje teksta na okvirne pozicije (prilagodljivo)
-    page.insert_text((110, 62), f"{datum}", fontsize=fs_text, fontname=fontname)
-    page.insert_text((110, 30), f"{kategorija}", fontsize=fs_title, fontname=fontname)
-    page.insert_text((552, 30), f"{broj_treninga}", fontsize=fs_text, fontname=fontname)
-    page.insert_text((552, 62), f"{broj_igraca}", fontsize=fs_text, fontname=fontname)
-    page.insert_text((230, 165), uvod, fontsize=fs_text, fontname=fontname)
-    page.insert_text((230, 325), glavni_dio, fontsize=fs_text, fontname=fontname)
-    page.insert_text((230, 570), zavrsni_dio, fontsize=fs_text, fontname=fontname)
+        # Dodavanje teksta
+        page.insert_text((110, 62), f"{datum}", fontsize=fs_text, fontfile=font_path)
+        page.insert_text((110, 30), f"{kategorija}", fontsize=fs_title, fontfile=font_path)
+        page.insert_text((552, 30), f"{broj_treninga}", fontsize=fs_text, fontfile=font_path)
+        page.insert_text((552, 62), f"{broj_igraca}", fontsize=fs_text, fontfile=font_path)
+        page.insert_textbox(fitz.Rect(230, 165, 500, 320), uvod, fontsize=fs_text, fontfile=font_path)
+        page.insert_textbox(fitz.Rect(230, 325, 500, 550), glavni_dio, fontsize=fs_text, fontfile=font_path)
+        page.insert_textbox(fitz.Rect(230, 570, 500, 750), zavrsni_dio, fontsize=fs_text, fontfile=font_path)
 
-    # Spremanje u memoriju
-    output_pdf = BytesIO()
-    doc.save(output_pdf)
-    doc.close()
-    output_pdf.seek(0)
+        # Spremanje u memoriju
+        output_pdf = BytesIO()
+        doc.save(output_pdf)
+        doc.close()
+        output_pdf.seek(0)
 
-    # Preuzimanje
-    st.success("PDF je generiran!")
-    st.download_button("Preuzmi PDF", output_pdf, file_name="generirani_izlaz.pdf", mime="application/pdf")
+        st.success("PDF je generiran!")
+        st.download_button("Preuzmi PDF", output_pdf, file_name="generirani_izlaz.pdf", mime="application/pdf")
