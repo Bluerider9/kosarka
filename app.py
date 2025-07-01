@@ -17,7 +17,7 @@ zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
-    font_path = "Roboto.ttf"  # Naziv fonta koji mora biti u direktoriju
+    font_path = "Roboto-Regular.ttf"  # Obavezno koristi točan naziv .ttf datoteke
 
     if not os.path.exists(template_path) or not os.path.exists(font_path):
         st.error(f"Greška: Provjerite da li datoteke '{template_path}' i '{font_path}' postoje u direktoriju.")
@@ -25,30 +25,18 @@ if st.button("Generiraj PDF"):
         doc = fitz.open(template_path)
         page = doc[0]
 
-        fontname = "roboto"
-        page.insert_font(fontfile=font_path, fontname=fontname)  # Dodaj font s hrvatskim znakovima
-
         fs_title = 18
         fs_text = 14
 
-        # Kreiraj TextWriter za bolju kontrolu nad Unicodeom
-        tw = fitz.TextWriter(page.rect)
+        # Umjesto registriranja fonta, koristi fontfile direktno u svakom unosu
+        page.insert_textbox(fitz.Rect(110, 60, 300, 90), datum, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
+        page.insert_textbox(fitz.Rect(110, 20, 400, 60), kategorija, fontsize=fs_title, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
+        page.insert_textbox(fitz.Rect(540, 20, 600, 60), str(broj_treninga), fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_CENTER)
+        page.insert_textbox(fitz.Rect(540, 60, 600, 100), str(broj_igraca), fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_CENTER)
+        page.insert_textbox(fitz.Rect(230, 165, 550, 250), uvod, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
+        page.insert_textbox(fitz.Rect(230, 325, 550, 450), glavni_dio, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
+        page.insert_textbox(fitz.Rect(230, 570, 550, 700), zavrsni_dio, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
 
-        # Datum, kategorija, brojevi
-        tw.append((110, 80), datum, fontsize=fs_text, fontname=fontname)
-        tw.append((110, 40), kategorija, fontsize=fs_title, fontname=fontname)
-        tw.append((540, 40), str(broj_treninga), fontsize=fs_text, fontname=fontname)
-        tw.append((540, 80), str(broj_igraca), fontsize=fs_text, fontname=fontname)
-
-        # Glavni tekstovi
-        tw.append((230, 200), uvod, fontsize=fs_text, fontname=fontname)
-        tw.append((230, 360), glavni_dio, fontsize=fs_text, fontname=fontname)
-        tw.append((230, 600), zavrsni_dio, fontsize=fs_text, fontname=fontname)
-
-        # Napiši sve na stranicu
-        tw.write_text(page)
-
-        # Spremi PDF u memoriju
         output_pdf = BytesIO()
         doc.save(output_pdf)
         doc.close()
