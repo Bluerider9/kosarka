@@ -17,7 +17,7 @@ zavrsni_dio = st.text_area("Završni dio")
 
 if st.button("Generiraj PDF"):
     template_path = "spranca.pdf"
-    font_path = "Roboto-Regular.ttf"  # Obavezno koristi točan naziv .ttf datoteke
+    font_path = "Roboto.ttf"  # Obavezno koristi točan naziv .ttf datoteke
 
     if not os.path.exists(template_path) or not os.path.exists(font_path):
         st.error(f"Greška: Provjerite da li datoteke '{template_path}' i '{font_path}' postoje u direktoriju.")
