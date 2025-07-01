@@ -29,10 +29,10 @@ if st.button("Generiraj PDF"):
         fs_text = 14
 
         # Umjesto registriranja fonta, koristi fontfile direktno u svakom unosu
-        page.insert_textbox(fitz.Rect(110, 60, 300, 90), datum, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
-        page.insert_textbox(fitz.Rect(110, 20, 400, 60), kategorija, fontsize=fs_title, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
-        page.insert_textbox(fitz.Rect(540, 20, 600, 60), str(broj_treninga), fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_CENTER)
-        page.insert_textbox(fitz.Rect(540, 60, 600, 100), str(broj_igraca), fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_CENTER)
+        page.insert_textbox(fitz.Rect(100, 60, 300, 90), datum, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
+        page.insert_textbox(fitz.Rect(100, 20, 400, 60), kategorija, fontsize=fs_title, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
+        page.insert_textbox(fitz.Rect(530, 20, 600, 60), str(broj_treninga), fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_CENTER)
+        page.insert_textbox(fitz.Rect(530, 60, 600, 100), str(broj_igraca), fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_CENTER)
         page.insert_textbox(fitz.Rect(230, 165, 550, 250), uvod, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
         page.insert_textbox(fitz.Rect(230, 325, 550, 450), glavni_dio, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
         page.insert_textbox(fitz.Rect(230, 570, 550, 700), zavrsni_dio, fontsize=fs_text, fontfile=font_path, align=fitz.TEXT_ALIGN_LEFT)
