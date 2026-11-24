@@ -592,3 +592,10 @@ td .who span { font-weight: 600; }
 .sd-t { gap: 6px; }
 .sd-t b { min-width: 88px; font-size: 13px; }
 .sd-t small { white-space: nowrap; }
+.sd-t b { min-width: 76px; font-size: 12px; }
+.sd-t { gap: 5px; }
+.sd-t span { padding: 1px 6px; }
+.sd-t small { font-size: 11px; }
+.sd-day { width: 46px; }
+.sd { gap: 4px; padding: 8px 2px; }
+.sd-t i { margin-left: 2px; }

@@ -140,7 +140,7 @@ function treningKartica() {
     : otv ? `<div class="rsvp-msg warn">Molim te budi odgovorna i javi na vrijeme.</div>`
     : `<div class="rsvp-msg warn">Prijave su zatvorene — nisi se javila.</div>`;
   return `<div class="card stack"><div class="meta">Današnji trening</div>
-    <div class="row"><div class="time-block gold"><b>${DANAS_TRENING.vrijeme}</b><span>Danas</span></div><div class="grow"><h3>${DANAS_TRENING.grupa} · ${DANAS_TRENING.dan}</h3><div class="meta">${DANAS_TRENING.dvorana}</div></div></div>
+    <div class="row"><div class="time-block gold"><b>${DANAS_TRENING.vrijeme}</b><span>Danas</span></div><div class="grow"><h3>${grupaLabel(DANAS_TRENING.grupa)} · ${DANAS_TRENING.dan}</h3><div class="meta">${DANAS_TRENING.dvorana}</div></div></div>
     <div class="rsvp"><button class="${r === 'da' ? 'on yes' : ''}" data-rsvp="da" ${otv ? '' : 'disabled'}>${ic('check', 18)} Dolazim</button><button class="${r === 'ne' ? 'on no' : ''}" data-rsvp="ne" ${otv ? '' : 'disabled'}>${ic('x', 18)} Ne dolazim</button></div>
     ${poruka}<div class="meta">${otv ? `Javi se do ${rsvpRok()} (3 sata prije početka). Do tada možeš promijeniti odgovor.` : `Prijave su se zatvorile u ${rsvpRok()} (3 sata prije početka).`}</div></div>`;
 }
@@ -164,8 +164,9 @@ function tabbar(uloga, tabs, aktivan) {
 }
 function trenRow(t, extra = '') {
   return `<div class="row"><div class="time-block"><b>${t.v}</b><span>do ${t.do}</span></div>
-    <div class="grow"><h3>${t.g}</h3><div class="meta">${t.d}</div></div>${extra}</div>`;
+    <div class="grow"><h3>${grupaLabel(t.g)}</h3><div class="meta">${t.d}</div></div>${extra}</div>`;
 }
+const grupaLabel = (g) => (g === 'U14' ? 'U14/U16/U18' : g); // zajednički trening
 const DANI_PUNO = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
 const RASPORED_NAPOMENA = `<div class="sched-note">${ic('cal', 16)}<span>Raspored za idući tjedan ažurira se <b>nedjeljom u podne</b>.</span></div>`;
 const DOLAZAK_TJEDAN = { '0-U14-17:30': true }; // prototip: Ana je bila na ponedjeljkovom treningu
@@ -173,7 +174,7 @@ function rasporedScreen(filterGrupe, tocke = false) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
-      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${t.g}</span><small>${t.d}</small>${tocke && i < TODAY ? `<i class="dot-${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'yes' : 'no'}" title="${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'Bila si' : 'Nisi bila'}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
+      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${tocke && i < TODAY ? `<i class="dot-${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'yes' : 'no'}" title="${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'Bila si' : 'Nisi bila'}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
   return `<div class="card sched-week">${redovi}</div>${tocke ? '<div class="sched-legend"><span><i class="dot-yes"></i> bila si na treningu</span><span><i class="dot-no"></i> nisi bila</span></div>' : ''}${RASPORED_NAPOMENA}`;
 }
@@ -569,7 +570,7 @@ const ADMIN = {
   raspored: () => `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Tjedan 23. – 29. 11.</div></div><div class="grow"></div>
       <button class="btn" data-toast="Novi termin — sljedeći korak">${ic('plus', 18)} Novi termin</button></div>
     ${RASPORED_NAPOMENA}<table><thead><tr><th>Dan</th><th>Vrijeme</th><th>Grupa</th><th>Dvorana</th></tr></thead><tbody>${DANI.flatMap((d, i) =>
-      (TRENINZI[i] || []).map((t, j) => `<tr><td>${j ? '' : '<b>' + d + '</b>'}</td><td>${t.v} – ${t.do}</td><td>${chip(t.g, 'navy')}</td><td>${t.d}</td></tr>`)).join('')}</tbody></table>`,
+      (TRENINZI[i] || []).map((t, j) => `<tr><td>${j ? '' : '<b>' + d + '</b>'}</td><td>${t.v} – ${t.do}</td><td>${chip(grupaLabel(t.g), 'navy')}</td><td>${t.d}</td></tr>`)).join('')}</tbody></table>`,
   clanarine: () => `<div class="page-head"><div><h1>Članarine</h1><div class="sub">Uplate i uvoz bankovnog izvoda</div></div></div>
     <div class="dropzone" style="margin-bottom:24px"><div style="color:var(--navy);margin-bottom:8px;display:flex;justify-content:center">${ic('upload', 28)}</div>
       <b style="color:var(--text)">Povuci Erste izvod (WRI) ovdje</b><div style="margin:4px 0 14px">ili</div>
