@@ -617,3 +617,11 @@ td .who span { font-weight: 600; }
 .card.week-dots h3 { font-size: var(--fs-sm); }
 .week-dots .wd-row { display: flex; gap: 8px; }
 .week-dots .wd-row i { width: 18px; height: 18px; border-radius: 50%; display: block; margin: 0; }
+
+.dot-late { background: #f0b64e; }
+i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.wd-chev { display: inline-flex; color: var(--muted); margin-left: 2px; }
+.card.week-dots { cursor: pointer; }
+.late-chip { padding: 4px 10px; border-radius: 999px; background: var(--navy-100); color: var(--navy); font-weight: 700; font-size: 11px; flex-shrink: 0; }
+.late-chip.on { background: #fff0cc; color: #8a5a00; }
+.m-sheet .list .row .grow, .m-sheet .list .row .grow h3, .m-sheet .list .row .grow .meta { text-align: left; }
