@@ -579,6 +579,11 @@ td .who span { font-weight: 600; }
 .sd-t small { color: var(--muted); font-weight: 600; font-size: var(--fs-xs); }
 .sd-none { color: var(--muted); font-size: var(--fs-sm); }
 .sd.today { background: #fff7e6; border-radius: 12px; border-bottom-color: transparent; }
-.sd.today .sd-day span::after { content: ' · danas'; font-weight: 800; color: #8a5a00; }
 .sd-day { width: 74px; }
 .sd.past { opacity: .55; }
+
+.sd-t i, .sched-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; align-self: center; margin-left: auto; }
+.sched-legend i { margin: 0 6px 0 0; vertical-align: middle; }
+.dot-yes { background: #2e9e5b; }
+.dot-no { background: var(--red); }
+.sched-legend { display: flex; gap: 16px; justify-content: center; font-size: var(--fs-xs); font-weight: 600; color: var(--muted); }

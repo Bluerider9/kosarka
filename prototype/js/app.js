@@ -168,13 +168,14 @@ function trenRow(t, extra = '') {
 }
 const DANI_PUNO = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
 const RASPORED_NAPOMENA = `<div class="sched-note">${ic('cal', 16)}<span>Raspored za idući tjedan ažurira se <b>nedjeljom u podne</b>.</span></div>`;
-function rasporedScreen(filterGrupe) {
+const DOLAZAK_TJEDAN = { '0-U14-17:30': true }; // prototip: Ana je bila na ponedjeljkovom treningu
+function rasporedScreen(filterGrupe, tocke = false) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
-      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${t.g}</span><small>${t.d}</small></div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
+      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${t.g}</span><small>${t.d}</small>${tocke && i < TODAY ? `<i class="dot-${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'yes' : 'no'}" title="${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'Bila si' : 'Nisi bila'}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
-  return `<div class="card sched-week">${redovi}</div>${RASPORED_NAPOMENA}`;
+  return `<div class="card sched-week">${redovi}</div>${tocke ? '<div class="sched-legend"><span><i class="dot-yes"></i> bila si na treningu</span><span><i class="dot-no"></i> nisi bila</span></div>' : ''}${RASPORED_NAPOMENA}`;
 }
 
 /* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
@@ -495,7 +496,7 @@ const SCREENS = {
   'igracica-raspored': () => ({
     header: mHeader('Raspored', 'U14'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'raspored'),
-    body: rasporedScreen(['U14']),
+    body: rasporedScreen(['U14'], true),
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
