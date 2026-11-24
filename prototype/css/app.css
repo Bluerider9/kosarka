@@ -680,3 +680,9 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 .sched-week .sd { padding: 5px 2px; }
 .sched-week { padding: 4px var(--s3); }
+
+.app-body .sched-note { margin-top: 10px; }
+.app-body .sched-week, .app-body .sched-matches { margin-top: 4px; }
+.sched-legend { margin: 2px 0 6px; }
+.app-body .sched-note { font-size: 11px; padding: 8px 10px; gap: 6px; white-space: nowrap; }
+.sched-legend { margin: 0 0 2px; }

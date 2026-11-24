@@ -124,7 +124,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Prikazuje se **samo aktivni tjedan** (pon–ned), svi dani ispisani jedan ispod drugog s treninzima (vrijeme, grupa, dvorana); današnji dan je istaknut, prošli blijedi. Bez biranja dana.
 - Na rasporedu igračice uz prošle treninge stoji **zelena točka** (bila) ili **crvena** (nije bila); današnji dan se označava samo bojom pozadine.
 - Na rasporedu igračice ispod tjednog plana stoji kartica **Utakmice**: odigrane (rezultat, zeleno pobjeda / crveno poraz) i one za koje je **pozvana** (oznaka "Pozvana", uz napomenu ako termin nije potvrđen).
-- Uz raspored stoji opaska: "Raspored za idući tjedan ažurira se nedjeljom u podne." (admin objavljuje idući tjedan do tada).
+- Opaska na vrhu rasporeda (odmah ispod zaglavlja): "Raspored za idući tjedan ažurira se nedjeljom u podne." (admin objavljuje idući tjedan do tada).
 
 ## Opcije (zupčanik)
 
