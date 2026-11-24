@@ -133,6 +133,13 @@ const minuta = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60
 const rsvpRok = () => { const m = minuta(DANAS_TRENING.vrijeme) - 180; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
 const rsvpOtvoren = () => minuta(PROTO_SADA) <= minuta(rsvpRok());
 const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', datum: 'Subota 28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false };
+function tjedanKartica() {
+  const stavke = DANI.flatMap((d, i) => (TRENINZI[i] || []).filter((t) => t.g === 'U14').map((t) => ({ d, i, t })));
+  const boja = ({ i, t }) => (i < TODAY ? (DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'dot-yes' : 'dot-no') : 'dot-wait');
+  return `<div class="card week-dots"><h3>Treninzi ovaj tjedan</h3>
+    <div class="wd-row">${stavke.map((s) => `<div class="wd ${s.i === TODAY ? 'today' : ''}"><i class="${boja(s)}"></i><b>${s.d}</b><small>${23 + s.i}.11.</small></div>`).join('')}</div>
+    <div class="sched-legend"><span><i class="dot-yes"></i> bila si i odradila</span><span><i class="dot-no"></i> nisi bila</span><span><i class="dot-wait"></i> još nije bio trening</span></div></div>`;
+}
 function treningKartica() {
   const r = state.rsvp; const otv = rsvpOtvoren();
   const poruka = r === 'da' ? `<div class="rsvp-msg ok">${ic('check', 16)} Javila si da dolaziš. Vidimo se!</div>`
@@ -460,7 +467,7 @@ const SCREENS = {
   'igracica-pocetna': () => ({
     header: mHeader('Bok, Ana', ''),
     tabs: `<div class="hero-strip"><div class="hs-text"><b>Samo naprijed, Ana!</b><span>Svaki trening je korak bliže.</span></div><img src="${FOTO}" alt=""></div>` + tabbar('igracica', IGRACICA_TABS, 'pocetna'),
-    body: treningKartica() + utakmicaKartica() + `<div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
+    body: tjedanKartica() + treningKartica() + utakmicaKartica() + `<div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
         <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>
       <div class="card row spread fc-card" data-go="igracica-falcoini"><div class="row" style="gap:12px">${coinSvg(34)}<div><h3>Falcoini</h3><div class="meta">Skeniraj QR na treningu</div></div></div><b style="font-size:var(--fs-xl);font-weight:900">${fmt(saldo())}</b></div>`,
   }),
