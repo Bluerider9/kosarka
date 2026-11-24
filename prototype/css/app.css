@@ -342,3 +342,14 @@ tr.click { cursor: pointer; }
 /* početna kao prije: središnji logo na plavoj podlozi, kartica odmah ispod */
 .login-top { flex-direction: column; justify-content: center; align-items: center; padding: 30px 24px 18px; text-align: center; }
 .login-card { margin: 0 16px; }
+
+/* emblem bez bijelog kvadratića: srebrni obrub (kao na originalnom logotipu) drži ga na tamnoj podlozi */
+.logo-badge { background: transparent; box-shadow: none; padding: 0; border-radius: 0; width: auto; height: auto; display: flex; align-items: center; }
+.logo-badge img {
+  height: 36px; width: auto; max-height: none;
+  filter: drop-shadow(1.5px 0 0 #dbe3ec) drop-shadow(-1.5px 0 0 #dbe3ec) drop-shadow(0 1.5px 0 #dbe3ec) drop-shadow(0 -1.5px 0 #dbe3ec);
+}
+.logo-badge.lg img { height: 40px; }
+.logo-badge.xs img { height: 20px; filter: drop-shadow(1px 0 0 #dbe3ec) drop-shadow(-1px 0 0 #dbe3ec) drop-shadow(0 1px 0 #dbe3ec) drop-shadow(0 -1px 0 #dbe3ec); }
+.mail-head .logo-badge img { height: 34px; }
+.sidebar .logo .logo-badge img { height: 42px; }

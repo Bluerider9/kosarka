@@ -30,9 +30,10 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Boje su izvučene iz PNG logotipa, nisu službene. Provjeriti s brandbookom/vektorom.
 - Emblem sokola (vektor, bez natpisa): `prototype/assets/falcons-emblem.svg` — za značke, ikone i male formate.
 - Puni logo s natpisom: `prototype/assets/falcons-logo.png` (obrezan PNG s prozirnom pozadinom; originalni SVG/vektor još treba dodati).
-  Logo ima tamnoplave dijelove, pa na tamnoj podlozi uvijek ide u **bijelom kvadratiću** (`.logo-badge`) s emblemom
-  u gornjem lijevom kutu — na ekranima za prijavljene korisnike (zaglavlja, admin izbornik, welcome mail).
-  **Početna (prijava) je iznimka**: središnji logo (pola veličine) na plavoj podlozi, bez bijelog kvadratića.
+  Na ekranima za prijavljene korisnike (zaglavlja, admin izbornik, welcome mail) u gornjem lijevom kutu stoji samo
+  **emblem sokola bez pozadine i bez bijelog kvadratića**; tamnoplava krila na navy podlozi drži tanki srebrni obrub
+  (CSS `drop-shadow`, kao obrub na originalnom logotipu) — `.logo-badge`.
+  **Početna (prijava) je iznimka**: središnji logo (pola veličine) na plavoj podlozi.
 - Potpis "App made by lots of ☕ by Bluerider Design": `prototype/assets/bluerider-logo-light.svg` (svijetla varijanta bez natpisa DESIGN, za tamnu
   podlogu), link na https://bluerider.hr.
 
