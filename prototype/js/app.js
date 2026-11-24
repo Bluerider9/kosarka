@@ -5,6 +5,8 @@ const TODAY = 1; // utorak (indeks u DANI)
 
 const ICON = {
   home: '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  x: '<path d="M18 6L6 18M6 6l12 12"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
   check: '<path d="M20 6L9 17l-5-5"/>',
   cal: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
   wallet: '<path d="M3 7a2 2 0 0 1 2-2h14v4"/><path d="M3 7v11a2 2 0 0 0 2 2h16V9H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1"/>',
@@ -123,6 +125,31 @@ const bellBtn = (cls = '', attr = 'data-bell') => `<button class="cog bell ${cls
 const bellList = () => { const l = OBAVIJESTI[uloga()] || []; return l.length ? `<div class="list">${l.map((n) => `<div class="row notif ${n.nova ? 'new' : ''}"><span class="n-ico">${ic('bell', 16)}</span><div class="grow"><h3 style="font-size:var(--fs-sm)">${n.naslov}</h3><div class="meta" style="color:var(--text)">${n.tekst}</div><div class="meta">${n.vr}</div></div></div>`).join('')}</div>` : '<p class="meta" style="text-align:center;padding:12px 0">Nema obavijesti.</p>'; };
 const markRead = () => { (OBAVIJESTI[uloga()] || []).forEach((n) => (n.nova = false)); document.querySelectorAll('.bell .nb').forEach((x) => x.remove()); };
 const awarded = {};
+
+/* ---------- početna igračice: današnji trening (dolazim / ne dolazim) i iduća utakmica ---------- */
+const DANAS_TRENING = { grupa: 'U14', vrijeme: '17:30', dvorana: 'Dvorana A', dan: 'utorak 24.11.' };
+const PROTO_SADA = '12:10'; // "trenutno vrijeme" u prototipu
+const minuta = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60 + m; };
+const rsvpRok = () => { const m = minuta(DANAS_TRENING.vrijeme) - 180; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
+const rsvpOtvoren = () => minuta(PROTO_SADA) <= minuta(rsvpRok());
+const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', datum: 'Subota 28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false };
+function treningKartica() {
+  const r = state.rsvp; const otv = rsvpOtvoren();
+  const poruka = r === 'da' ? `<div class="rsvp-msg ok">${ic('check', 16)} Javila si da dolaziš. Vidimo se!</div>`
+    : r === 'ne' ? `<div class="rsvp-msg no">Javila si da ne dolaziš.</div>`
+    : otv ? `<div class="rsvp-msg warn">Molim te budi odgovorna i javi na vrijeme.</div>`
+    : `<div class="rsvp-msg warn">Prijave su zatvorene — nisi se javila.</div>`;
+  return `<div class="card stack"><div class="meta">Današnji trening</div>
+    <div class="row"><div class="time-block gold"><b>${DANAS_TRENING.vrijeme}</b><span>Danas</span></div><div class="grow"><h3>${DANAS_TRENING.grupa} · ${DANAS_TRENING.dan}</h3><div class="meta">${DANAS_TRENING.dvorana}</div></div></div>
+    <div class="rsvp"><button class="${r === 'da' ? 'on yes' : ''}" data-rsvp="da" ${otv ? '' : 'disabled'}>${ic('check', 18)} Dolazim</button><button class="${r === 'ne' ? 'on no' : ''}" data-rsvp="ne" ${otv ? '' : 'disabled'}>${ic('x', 18)} Ne dolazim</button></div>
+    ${poruka}<div class="meta">${otv ? `Javi se do ${rsvpRok()} (3 sata prije početka). Do tada možeš promijeniti odgovor.` : `Prijave su se zatvorile u ${rsvpRok()} (3 sata prije početka).`}</div></div>`;
+}
+function utakmicaKartica() {
+  const u = UTAKMICA;
+  return `<div class="card stack"><div class="row spread"><div class="meta">Iduća utakmica · ${u.grupa}</div>${chip('Još nije potvrđeno', 'warn')}</div>
+    <div class="row"><div class="time-block"><b>${u.vrijeme}</b><span>Sub</span></div><div class="grow"><h3>${u.natjecanje}</h3><div class="meta">${u.datum} u ${u.vrijeme}</div></div></div>
+    <div class="match-flags"><span>${ic('cal', 14)} Datum i vrijeme još nisu potvrđeni</span><span>${ic('pin', 14)} Dvorana još nije potvrđena</span></div></div>`;
+}
 
 /* ---------- mobilni zajednički dijelovi ---------- */
 function mHeader(naslov, sub, foto = false, cog = true) {
@@ -431,9 +458,7 @@ const SCREENS = {
   'igracica-pocetna': () => ({
     header: mHeader('Bok, Ana', 'U14'),
     tabs: `<div class="hero-strip"><div class="hs-text"><b>Samo naprijed, Ana!</b><span>Svaki trening je korak bliže.</span></div><img src="${FOTO}" alt=""></div>` + tabbar('igracica', IGRACICA_TABS, 'pocetna'),
-    body: `<div class="card stack"><div class="meta">Sljedeći trening</div>
-        <div class="row"><div class="time-block gold"><b>17:30</b><span>Danas</span></div><div class="grow"><h3>U14</h3><div class="meta">Dvorana A</div></div></div></div>
-      <div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
+    body: treningKartica() + utakmicaKartica() + `<div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
         <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>
       <div class="card row spread fc-card" data-go="igracica-falcoini"><div class="row" style="gap:12px">${coinSvg(34)}<div><h3>Falcoini</h3><div class="meta">Skeniraj QR na treningu</div></div></div><b style="font-size:var(--fs-xl);font-weight:900">${fmt(saldo())}</b></div>`,
   }),
@@ -768,6 +793,8 @@ document.addEventListener('click', (e) => {
     });
     toastIn(dano || vraceno ? `Spremljeno · dodijeljeno ${fmt(dano * n)} Falcoina za ${dano} ${dano === 1 ? 'igračicu' : 'igračica'}${vraceno ? `, vraćeno ${vraceno}` : ''}` : 'Dolasci spremljeni — nema promjena'); return;
   }
+  const rs = e.target.closest('[data-rsvp]');
+  if (rs && !rs.disabled) { state.rsvp = rs.dataset.rsvp; render(); toastIn(state.rsvp === 'da' ? 'Javljeno: dolaziš na trening' : 'Javljeno: ne dolaziš na trening'); return; }
   const a = e.target.closest('[data-att]');
   if (a) {
     const id = +a.dataset.att; att[id] = !att[id]; a.classList.toggle('on', att[id]);

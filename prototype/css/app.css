@@ -538,9 +538,21 @@ td .who span { font-weight: 600; }
 .row.notif .grow, .row.notif h3, .row.notif .meta { text-align: left; }
 
 /* ---------- fotografija igračice iznad izbornika (samo početna) ---------- */
-.hero-strip { position: relative; flex-shrink: 0; height: 84px; overflow: hidden; background: var(--navy); display: flex; align-items: center; padding: 0 var(--s4); color: #fff; }
+.hero-strip { position: relative; flex-shrink: 0; height: 84px; overflow: visible; clip-path: inset(-140px 0 0 0); z-index: 2; background: var(--navy); display: flex; align-items: center; padding: 0 var(--s4); color: #fff; }
 .hero-strip::before { content: ''; position: absolute; right: 14px; bottom: -70px; width: 150px; height: 150px; border-radius: 50%; background: var(--gold); }
 .hero-strip .hs-text { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 2px; max-width: 58%; }
 .hero-strip .hs-text b { font-weight: 900; font-size: var(--fs-md); }
 .hero-strip .hs-text span { font-size: var(--fs-xs); opacity: .8; }
-.hero-strip img { position: absolute; right: 22px; bottom: -64px; height: 150px; width: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,.35)); pointer-events: none; }
+.hero-strip img { position: absolute; right: 22px; bottom: -52px; height: 168px; width: auto; filter: drop-shadow(0 4px 8px rgba(0,0,0,.35)); pointer-events: none; }
+
+.rsvp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rsvp button { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 8px; border-radius: 14px; border: 2px solid var(--silver-100); background: #fff; color: var(--navy); font-weight: 800; font-size: var(--fs-sm); }
+.rsvp button.on.yes { background: #e3f4ea; border-color: #2e9e5b; color: #1d7a43; }
+.rsvp button.on.no { background: var(--red-100); border-color: var(--red); color: var(--red); }
+.rsvp button:disabled { opacity: .5; }
+.rsvp-msg { padding: 10px 12px; border-radius: 12px; font-weight: 700; font-size: var(--fs-sm); display: flex; gap: 8px; align-items: center; }
+.rsvp-msg.warn { background: #fff4de; color: #8a5a00; }
+.rsvp-msg.ok { background: #e3f4ea; color: #1d7a43; }
+.rsvp-msg.no { background: var(--red-100); color: var(--red); }
+.match-flags { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-xs); font-weight: 700; color: #8a5a00; }
+.match-flags span { display: flex; align-items: center; gap: 6px; background: #fff4de; padding: 7px 10px; border-radius: 10px; }

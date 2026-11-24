@@ -109,6 +109,12 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Kad trener pritisne **"Spremi dolaske"**, svaka prisutna igračica automatski dobiva Falcoine za trening (iznos iz pravila bodovanja). Ponovno spremanje ne duplira bodove; ako trener kasnije skine kvačicu, bodovi se oduzimaju (ispravak u povijesti). QR dolazak i ručni unos dijele istu zaštitu od dvostrukog bodovanja.
 - **Zvono (obavijesti)** stoji uz zupčanik (mobitel i admin desktop), s crvenom značkom nepročitanih. Igračica i roditelj dobivaju poruku "Dobila si +1,00 Falcoin za dolazak…", admin dobiva obavijest o novoj narudžbi u Ormaru. Prava aplikacija: push/e-mail uz isti sadržaj.
 
+## Početna igračice
+
+- **Današnji trening:** vrijeme, dvorana, gumbi **Dolazim / Ne dolazim** (otvoreni do 3 sata prije početka, do tada se odgovor može mijenjati); bez odgovora piše "Molim te budi odgovorna i javi na vrijeme."; nakon roka gumbi se zaključavaju. Odgovore vidi trener u Dolascima (još nije u prototipu).
+- **Iduća utakmica** za njezinu grupu: datum i vrijeme, uz oznake "Datum i vrijeme još nisu potvrđeni" i "Dvorana još nije potvrđena" dok admin ne potvrdi.
+- Fotografija je u traci iznad donjeg izbornika (samo početna), izvire iz zlatnog kruga i iznad okvira trake; zaglavlje je bez slike.
+
 ## Opcije (zupčanik)
 
 - Zupčanik gore desno na svim ekranima za prijavljene (mobitel: u zaglavlju; admin: u kutu glavnog dijela).
