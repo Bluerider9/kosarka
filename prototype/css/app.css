@@ -641,3 +641,18 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .late-step button { width: 24px; height: 24px; }
 .attend .grow { min-width: 0; }
 .card.week-dots { margin-top: 18px; }
+
+/* početna igračice: sve na jednom zaslonu */
+.card.tight { padding: 12px 14px; gap: 8px; }
+.time-block.sm { transform: scale(.85); transform-origin: left center; margin-right: -8px; }
+.meta.small { font-size: 11px; }
+.card.tight .rsvp button { padding: 9px 6px; }
+.card.tight .rsvp-msg { padding: 7px 10px; font-size: 12px; }
+.card.tight .match-flags { gap: 4px; }
+.card.tight .match-flags span { padding: 5px 8px; }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
+.duo .card { padding: 12px 14px; gap: 4px; display: flex; flex-direction: column; }
+.big-n { font-size: var(--fs-xl); font-weight: 900; line-height: 1.1; }
+.card.week-dots { margin-top: 14px; }
+.hero-strip { height: 72px; }
+.card.week-dots { margin-top: 8px; }

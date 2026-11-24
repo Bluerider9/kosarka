@@ -144,15 +144,13 @@ function treningKartica() {
     : r === 'ne' ? `<div class="rsvp-msg no">Javila si da ne dolaziš.</div>`
     : otv ? `<div class="rsvp-msg warn">Molim te budi odgovorna i javi na vrijeme.</div>`
     : `<div class="rsvp-msg warn">Prijave su zatvorene — nisi se javila.</div>`;
-  return `<div class="card stack"><div class="meta">Današnji trening</div>
-    <div class="row"><div class="time-block gold"><b>${DANAS_TRENING.vrijeme}</b><span>Danas</span></div><div class="grow"><h3>${grupaLabel(DANAS_TRENING.grupa)} · ${DANAS_TRENING.dan}</h3><div class="meta">${DANAS_TRENING.dvorana}</div></div></div>
+  return `<div class="card stack tight"><div class="row"><div class="time-block gold sm"><b>${DANAS_TRENING.vrijeme}</b><span>Danas</span></div><div class="grow"><div class="meta">Današnji trening</div><h3>${grupaLabel(DANAS_TRENING.grupa)} · ${DANAS_TRENING.dan}</h3><div class="meta">${DANAS_TRENING.dvorana}${otv ? ` · javi se do ${rsvpRok()}` : ` · prijave zatvorene u ${rsvpRok()}`}</div></div></div>
     <div class="rsvp"><button class="${r === 'da' ? 'on yes' : ''}" data-rsvp="da" ${otv ? '' : 'disabled'}>${ic('check', 18)} Dolazim</button><button class="${r === 'ne' ? 'on no' : ''}" data-rsvp="ne" ${otv ? '' : 'disabled'}>${ic('x', 18)} Ne dolazim</button></div>
-    ${poruka}<div class="meta">${otv ? `Javi se do ${rsvpRok()} (3 sata prije početka). Do tada možeš promijeniti odgovor.` : `Prijave su se zatvorile u ${rsvpRok()} (3 sata prije početka).`}</div></div>`;
+    ${poruka}</div>`;
 }
 function utakmicaKartica() {
   const u = UTAKMICA;
-  return `<div class="card stack"><div class="row spread"><div class="meta">Iduća utakmica · ${u.grupa}</div>${chip('Još nije potvrđeno', 'warn')}</div>
-    <div class="row"><div class="time-block"><b>${u.vrijeme}</b><span>Sub</span></div><div class="grow"><h3>${u.natjecanje}</h3><div class="meta">${u.datum} u ${u.vrijeme}</div></div></div>
+  return `<div class="card stack tight"><div class="row"><div class="time-block sm"><b>${u.vrijeme}</b><span>Sub</span></div><div class="grow"><div class="meta">Iduća utakmica</div><h3>${u.natjecanje}</h3><div class="meta">${u.datum} u ${u.vrijeme}</div></div></div>
     <div class="match-flags"><span>${ic('cal', 14)} Datum i vrijeme još nisu potvrđeni</span><span>${ic('pin', 14)} Dvorana još nije potvrđena</span></div></div>`;
 }
 
@@ -472,9 +470,8 @@ const SCREENS = {
   'igracica-pocetna': () => ({
     header: mHeader('Bok, Ana', ''),
     tabs: `<div class="hero-strip"><div class="hs-text"><b>Samo naprijed, Ana!</b><span>Svaki trening je korak bliže.</span></div><img src="${FOTO}" alt=""></div>` + tabbar('igracica', IGRACICA_TABS, 'pocetna'),
-    body: tjedanKartica() + treningKartica() + utakmicaKartica() + `<div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
-        <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>
-      <div class="card row spread fc-card" data-go="igracica-falcoini"><div class="row" style="gap:12px">${coinSvg(34)}<div><h3>Falcoini</h3><div class="meta">Skeniraj QR na treningu</div></div></div><b style="font-size:var(--fs-xl);font-weight:900">${fmt(saldo())}</b></div>`,
+    body: tjedanKartica() + treningKartica() + utakmicaKartica() + `<div class="duo"><div class="card"><div class="meta">Moja dolaznost</div><b class="big-n">91%</b><div class="progress"><i style="width:91%"></i></div></div>
+      <div class="card fc-card" data-go="igracica-falcoini"><div class="meta">Falcoini</div><div class="row" style="gap:8px">${coinSvg(24)}<b class="big-n">${fmt(saldo())}</b></div></div></div>`,
   }),
   'igracica-falcoini': () => ({
     header: mHeader('Falcoini', 'Skupljaj i mijenjaj u Ormaru'),
