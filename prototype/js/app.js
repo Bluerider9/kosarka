@@ -490,11 +490,10 @@ const SCREENS = {
   'igracica-falcoini': () => ({
     header: mHeader('Falcoini', 'Skupljaj i mijenjaj u Ormaru'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
-    body: `<div class="card fc-hero">${coinSvg(56)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-eur">= ${fmt(saldo())} € u Ormaru</div><div class="fc-lbl">Falcoina</div>
-        <button class="btn red block" data-scan>${ic('qr', 20)} Skeniraj QR za dolazak</button></div>
-      <button class="btn ghost block" data-go="igracica-ormar">${ic('bag', 18)} Otvori Ormar</button>
-      <div class="section-title">Kako zarađuješ</div>
-      <div class="card"><div class="list">${FALCOIN_PRAVILA.map((r) => `<div class="row spread"><span style="font-size:var(--fs-sm)">${r.label}</span>${fc(r.iznos)}</div>`).join('')}</div></div>
+    body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-side"><span>Falcoina</span><small>= ${fmt(saldo())} € u Ormaru</small></div></div>
+        <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
+      <div class="section-title small">Kako zarađuješ</div>
+      <div class="card earn"><div class="list">${FALCOIN_PRAVILA.map((r) => `<div class="row spread"><span style="font-size:var(--fs-sm)">${r.label}</span>${fc(r.iznos)}</div>`).join('')}</div></div>
       <div class="section-title">Povijest</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({
