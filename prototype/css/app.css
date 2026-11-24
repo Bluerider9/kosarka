@@ -298,3 +298,28 @@ tr.click { cursor: pointer; }
 .madeby { flex-direction: row; justify-content: center; align-items: center; flex-wrap: nowrap; gap: 10px; padding: 14px 16px 16px; font-size: 11px; }
 .madeby > span:first-child { white-space: nowrap; }
 .bluerider img { height: 24px; width: auto; }
+
+/* ---------- početna: plava podloga, manji logo i okvir ---------- */
+.login { background: radial-gradient(120% 80% at 50% 0%, #243272 0%, var(--navy) 55%, var(--navy-700) 100%); }
+.login-top { background: none; padding: 30px 24px 18px; }
+.login-logo { width: min(125px, 36%); filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
+.login-card { flex: none; margin: 0 16px; padding: 16px; gap: 12px; border-radius: 20px; background: #fff; box-shadow: var(--shadow-2); }
+.login-card .input { padding: 10px 12px; font-size: 14px; }
+.login-card .field { gap: 5px; }
+.login-card .btn { padding: 11px 16px; }
+.login-card .seg2 button { padding: 9px 0; }
+.login-card .noacc { font-size: 12px; }
+.madeby { margin: auto 0 0; padding: 22px 16px 20px; background: none; flex-wrap: wrap; justify-content: center; align-items: center; text-align: center; row-gap: 6px; column-gap: 10px; color: rgba(255,255,255,.7); width: 100%; }
+.madeby > span:first-child { display: inline-flex; align-items: center; gap: 4px; }
+.madeby .cup { color: var(--gold); display: inline-flex; vertical-align: 0; }
+.bluerider { display: inline-flex; align-items: center; }
+
+/* prijedlog biometrije nakon prijave */
+.m-overlay { position: absolute; inset: 0; background: rgba(13,19,48,.6); display: flex; align-items: flex-end; z-index: 30; animation: fade .2s; }
+.m-sheet { background: #fff; width: 100%; border-radius: 24px 24px 0 0; padding: 26px 22px 24px; display: flex; flex-direction: column; gap: 10px; text-align: center; animation: up .25s; }
+.m-sheet h2 { font-size: var(--fs-xl); font-weight: 900; }
+.m-sheet p { color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; margin-bottom: 6px; }
+.m-sheet small { color: var(--muted); font-size: var(--fs-xs); }
+.bio-ico { width: 68px; height: 68px; border-radius: 50%; background: var(--navy-100); color: var(--navy); display: grid; place-items: center; margin: 0 auto 4px; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes up { from { transform: translateY(40px); } to { transform: none; } }

@@ -193,15 +193,14 @@ const SCREENS = {
           <div class="field" data-field="lozinka"><label>Lozinka</label><div class="pw"><input class="input" name="lozinka" type="password" placeholder="Unesi lozinku" autocomplete="current-password"><button type="button" class="eye" data-eye aria-label="Prikaži lozinku">${ic('eye', 20)}</button></div><small class="err"></small></div>
           <div class="row spread"><label class="check" style="align-items:center"><input type="checkbox" name="zapamti" checked><span>Ostani prijavljena</span></label><a class="link" data-toast="Link za novu lozinku šalje se na e-mail">Zaboravljena lozinka?</a></div>
           <button class="btn red block" type="submit">Prijavi se</button>
-          <div class="or"><span>ili</span></div>
-          <button class="btn ghost block" type="button" data-bio>${ic('finger', 20)} Prijava otiskom prsta / Face ID-jem</button>
         </form>
         <div class="noacc">Nemaš račun? <a class="link" data-go="prijava-forma">Zatraži ga ovdje</a></div>
-        <div class="madeby">
+      </div>
+      <div class="madeby">
           <span>App made by lots of <span class="cup">${ic('cup', 16)}</span> by</span>
           <a class="bluerider" href="https://bluerider.hr" target="_blank" rel="noopener" title="Bluerider Design — bluerider.hr"><img src="${BLUERIDER}" alt="Bluerider Design"></a>
         </div>
-      </div></div>`,
+      </div>`,
   }),
 
   /* ---------- JAVNA PRIJAVA ---------- */
@@ -335,6 +334,17 @@ function render() {
     : `<div class="device">${s.header}<div class="app-body">${s.body}</div>${s.tabs}<div class="toast" id="toastIn"></div></div>`;
 }
 
+function bioSheet() {
+  const dev = $('.device'); if (!dev) return;
+  const o = document.createElement('div'); o.className = 'm-overlay';
+  o.innerHTML = `<div class="m-sheet"><div class="bio-ico">${ic('finger', 34)}</div>
+    <h2>Uključi brzu prijavu?</h2>
+    <p>Sljedeći put se prijavi otiskom prsta ili Face ID-jem, bez upisivanja lozinke.</p>
+    <button class="btn red block" data-bio="yes">Uključi</button>
+    <button class="btn ghost block" data-bio="no">Ne sada</button>
+    <small>Možeš ga uključiti i kasnije u Profilu.</small></div>`;
+  dev.appendChild(o);
+}
 function showErr(form, name, msg) {
   const f = form.querySelector(`[data-field="${name}"]`);
   if (f) { f.querySelector('.input').classList.toggle('bad', !!msg); f.querySelector('.err').textContent = msg || ''; }
@@ -354,7 +364,7 @@ document.addEventListener('submit', (e) => {
     e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
     showErr(f, 'email', d.email ? '' : 'Upiši e-mail'); showErr(f, 'lozinka', d.lozinka ? '' : 'Upiši lozinku');
     if (!d.email || !d.lozinka) ok = false;
-    if (ok) location.hash = 'roditelj-pocetna'; // u pravoj aplikaciji: uloga dolazi iz računa
+    if (ok) bioSheet(); // u pravoj aplikaciji: uloga dolazi iz računa; prijedlog se nudi samo ako uređaj to podržava
     return;
   }
   if (e.target.id !== 'prijavaForm') return; e.preventDefault();
@@ -366,7 +376,12 @@ document.addEventListener('submit', (e) => {
 document.addEventListener('click', (e) => {
   const eye = e.target.closest('[data-eye]');
   if (eye) { const i = eye.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; return; }
-  if (e.target.closest('[data-bio]')) { const t = $('#toastIn'); t.textContent = 'U pravoj aplikaciji: potvrda otiskom prsta / Face ID-jem'; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); setTimeout(() => (location.hash = 'roditelj-pocetna'), 900); return; }
+  const bio = e.target.closest('[data-bio]');
+  if (bio) {
+    if (bio.dataset.bio === 'yes') { const t = $('#toastIn'); t.textContent = 'Brza prijava uključena (u pravoj aplikaciji: potvrda otiskom/Face ID-jem)'; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); setTimeout(() => (location.hash = 'roditelj-pocetna'), 1100); }
+    else location.hash = 'roditelj-pocetna';
+    return;
+  }
   if (e.target.closest('[data-fill]')) {
     const f = $('#prijavaForm'); Object.entries(SAMPLE).forEach(([k, v]) => { const el = f.elements[k]; if (el) el.value = v; });
     f.elements.privola.checked = true; return;

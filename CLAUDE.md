@@ -58,6 +58,13 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Instalacija je PWA (ne trgovina aplikacija): Android Chrome "Instaliraj aplikaciju", iPhone Safari "Dodaj na početni zaslon".
 - Fotografiju igračice naknadno učitava admin (privola za fotografiju se pamti uz igračicu).
 
+## Prijava
+
+- Početna: e-mail + lozinka, "Ostani prijavljena" (dugotrajna sesija), "Zatraži račun" vodi na obrazac prijave nove članice.
+- Prijava otiskom prsta / Face ID-jem (passkey/WebAuthn) **ne stoji na početnoj**: nudi se **nakon prve uspješne prijave**
+  ("Uključi brzu prijavu?" — Uključi / Ne sada), a može se uključiti i kasnije u Profilu. Na iPhoneu se nudi unutar
+  instalirane aplikacije (PWA ima odvojenu prijavu od Safarija).
+
 ## Struktura
 
 - `prototype/` — klikabilni HTML prototip (mobitel + admin desktop), izmišljeni podaci
