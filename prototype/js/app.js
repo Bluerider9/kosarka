@@ -24,6 +24,8 @@ const ICON = {
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
 const LOGO = 'assets/falcons-logo.png';
+const APP_NAME = 'Oko Soko'; // radni naziv aplikacije — mijenja se samo ovdje
+const APP_SLOGAN = 'Oko Soko vidi sve';
 const BLUERIDER = 'assets/bluerider-lockup-light.svg';
 const EMBLEM = 'assets/falcons-emblem.svg';
 const badge = (cls = '') => `<div class="logo-badge ${cls}"><img src="${EMBLEM}" alt="ŽKK Falcons Zagreb"></div>`;
@@ -64,12 +66,12 @@ function field(name, label, o = {}) {
 }
 function mailPreview(p) {
   const step = (n, t) => `<div style="display:flex;gap:10px;margin:6px 0"><b style="flex:0 0 22px;height:22px;border-radius:50%;background:#182454;color:#fff;font-size:12px;display:grid;place-items:center">${n}</b><span>${t}</span></div>`;
-  return `<div class="mail"><div class="mail-head">${badge('lg')}<b>ŽKK FALCONS ZAGREB</b></div>
-    <div class="mail-body"><h2>Dobrodošla u Falcons, ${p.ime}! 🏀</h2>
+  return `<div class="mail"><div class="mail-head">${badge('lg')}<b>${APP_NAME.toUpperCase()} · ŽKK FALCONS ZAGREB</b></div>
+    <div class="mail-body"><h2>Dobrodošla u ${APP_NAME}, ${p.ime}! 🏀</h2>
     <p>Prijava za ${p.ime} ${p.prezime} je potvrđena${p.dodijeljeno ? ` i raspoređena u grupu <b>${p.dodijeljeno}</b>` : ''}. Napravili smo vam račun u klupskoj aplikaciji, gdje pratite raspored treninga, članarinu i potvrde.</p>
     <p style="text-align:center;margin:20px 0"><span class="mail-btn">Postavi lozinku</span></p>
     <p style="font-size:12px;color:#6b7686;text-align:center">Link vrijedi 7 dana.</p>
-    <div class="mail-box"><b>Instaliraj aplikaciju na mobitel</b>
+    <div class="mail-box"><b>Instaliraj ${APP_NAME} na mobitel</b>
       <div style="margin-top:10px"><b style="font-size:13px">Android (Chrome)</b>${step(1, 'Otvori link iz maila u Chromeu')}${step(2, 'Dodirni ⋮ pa <b>Instaliraj aplikaciju</b>')}</div>
       <div style="margin-top:12px"><b style="font-size:13px">iPhone (Safari)</b>${step(1, 'Otvori link u <b>Safariju</b> (ne u mail aplikaciji)')}${step(2, 'Dodirni gumb Dijeli pa <b>Dodaj na početni zaslon</b>')}</div></div>
     <p style="font-size:12px;color:#6b7686;margin-top:18px">Ako imaš pitanja, odgovori na ovaj mail.<br>ŽKK Falcons Zagreb</p></div></div>`;
@@ -202,7 +204,7 @@ const SCREENS = {
   'start-login': () => ({
     bare: true,
     body: `<div class="login">
-      <div class="login-top"><img class="login-logo" src="${LOGO}" alt="ŽKK Zagreb Falcons"></div>
+      <div class="login-top"><img class="login-logo" src="${LOGO}" alt="ŽKK Zagreb Falcons"><div class="app-name">${APP_NAME}</div><div class="app-slogan">${APP_SLOGAN}</div></div>
       <div class="login-card">
         <div class="seg2"><button class="on" type="button">Prijava</button><button type="button" data-go="prijava-forma">Registracija</button></div>
         <form id="loginForm" class="stack" novalidate>
@@ -222,7 +224,7 @@ const SCREENS = {
 
   /* ---------- JAVNA PRIJAVA ---------- */
   'prijava-forma': () => ({
-    header: mHeader('Prijava nove članice', 'ŽKK Falcons Zagreb', false, false),
+    header: mHeader('Prijava nove članice', `${APP_NAME} · ŽKK Falcons Zagreb`, false, false),
     tabs: '',
     body: `<a class="link back" data-go="start-login">← Imam račun, prijavi me</a>
       <form id="prijavaForm" novalidate data-step="1">

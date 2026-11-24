@@ -411,3 +411,7 @@ select.input option { color: #182454; background: #fff; font-family: inherit; }
 /* potpis: podvlaka ne smije pomaknuti tekst; razmak slova ne smije otkloniti centar */
 .bluerider { border-bottom: 0; padding: 0; margin-right: -.14em; line-height: 16px; background: linear-gradient(var(--gold), var(--gold)) 0 100% / calc(100% - .14em) 1.5px no-repeat; padding-bottom: 3px; margin-bottom: -3px; }
 .madeby { align-items: center; }
+
+/* ---------- naziv aplikacije na početnoj ---------- */
+.app-name { font-size: 30px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: #fff; line-height: 1; margin-top: 6px; }
+.app-slogan { font-size: var(--fs-sm); font-weight: 700; letter-spacing: .06em; color: var(--gold); margin-top: -4px; }
