@@ -1,0 +1,55 @@
+/* ŽKK Falcons — dizajnerski tokeni
+   Boje izvučene iz logotipa (nisu službene). Font: Montserrat. */
+:root {
+  /* brand */
+  --navy: #182454;
+  --navy-700: #111a40;
+  --navy-100: #e6e9f4;
+  --red: #c04848;
+  --red-100: #f7e3e3;
+  --gold: #f0b64e;
+  --gold-100: #fdf2dc;
+  --silver: #b4c0cc;
+  --silver-100: #eef1f4;
+
+  /* neutralno */
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --text: #1b2236;
+  --muted: #6b7686;
+  --line: #e1e6ec;
+
+  /* semantika */
+  --ok: #2f8f5b;
+  --ok-100: #e2f3ea;
+  --warn: #b9770e;
+  --warn-100: #fdf2dc;
+  --danger: #c04848;
+  --danger-100: #f7e3e3;
+
+  /* tipografija */
+  --font: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fs-xs: 11px;
+  --fs-sm: 13px;
+  --fs-md: 15px;
+  --fs-lg: 18px;
+  --fs-xl: 24px;
+  --fs-2xl: 30px;
+
+  /* razmaci (4px skala) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+
+  /* oblik */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+  --shadow-1: 0 1px 2px rgba(24, 36, 84, 0.06), 0 2px 8px rgba(24, 36, 84, 0.06);
+  --shadow-2: 0 8px 28px rgba(24, 36, 84, 0.16);
+}
