@@ -631,3 +631,12 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .late-chip { padding: 4px 10px; border-radius: 999px; background: var(--navy-100); color: var(--navy); font-weight: 700; font-size: 11px; flex-shrink: 0; }
 .late-chip.on { background: #fff0cc; color: #8a5a00; }
 .m-sheet .list .row .grow, .m-sheet .list .row .grow h3, .m-sheet .list .row .grow .meta { text-align: left; }
+
+.late-step { display: inline-flex; align-items: center; gap: 2px; background: var(--navy-100); border-radius: 999px; padding: 2px; flex-shrink: 0; }
+.late-step.on { background: #fff0cc; }
+.late-step button { width: 26px; height: 26px; border-radius: 50%; background: #fff; color: var(--navy); font-weight: 900; font-size: 16px; line-height: 1; }
+.late-step span { font-size: 11px; font-weight: 700; color: var(--navy); padding: 0 6px; min-width: 62px; text-align: center; white-space: nowrap; }
+.late-step.on span { color: #8a5a00; }
+.late-step span { min-width: 0; padding: 0 4px; }
+.late-step button { width: 24px; height: 24px; }
+.attend .grow { min-width: 0; }

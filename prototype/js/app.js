@@ -136,8 +136,7 @@ const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', datum: 'Subota 28.
 const tjedanStavke = () => DANI.flatMap((d, i) => (TRENINZI[i] || []).filter((t) => t.g === 'U14').map((t) => ({ d, i, t })));
 function tjedanKartica() {
   return `<div class="card week-dots" data-tjedan><div class="wk-head"><h3>Treninzi ovaj tjedan</h3><div class="wd-row">${tjedanStavke().map((s) => `<i class="${dotCls(s.i, s.t)}"></i>`).join('')}<span class="wd-chev">${ic('chev', 18)}</span></div></div>
-    <div class="wk-detail"><div class="list">${tjedanStavke().map((s) => `<div class="row"><i class="${dotCls(s.i, s.t)} big"></i><div class="grow"><h3 style="font-size:var(--fs-sm)">${DANI_PUNO[s.i]} ${23 + s.i}.11. · ${s.t.v}–${s.t.do}</h3><div class="meta">${dolazakTekst(s.i, s.t)}</div></div></div>`).join('')}</div>
-      <div class="sched-legend"><span><i class="dot-yes"></i> bila</span><span><i class="dot-late"></i> kasnila</span><span><i class="dot-no"></i> nije bila</span><span><i class="dot-wait"></i> još nije bio</span></div></div></div>`;
+    <div class="wk-detail"><div class="list">${tjedanStavke().map((s) => `<div class="row"><i class="${dotCls(s.i, s.t)} big"></i><div class="grow"><h3 style="font-size:var(--fs-sm)">${DANI_PUNO[s.i]} ${23 + s.i}.11. · ${s.t.v}–${s.t.do}</h3><div class="meta">${dolazakTekst(s.i, s.t)}</div></div></div>`).join('')}</div></div></div>`;
 }
 function treningKartica() {
   const r = state.rsvp; const otv = rsvpOtvoren();
@@ -180,7 +179,8 @@ const DOLAZAK_TJEDAN = { '0-U14-17:30': 'da' }; // prototip: Ana je bila na pone
 const dolazak = (i, t) => DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`];
 const dolazakStatus = (i, t) => { const v = dolazak(i, t); return v === undefined ? (i < TODAY ? 'ne' : 'cekaj') : v === 'da' ? 'da' : v === 'ne' ? 'ne' : 'kasni'; };
 const dotCls = (i, t) => ({ da: 'dot-yes', kasni: 'dot-late', ne: 'dot-no', cekaj: 'dot-wait' })[dolazakStatus(i, t)];
-const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t); return { da: 'Bila si i odradila', kasni: `Bila si, kasnila ${v} min (računa se kao dolazak)`, ne: 'Nisi bila', cekaj: 'Još nije bio trening' }[s]; };
+const minute = (n) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'minutu' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'minute' : 'minuta'}`;
+const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t); return { da: 'Bila si i odradila', kasni: `Kasnila ${minute(v)}`, ne: 'Nisi bila', cekaj: 'Još nije bio trening' }[s]; };
 function rasporedScreen(filterGrupe, tocke = false) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
@@ -294,7 +294,7 @@ function ormarGrid() {
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
-const kasn = {}; const KASN_KORACI = [0, 5, 10, 15, 20, 30];
+const kasn = {};
 const att = {}; PLAYERS.slice(0, 8).forEach((p, i) => (att[p.id] = i !== 4 && i !== 7));
 const SCREENS = {
   'trener-danas': () => ({
@@ -329,7 +329,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''}" data-att="${p.id}">
-          ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div>${att[p.id] ? `<button class="late-chip ${kasn[p.id] ? 'on' : ''}" data-late="${p.id}">${kasn[p.id] ? `kasni ${kasn[p.id]} min` : 'na vrijeme'}</button>` : ''}<button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button><div class="toggle"></div></div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div>${att[p.id] ? `<div class="late-step ${kasn[p.id] ? 'on' : ''}">${kasn[p.id] ? `<button data-late="${p.id}" data-d="-1" aria-label="Manje">−</button>` : ''}<span>${kasn[p.id] ? `${kasn[p.id]} min` : 'na vrijeme'}</span><button data-late="${p.id}" data-d="1" aria-label="Više">+</button></div>` : ''}<button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button><div class="toggle"></div></div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
@@ -811,7 +811,7 @@ document.addEventListener('click', (e) => {
   const rs = e.target.closest('[data-rsvp]');
   if (rs && !rs.disabled) { state.rsvp = rs.dataset.rsvp; render(); toastIn(state.rsvp === 'da' ? 'Javljeno: dolaziš na trening' : 'Javljeno: ne dolaziš na trening'); return; }
   const lt = e.target.closest('[data-late]');
-  if (lt) { const id = +lt.dataset.late; kasn[id] = KASN_KORACI[(KASN_KORACI.indexOf(kasn[id] || 0) + 1) % KASN_KORACI.length]; render(); return; }
+  if (lt) { const id = +lt.dataset.late; kasn[id] = Math.max(0, Math.min(90, (kasn[id] || 0) + +lt.dataset.d)); render(); return; }
   const tj = e.target.closest('[data-tjedan]'); if (tj) { tj.classList.toggle('open'); return; }
   const a = e.target.closest('[data-att]');
   if (a) {
