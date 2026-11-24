@@ -51,9 +51,9 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Javni link (bez prijave) → obrazac → tablica `prijave` sa statusom "čeka" → admin potvrđuje i dodjeljuje grupu →
   tek tada nastaju igračica, roditeljski račun i veza, i šalje se welcome mail (link za lozinku + upute za instalaciju).
   (Prijedlog "mail tek nakon potvrde admina" — čeka potvrdu vlasnika.)
-- Obrazac je **jedan okvir u dva koraka**: 1/2 podaci o djevojčici (ime, prezime, spol, datum rođenja, OIB, adresa, poštanski broj, mjesto),
+- Obrazac je **jedan okvir u dva koraka**: 1/2 podaci o djevojčici (ime, prezime, datum rođenja, OIB, adresa, poštanski broj, mjesto),
   2/2 kontakt roditelja, grupa, napomena i privole ("Dalje" provjerava korak 1, "Natrag" čuva unos). Link "Imam račun, prijavi me" je odmaknut od vrha.
-- Polja (kao u Relagu): ime, prezime, spol (default Ž), datum rođenja, adresa, poštanski broj, mjesto, OIB,
+- Polja (kao u Relagu): ime, prezime, datum rođenja (spol se ne pita: ženski klub), adresa, poštanski broj, mjesto, OIB,
   mobitel, e-mail roditelja, grupa, napomena + privole (privatnost obavezna; fotografija odvojeno).
 - Grupa u obrascu: **Selekcija** (admin kasnije određuje U12/U14/U16/SEN) ili **Škola košarke – OŠ 1, OŠ 2…**
   (popis škola upravlja admin).
