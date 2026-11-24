@@ -129,6 +129,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 ## Opcije (zupčanik)
 
 - Zupčanik gore desno na svim ekranima za prijavljene (mobitel: u zaglavlju; admin: u kutu glavnog dijela).
+- Mobitel: u zaglavlju stoje **tri ikone: QR (skeniranje), zvono, zupčanik**. QR otvara skener za dolazak (igračica), QR za termin (trener); roditelju javlja da je skeniranje za igračice.
 - Mobitel: Moj profil, Brza prijava (prekidač za otisak prsta / Face ID), Upute za instalaciju, Pravila privatnosti, Odjava.
 - Admin: Moj profil, Postavke kluba (grupe, popis škola, sezone), Korisnici i uloge, Predlošci e-mailova, Odjava.
 

@@ -700,3 +700,9 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.earn .row { padding: 4px 0; font-size: 12px; }
 .card.earn .row span { font-size: 12px !important; }
 .fc-hero.compact { margin-top: 12px; }
+
+/* tri ikone u zaglavlju: QR, zvono, zupčanik */
+.app-header .row > .cog { width: 36px; height: 36px; }
+.app-header .row > .cog + .cog { margin-left: -4px; }
+.app-header .row .grow h1 { white-space: nowrap; }
+.h1-sm { font-size: .6em !important; }
