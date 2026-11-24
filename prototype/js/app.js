@@ -38,9 +38,9 @@ const clan = (k) => chip(CLANARINA[k].label, CLANARINA[k].cls);
 const GRUPE_PRIJAVA = ['Selekcija', 'Škola košarke – OŠ 1', 'Škola košarke – OŠ 2', 'Škola košarke – OŠ 3'];
 const GRUPE_DODJELA = ['U12', 'U14', 'U16', 'SEN', 'Škola košarke – OŠ 1', 'Škola košarke – OŠ 2', 'Škola košarke – OŠ 3'];
 const prijave = [
-  { id: 101, dat: '24.11.2026.', ime: 'Dora', prezime: 'Šarić', rod: '2014-03-18', adresa: 'Ulica primjera 12', pbr: '10000', mjesto: 'Zagreb', oib: '54321098766', mob: '091 234 5678', email: 'roditelj.saric@example.com', grupa: 'Selekcija', napomena: 'Igrala dvije godine u školskoj ekipi.', foto: true, status: 'ceka' },
-  { id: 102, dat: '23.11.2026.', ime: 'Ema', prezime: 'Kovač', rod: '2016-09-02', adresa: 'Trg primjera 3', pbr: '10020', mjesto: 'Zagreb', oib: '87654321011', mob: '098 111 2233', email: 'kovac.ema.mama@example.com', grupa: 'Škola košarke – OŠ 1', napomena: '', foto: false, status: 'ceka', dup: true },
-  { id: 100, dat: '20.11.2026.', ime: 'Tia', prezime: 'Lončar', rod: '2013-06-11', adresa: 'Cesta primjera 7', pbr: '10010', mjesto: 'Zagreb', oib: '11111111119', mob: '095 555 1212', email: 'loncar.tia@example.com', grupa: 'Selekcija', napomena: '', foto: true, status: 'odobreno', dodijeljeno: 'U14' },
+  { id: 101, dat: '24.11.2026.', ime: 'Dora', prezime: 'Šarić', rod: '2014-03-18', adresa: 'Ulica primjera 12', pbr: '10000', mjesto: 'Zagreb', oib: '54321098766', mob: '091 234 5678', email: 'roditelj.saric@example.com', grupa: 'Selekcija', majica: '152', foto: true, status: 'ceka' },
+  { id: 102, dat: '23.11.2026.', ime: 'Ema', prezime: 'Kovač', rod: '2016-09-02', adresa: 'Trg primjera 3', pbr: '10020', mjesto: 'Zagreb', oib: '87654321011', mob: '098 111 2233', email: 'kovac.ema.mama@example.com', grupa: 'Škola košarke – OŠ 1', majica: '128', foto: false, status: 'ceka', dup: true },
+  { id: 100, dat: '20.11.2026.', ime: 'Tia', prezime: 'Lončar', rod: '2013-06-11', adresa: 'Cesta primjera 7', pbr: '10010', mjesto: 'Zagreb', oib: '11111111119', mob: '095 555 1212', email: 'loncar.tia@example.com', grupa: 'Selekcija', majica: '164', foto: true, status: 'odobreno', dodijeljeno: 'U14' },
 ];
 const pending = () => prijave.filter((p) => p.status === 'ceka').length;
 const STATUS_P = { ceka: ['Čeka potvrdu', 'warn'], odobreno: ['Odobreno', 'ok'], odbijeno: ['Odbijeno', 'danger'] };
@@ -52,12 +52,13 @@ function oibOk(v) {
   const k = 11 - a === 10 ? 0 : 11 - a;
   return k === +v[10];
 }
-const SAMPLE = { ime: 'Mila', prezime: 'Pavić', rod: '2014-05-20', adresa: 'Ulica primjera 5', pbr: '10000', mjesto: 'Zagreb', oib: '12345678903', mob: '091 000 1111', email: 'roditelj@example.com', grupa: 'Selekcija' };
+const MAJICE = ['116', '128', '140', '152', '164', 'XS', 'S', 'M', 'L'];
+const SAMPLE = { ime: 'Mila', prezime: 'Pavić', rod: '2014-05-20', adresa: 'Ulica primjera 5', pbr: '10000', mjesto: 'Zagreb', oib: '12345678903', mob: '091 000 1111', email: 'roditelj@example.com', grupa: 'Selekcija', majica: '152' };
 
 function field(name, label, o = {}) {
   const { type = 'text', ph = 'obavezno', extra = '', opts } = o;
   const input = opts
-    ? `<select class="input" name="${name}">${opts.map((x) => `<option>${x}</option>`).join('')}</select>`
+    ? `<select class="input" name="${name}">${o.empty ? `<option value="">${o.empty}</option>` : ''}${opts.map((x) => `<option>${x}</option>`).join('')}</select>`
     : `<input class="input" name="${name}" type="${type}" placeholder="${ph}" ${extra}>`;
   return `<div class="field" data-field="${name}"><label>${label}</label>${input}<small class="err"></small></div>`;
 }
@@ -244,7 +245,8 @@ const SCREENS = {
           <div class="sub-title">Grupa</div>
           ${field('grupa', 'Grupa', { opts: GRUPE_PRIJAVA })}
           <div class="meta">Ako se prijavljujete u selekciju, trener određuje u koju točno spada.</div>
-          <div class="field"><label>Napomena</label><textarea class="input" name="napomena" rows="3" placeholder="neobavezno"></textarea></div>
+          ${field('majica', 'Veličina majice za nošenje', { opts: MAJICE, empty: 'Odaberi veličinu' })}
+          <div class="meta">Dječje veličine označene su visinom u cm. Ako ste između dvije, odaberite veću.</div>
           <div class="sub-title">Privole</div>
           <label class="check"><input type="checkbox" name="privola"><span>Kao roditelj/skrbnik djevojčice dajem privolu za obradu njezinih i mojih osobnih podataka (ime, OIB, adresa, kontakt) u svrhu članstva u klubu, u skladu s <a class="link" data-privacy>pravilima privatnosti</a>.</span></label><small class="err" data-err="privola"></small>
           <label class="check"><input type="checkbox" name="fotoPrivola"><span>Kao roditelj/skrbnik dopuštam korištenje fotografije djevojčice unutar klupske aplikacije.</span></label><small class="err" data-err="fotoPrivola"></small>
@@ -415,11 +417,11 @@ function datOk(s) {
 const datIso = (s) => s.split('.').reverse().join('-');
 function readForm(form) { const d = {}; new FormData(form).forEach((v, k) => (d[k] = v.toString().trim())); return d; }
 const STEP1 = ['ime', 'prezime', 'rod', 'adresa', 'pbr', 'mjesto', 'oib'];
-const STEP2 = ['mob', 'email'];
+const STEP2 = ['mob', 'email', 'majica'];
 function validate(form, step) {
   const d = readForm(form); let ok = true;
   const need = step === 1 ? STEP1 : step === 2 ? STEP2 : [...STEP1, ...STEP2];
-  need.forEach((k) => { const bad = !d[k]; showErr(form, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
+  need.forEach((k) => { const bad = !d[k]; showErr(form, k, bad ? (k === 'majica' ? 'Odaberi veličinu' : 'Obavezno polje') : ''); if (bad) ok = false; });
   if (need.includes('rod') && d.rod && !datOk(d.rod)) { showErr(form, 'rod', 'Upiši datum kao dd.mm.gggg'); ok = false; }
   if (need.includes('oib') && d.oib && !oibOk(d.oib)) { showErr(form, 'oib', 'OIB nije ispravan'); ok = false; }
   if (need.includes('email') && d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) { showErr(form, 'email', 'Unesi ispravan e-mail'); ok = false; }
@@ -481,7 +483,7 @@ document.addEventListener('click', (e) => {
     modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">${p.ime} ${p.prezime}</h2>${chip(STATUS_P[p.status][0], STATUS_P[p.status][1])}</div>
       ${p.dup && p.status === 'ceka' ? '<div class="alert">⚠ OIB se podudara s postojećom prijavom/članicom. Provjeri prije potvrde.</div>' : ''}
       <div class="kvs">${red('Datum rođenja', fmtDat(p.rod))}${red('OIB', p.oib)}${red('Adresa', `${p.adresa}, ${p.pbr} ${p.mjesto}`)}
-      ${red('Mobitel', p.mob)}${red('E-mail', p.email)}${red('Zatražena grupa', p.grupa)}${red('Napomena', p.napomena)}${red('Privola za fotografiju', p.foto ? 'Da' : 'Ne')}</div>
+      ${red('Mobitel', p.mob)}${red('E-mail', p.email)}${red('Zatražena grupa', p.grupa)}${red('Veličina majice', p.majica)}${red('Privola za fotografiju', p.foto ? 'Da' : 'Ne')}</div>
       ${p.status === 'ceka' ? `<div class="field" style="margin-top:16px"><label>Dodijeli grupu</label><select class="input" id="dodjela">${GRUPE_DODJELA.map((g) => `<option ${g === (p.grupa === 'Selekcija' ? 'U14' : p.grupa) ? 'selected' : ''}>${g}</option>`).join('')}</select></div>
       <div class="row" style="margin-top:16px;gap:8px"><button class="btn red grow" data-act="odobri" data-id="${p.id}">Potvrdi i pošalji welcome mail</button><button class="btn ghost" data-act="odbij" data-id="${p.id}">Odbij</button></div>`
       : `<div class="row" style="margin-top:16px;gap:8px"><button class="btn ghost grow" data-act="mail" data-id="${p.id}">Pogledaj welcome mail</button><button class="btn ghost" data-close>Zatvori</button></div>`}
