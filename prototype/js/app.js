@@ -210,23 +210,39 @@ const SCREENS = {
   'prijava-forma': () => ({
     header: mHeader('Prijava nove članice', 'ŽKK Falcons Zagreb', false, false),
     tabs: '',
-    body: `<a class="link back" data-go="start-login">← Imam račun, prijavi me</a><form id="prijavaForm" class="stack" novalidate>
-      <div class="card stack"><div class="row spread"><h3>Podaci o djevojčici</h3><button type="button" class="btn ghost sm" data-fill>Popuni primjerom</button></div>
-        <div class="two">${field('ime', 'Ime')}${field('prezime', 'Prezime')}</div>
-        <div class="two">${field('spol', 'Spol', { opts: ['Ž', 'M'] })}${field('rod', 'Datum rođenja', { type: 'date', ph: '' })}</div>
-        ${field('oib', 'OIB', { ph: '11 znamenki', extra: 'inputmode="numeric" maxlength="11"' })}
-        ${field('adresa', 'Adresa')}
-        <div class="two" style="grid-template-columns:1fr 1.4fr">${field('pbr', 'Poštanski broj', { extra: 'inputmode="numeric" maxlength="5"' })}${field('mjesto', 'Mjesto')}</div></div>
-      <div class="card stack"><h3>Kontakt roditelja</h3>
-        ${field('mob', 'Mobitel', { type: 'tel' })}${field('email', 'E-mail', { type: 'email' })}
-        <div class="meta">Na ovaj e-mail stiže potvrda prijave i pristup aplikaciji.</div></div>
-      <div class="card stack"><h3>Grupa</h3>${field('grupa', 'Grupa', { opts: GRUPE_PRIJAVA })}
-        <div class="meta">Ako se prijavljujete u selekciju, trener određuje u koju točno spada.</div>
-        <div class="field"><label>Napomena</label><textarea class="input" name="napomena" rows="3" placeholder="neobavezno"></textarea></div></div>
-      <div class="card stack">
-        <label class="check"><input type="checkbox" name="privola" required><span>Prihvaćam <u>pravila privatnosti</u> i obradu osobnih podataka (OIB, adresa) u svrhu članstva u klubu.</span></label><small class="err" data-err="privola"></small>
-        <label class="check"><input type="checkbox" name="fotoPrivola"><span>Dopuštam korištenje fotografije djevojčice unutar klupske aplikacije.</span></label></div>
-      <button class="btn red block" type="submit">Pošalji prijavu</button><div style="height:8px"></div></form>`,
+    body: `<a class="link back" data-go="start-login">← Imam račun, prijavi me</a>
+      <form id="prijavaForm" novalidate data-step="1">
+      <div class="card wiz">
+        <div class="wiz-top"><div><div class="wiz-step" id="wizStep">1/2</div><h3 id="wizTitle">Podaci o djevojčici</h3></div><button type="button" class="btn ghost sm" data-fill title="Popuni primjerom">Primjer</button></div>
+        <div class="wiz-bar"><i id="wizBar" style="width:50%"></i></div>
+
+        <div class="step stack" data-stepbox="1">
+          <div class="two">${field('ime', 'Ime')}${field('prezime', 'Prezime')}</div>
+          <div class="two">${field('spol', 'Spol', { opts: ['Ž', 'M'] })}${field('rod', 'Datum rođenja', { type: 'date', ph: '' })}</div>
+          ${field('oib', 'OIB', { ph: '11 znamenki', extra: 'inputmode="numeric" maxlength="11"' })}
+          ${field('adresa', 'Adresa')}
+          <div class="two" style="grid-template-columns:1fr 1.4fr">${field('pbr', 'Poštanski broj', { extra: 'inputmode="numeric" maxlength="5"' })}${field('mjesto', 'Mjesto')}</div>
+        </div>
+
+        <div class="step stack" data-stepbox="2" hidden>
+          <div class="sub-title">Kontakt roditelja</div>
+          ${field('mob', 'Mobitel', { type: 'tel' })}${field('email', 'E-mail', { type: 'email' })}
+          <div class="meta">Na ovaj e-mail stiže potvrda prijave i pristup aplikaciji.</div>
+          <div class="sub-title">Grupa</div>
+          ${field('grupa', 'Grupa', { opts: GRUPE_PRIJAVA })}
+          <div class="meta">Ako se prijavljujete u selekciju, trener određuje u koju točno spada.</div>
+          <div class="field"><label>Napomena</label><textarea class="input" name="napomena" rows="3" placeholder="neobavezno"></textarea></div>
+          <div class="sub-title">Privole</div>
+          <label class="check"><input type="checkbox" name="privola"><span>Prihvaćam <u>pravila privatnosti</u> i obradu osobnih podataka (OIB, adresa) u svrhu članstva u klubu.</span></label><small class="err" data-err="privola"></small>
+          <label class="check"><input type="checkbox" name="fotoPrivola"><span>Dopuštam korištenje fotografije djevojčice unutar klupske aplikacije.</span></label>
+        </div>
+
+        <div class="wiz-nav">
+          <button class="btn ghost" type="button" data-prev hidden>Natrag</button>
+          <button class="btn red grow" type="button" data-next>Dalje</button>
+          <button class="btn red grow" type="submit" hidden>Pošalji prijavu</button>
+        </div>
+      </div></form><div style="height:6px"></div>`,
   }),
   'prijava-poslano': () => {
     const p = state.zadnja || SAMPLE;
@@ -377,14 +393,24 @@ function showErr(form, name, msg) {
   if (f) { f.querySelector('.input').classList.toggle('bad', !!msg); f.querySelector('.err').textContent = msg || ''; }
 }
 function readForm(form) { const d = {}; new FormData(form).forEach((v, k) => (d[k] = v.toString().trim())); return d; }
-function validate(form) {
+const STEP1 = ['ime', 'prezime', 'rod', 'adresa', 'pbr', 'mjesto', 'oib'];
+const STEP2 = ['mob', 'email'];
+function validate(form, step) {
   const d = readForm(form); let ok = true;
-  const need = ['ime', 'prezime', 'rod', 'adresa', 'pbr', 'mjesto', 'oib', 'mob', 'email'];
+  const need = step === 1 ? STEP1 : step === 2 ? STEP2 : [...STEP1, ...STEP2];
   need.forEach((k) => { const bad = !d[k]; showErr(form, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
-  if (d.oib && !oibOk(d.oib)) { showErr(form, 'oib', 'OIB nije ispravan'); ok = false; }
-  if (d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) { showErr(form, 'email', 'Unesi ispravan e-mail'); ok = false; }
-  const pe = form.querySelector('[data-err="privola"]'); pe.textContent = d.privola ? '' : 'Privola je obavezna za prijavu'; if (!d.privola) ok = false;
+  if (need.includes('oib') && d.oib && !oibOk(d.oib)) { showErr(form, 'oib', 'OIB nije ispravan'); ok = false; }
+  if (need.includes('email') && d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) { showErr(form, 'email', 'Unesi ispravan e-mail'); ok = false; }
+  if (step !== 1) { const pe = form.querySelector('[data-err="privola"]'); pe.textContent = d.privola ? '' : 'Privola je obavezna za prijavu'; if (!d.privola) ok = false; }
   return ok ? d : null;
+}
+function goStep(form, n) {
+  form.dataset.step = n;
+  form.querySelectorAll('[data-stepbox]').forEach((b) => (b.hidden = +b.dataset.stepbox !== n));
+  $('#wizStep').textContent = `${n}/2`; $('#wizTitle').textContent = n === 1 ? 'Podaci o djevojčici' : 'Kontakt i grupa';
+  $('#wizBar').style.width = n === 1 ? '50%' : '100%';
+  form.querySelector('[data-prev]').hidden = n === 1; form.querySelector('[data-next]').hidden = n === 2; form.querySelector('[type=submit]').hidden = n === 1;
+  const body = form.closest('.app-body'); if (body) body.scrollTo({ top: 0, behavior: 'smooth' });
 }
 document.addEventListener('submit', (e) => {
   if (e.target.id === 'loginForm') {
@@ -395,12 +421,15 @@ document.addEventListener('submit', (e) => {
     return;
   }
   if (e.target.id !== 'prijavaForm') return; e.preventDefault();
-  const d = validate(e.target); if (!d) { const b = e.target.querySelector('.bad, .err:not(:empty)'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+  if (e.target.dataset.step === '1') { if (validate(e.target, 1)) goStep(e.target, 2); return; }
+  const d = validate(e.target); if (!d) { if (!validate(e.target, 1)) { goStep(e.target, 1); return; } const b = e.target.querySelector('.bad, .err:not(:empty)'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   const dup = prijave.some((p) => p.oib === d.oib); // u pravoj aplikaciji: i provjera protiv postojećih članica
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
 document.addEventListener('click', (e) => {
+  const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
+  const pv = e.target.closest('[data-prev]'); if (pv) { goStep(pv.closest('form'), 1); return; }
   if (e.target.closest('[data-opt]')) { optSheet(); return; }
   if (e.target.closest('[data-opt-admin]')) { optAdmin(); return; }
   if (e.target.closest('[data-optclose]') || e.target.classList.contains('opt')) { const o = document.querySelector('.m-overlay.opt'); if (o) o.remove(); return; }

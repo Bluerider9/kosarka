@@ -374,3 +374,19 @@ tr.click { cursor: pointer; }
 .app-header.hero .hero-photo { right: 58px; height: 150px; bottom: -30px; }
 .app-header.hero::before { right: 6px; bottom: -78px; width: 190px; height: 190px; }
 .app-header.hero .cog { background: rgba(24,36,84,.55); }
+
+/* ---------- obrazac u dva koraka ---------- */
+[hidden] { display: none !important; }
+.link.back { display: inline-block; margin: 18px 4px 4px; }
+.card.wiz { padding: 22px 20px; display: flex; flex-direction: column; gap: 18px; }
+.wiz-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.wiz-top h3 { font-size: var(--fs-lg); font-weight: 900; margin-top: 2px; }
+.wiz-step { display: inline-block; font-size: var(--fs-xs); font-weight: 800; letter-spacing: .08em; color: var(--navy); background: var(--navy-100); padding: 3px 10px; border-radius: var(--r-pill); }
+.wiz-bar { height: 6px; background: var(--silver-100); border-radius: var(--r-pill); overflow: hidden; margin-top: -4px; }
+.wiz-bar i { display: block; height: 100%; background: var(--gold); border-radius: var(--r-pill); transition: width .25s; }
+.card.wiz .stack { gap: 16px; }
+.sub-title { font-size: var(--fs-xs); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.wiz-nav { display: flex; gap: 10px; margin-top: 4px; }
+.wiz-nav .btn { padding: 13px 18px; }
+
+.wiz-top .btn { white-space: nowrap; flex-shrink: 0; }
