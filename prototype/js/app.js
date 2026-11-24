@@ -218,7 +218,7 @@ const SCREENS = {
 
         <div class="step stack" data-stepbox="1">
           <div class="two">${field('ime', 'Ime')}${field('prezime', 'Prezime')}</div>
-          ${field('rod', 'Datum rođenja', { type: 'date', ph: '' })}
+          ${field('rod', 'Datum rođenja', { ph: 'dd.mm.gggg', extra: 'inputmode="numeric" maxlength="10" autocomplete="off"' })}
           ${field('oib', 'OIB', { ph: '11 znamenki', extra: 'inputmode="numeric" maxlength="11"' })}
           ${field('adresa', 'Adresa')}
           <div class="two" style="grid-template-columns:1fr 1.4fr">${field('pbr', 'Poštanski broj', { extra: 'inputmode="numeric" maxlength="5"' })}${field('mjesto', 'Mjesto')}</div>
@@ -392,6 +392,13 @@ function showErr(form, name, msg) {
   const f = form.querySelector(`[data-field="${name}"]`);
   if (f) { f.querySelector('.input').classList.toggle('bad', !!msg); f.querySelector('.err').textContent = msg || ''; }
 }
+// datum rođenja: upis dd.mm.gggg (točke se dodaju same), u podacima se čuva kao gggg-mm-dd
+function datOk(s) {
+  const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s); if (!m) return false;
+  const [d, mo, y] = [+m[1], +m[2], +m[3]]; const t = new Date(y, mo - 1, d);
+  return t.getFullYear() === y && t.getMonth() === mo - 1 && t.getDate() === d && y >= 2000 && t <= new Date();
+}
+const datIso = (s) => s.split('.').reverse().join('-');
 function readForm(form) { const d = {}; new FormData(form).forEach((v, k) => (d[k] = v.toString().trim())); return d; }
 const STEP1 = ['ime', 'prezime', 'rod', 'adresa', 'pbr', 'mjesto', 'oib'];
 const STEP2 = ['mob', 'email'];
@@ -399,6 +406,7 @@ function validate(form, step) {
   const d = readForm(form); let ok = true;
   const need = step === 1 ? STEP1 : step === 2 ? STEP2 : [...STEP1, ...STEP2];
   need.forEach((k) => { const bad = !d[k]; showErr(form, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
+  if (need.includes('rod') && d.rod && !datOk(d.rod)) { showErr(form, 'rod', 'Upiši datum kao dd.mm.gggg'); ok = false; }
   if (need.includes('oib') && d.oib && !oibOk(d.oib)) { showErr(form, 'oib', 'OIB nije ispravan'); ok = false; }
   if (need.includes('email') && d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) { showErr(form, 'email', 'Unesi ispravan e-mail'); ok = false; }
   if (step !== 1) { const pe = form.querySelector('[data-err="privola"]'); pe.textContent = d.privola ? '' : 'Privola je obavezna za prijavu'; if (!d.privola) ok = false; }
@@ -424,7 +432,7 @@ document.addEventListener('submit', (e) => {
   if (e.target.dataset.step === '1') { if (validate(e.target, 1)) goStep(e.target, 2); return; }
   const d = validate(e.target); if (!d) { if (!validate(e.target, 1)) { goStep(e.target, 1); return; } const b = e.target.querySelector('.bad, .err:not(:empty)'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   const dup = prijave.some((p) => p.oib === d.oib); // u pravoj aplikaciji: i provjera protiv postojećih članica
-  const p = { id: Date.now(), dat: '24.11.2026.', ...d, foto: false, status: 'ceka', dup };
+  const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
 document.addEventListener('click', (e) => {
@@ -445,7 +453,7 @@ document.addEventListener('click', (e) => {
     return;
   }
   if (e.target.closest('[data-fill]')) {
-    const f = $('#prijavaForm'); Object.entries(SAMPLE).forEach(([k, v]) => { const el = f.elements[k]; if (el) el.value = v; });
+    const f = $('#prijavaForm'); Object.entries(SAMPLE).forEach(([k, v]) => { const el = f.elements[k]; if (el) el.value = k === 'rod' ? v.split('-').reverse().join('.') : v; });
     f.elements.privola.checked = true; return;
   }
   if (e.target.closest('[data-close]') || e.target.classList.contains('modal')) { closeModal(); return; }
@@ -484,6 +492,10 @@ document.addEventListener('click', (e) => {
   if (f) { document.querySelectorAll('#filters .chip').forEach((c) => c.classList.toggle('on', c === f)); $('#rows').innerHTML = memberRows($('#q').value, f.dataset.f); }
 });
 document.addEventListener('input', (e) => {
+  if (e.target.name === 'rod' && e.target.closest('#prijavaForm')) {
+    const z = e.target.value.replace(/\D/g, '').slice(0, 8);
+    e.target.value = [z.slice(0, 2), z.slice(2, 4), z.slice(4)].filter(Boolean).join('.') + (z.length === 2 || z.length === 4 ? '.' : '');
+  }
   if (e.target.id === 'q') { const on = $('#filters .chip.on'); $('#rows').innerHTML = memberRows(e.target.value, on ? on.dataset.f : 'Sve'); }
 });
 window.addEventListener('hashchange', render);
