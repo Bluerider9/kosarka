@@ -78,6 +78,19 @@ function modal(html) {
   const m = document.createElement('div'); m.className = 'modal';
   m.innerHTML = `<div class="sheet">${html}</div>`; document.body.appendChild(m);
 }
+function privacySheet() {
+  modal(`<div class="row spread" style="margin-bottom:10px"><h2 style="font-size:var(--fs-xl)">Pravila privatnosti</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+    <div class="policy">
+      <div class="meta">Nacrt teksta — prije puštanja u rad treba ga provjeriti i dopuniti (npr. podaci o kontaktu i službeniku za zaštitu podataka, ako je potreban).</div>
+      <h4>Tko obrađuje podatke</h4><p>Voditelj obrade je ŽKK Falcons Zagreb (adresa, OIB i kontakt kluba — dopuniti).</p>
+      <h4>Koje podatke prikupljamo</h4><p>Ime i prezime, datum rođenja, OIB, adresa i mjesto djevojčice; ime, mobitel i e-mail roditelja/skrbnika; podatke o grupi, dolascima na treninge i članarini; fotografiju, ako je dana privola.</p>
+      <h4>Zašto ih obrađujemo</h4><p>Za članstvo u klubu: raspored u grupe i treninge, evidenciju dolazaka, naplatu i evidenciju članarine, izdavanje potvrda o članstvu te komunikaciju s roditeljima.</p>
+      <h4>Tko ima pristup</h4><p>Samo ovlaštene osobe kluba (uprava i treneri, u opsegu potrebnom za njihov posao). Podaci se ne prodaju niti ustupaju trećim stranama, osim kad to nalaže zakon.</p>
+      <h4>Koliko dugo čuvamo</h4><p>Dok traje članstvo, te nakon toga onoliko koliko propisi zahtijevaju (dopuniti rokove).</p>
+      <h4>Vaša prava</h4><p>Imate pravo na pristup, ispravak i brisanje podataka, ograničenje obrade, prigovor te povlačenje privole u bilo kojem trenutku. Zahtjev pošaljite klubu na e-mail (dopuniti). Imate i pravo prigovora Agenciji za zaštitu osobnih podataka (AZOP).</p>
+    </div>
+    <button class="btn block" style="margin-top:14px" data-close>Razumijem</button>`);
+}
 const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.remove(); };
 
 /* ---------- mobilni zajednički dijelovi ---------- */
@@ -233,8 +246,9 @@ const SCREENS = {
           <div class="meta">Ako se prijavljujete u selekciju, trener određuje u koju točno spada.</div>
           <div class="field"><label>Napomena</label><textarea class="input" name="napomena" rows="3" placeholder="neobavezno"></textarea></div>
           <div class="sub-title">Privole</div>
-          <label class="check"><input type="checkbox" name="privola"><span>Prihvaćam <u>pravila privatnosti</u> i obradu osobnih podataka (OIB, adresa) u svrhu članstva u klubu.</span></label><small class="err" data-err="privola"></small>
-          <label class="check"><input type="checkbox" name="fotoPrivola"><span>Dopuštam korištenje fotografije djevojčice unutar klupske aplikacije.</span></label>
+          <label class="check"><input type="checkbox" name="privola"><span>Kao roditelj/skrbnik djevojčice dajem privolu za obradu njezinih i mojih osobnih podataka (ime, OIB, adresa, kontakt) u svrhu članstva u klubu, u skladu s <a class="link" data-privacy>pravilima privatnosti</a>.</span></label><small class="err" data-err="privola"></small>
+          <label class="check"><input type="checkbox" name="fotoPrivola"><span>Kao roditelj/skrbnik dopuštam korištenje fotografije djevojčice unutar klupske aplikacije. <em>(neobavezno)</em></span></label>
+          <div class="meta">Privolu možete povući u svakom trenutku obraćanjem klubu.</div>
         </div>
 
         <div class="wiz-nav">
@@ -373,7 +387,7 @@ function optSheet() {
       <div class="opt-row" data-toast="Moj profil — sljedeći korak"><span class="grow">Moj profil</span>${ic('chev', 18)}</div>
       <div class="opt-row attend ${state.bio ? 'on' : ''}" data-optbio><span class="grow">Brza prijava<small>Otisak prsta / Face ID</small></span><div class="toggle"></div></div>
       <div class="opt-row" data-toast="Upute za instalaciju — sljedeći korak"><span class="grow">Upute za instalaciju aplikacije</span>${ic('chev', 18)}</div>
-      <div class="opt-row" data-toast="Pravila privatnosti — sljedeći korak"><span class="grow">Pravila privatnosti</span>${ic('chev', 18)}</div>
+      <div class="opt-row" data-privacy><span class="grow">Pravila privatnosti</span>${ic('chev', 18)}</div>
       <div class="opt-row danger" data-go="start-login"><span class="grow">Odjava</span></div>
     </div></div>`;
   dev.appendChild(o);
@@ -438,6 +452,7 @@ document.addEventListener('submit', (e) => {
 document.addEventListener('click', (e) => {
   const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
   const pv = e.target.closest('[data-prev]'); if (pv) { goStep(pv.closest('form'), 1); return; }
+  if (e.target.closest('[data-privacy]')) { e.preventDefault(); privacySheet(); return; }
   if (e.target.closest('[data-opt]')) { optSheet(); return; }
   if (e.target.closest('[data-opt-admin]')) { optAdmin(); return; }
   if (e.target.closest('[data-optclose]') || e.target.classList.contains('opt')) { const o = document.querySelector('.m-overlay.opt'); if (o) o.remove(); return; }
