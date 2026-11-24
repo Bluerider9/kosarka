@@ -77,3 +77,34 @@ const NOVOSTI = [
   { id: 5, oznaka: 'Škola košarke', grupa: 'Škola košarke', dat: '15.11.2026.', naslov: 'Škola košarke: nova grupa OŠ 3',
     tekst: 'Otvaramo novu grupu u OŠ 3, ponedjeljkom i srijedom u 15:00. Ima još nekoliko slobodnih mjesta, a prijava ide preko javnog obrasca.', citalo: 30, od: 38 },
 ];
+
+// ---------- Falcoini i Ormar (webshop) ----------
+const FALCOIN_PRAVILA = [
+  { k: 'trening', label: 'Dolazak na trening', iznos: 10 },
+  { k: 'utakmica', label: 'Dolazak na utakmicu', iznos: 25 },
+  { k: 'turnir', label: 'Dolazak na turnir', iznos: 40 },
+  { k: 'niz', label: 'Niz od 5 treninga zaredom (bonus)', iznos: 20 },
+  { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 15 },
+];
+const ORMAR = [
+  { id: 1, ime: 'Narukvica Falcons', cijena: 60, zaliha: 24 },
+  { id: 2, ime: 'Set naljepnica', cijena: 40, zaliha: 40 },
+  { id: 3, ime: 'Boca za vodu', cijena: 150, zaliha: 12 },
+  { id: 4, ime: 'Čarape Falcons', cijena: 200, zaliha: 9 },
+  { id: 5, ime: 'Majica za zagrijavanje', cijena: 400, zaliha: 6 },
+  { id: 6, ime: 'Ruksak za dvoranu', cijena: 700, zaliha: 3 },
+];
+const FALCOINI = { 1: 185, 2: 240, 3: 95, 4: 310, 5: 60, 6: 150, 7: 205, 8: 40, 9: 275, 10: 330, 11: 120, 12: 90 };
+const FALCOIN_POVIJEST = [
+  { dat: '21.11.', opis: 'Utakmica U14 — gostovanje', iznos: 25 },
+  { dat: '20.11.', opis: 'Trening U14', iznos: 10 },
+  { dat: '18.11.', opis: 'Trening U14', iznos: 10 },
+  { dat: '17.11.', opis: 'Bonus: niz od 5 treninga', iznos: 20 },
+  { dat: '14.11.', opis: 'Zamjena: Set naljepnica', iznos: -40 },
+  { dat: '13.11.', opis: 'Trening U14', iznos: 10 },
+];
+const NARUDZBE = [
+  { igr: 'Mia Kovač', artikl: 'Boca za vodu', cijena: 150, dat: '23.11.2026.', st: 'čeka' },
+  { igr: 'Petra Marić', artikl: 'Narukvica Falcons', cijena: 60, dat: '22.11.2026.', st: 'čeka' },
+  { igr: 'Ana Horvat', artikl: 'Set naljepnica', cijena: 40, dat: '14.11.2026.', st: 'izdano' },
+];

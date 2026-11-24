@@ -19,6 +19,9 @@ const ICON = {
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   cog: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   chev: '<path d="M9 6l6 6-6 6"/>',
+  coin: '<circle cx="12" cy="12" r="9"/><path d="M10 16V8h5M10 12h4"/>',
+  bag: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 0 1 6 0"/>',
+  qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v1M14 20h3M20 18v3"/>',
   bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   finger: '<path d="M12 11v3a8 8 0 0 1-1.5 4.7M7 11a5 5 0 0 1 10 0v2a13 13 0 0 1-1.2 5.4M3.5 9.5A9 9 0 0 1 20.5 9.5M12 15a17 17 0 0 1-1.2 4.7M7 14.5a21 21 0 0 1-.7 4"/>',
   cup: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 2v3M11 2v3M15 2v3"/>',
@@ -158,11 +161,12 @@ function profilBody(p, uloga) {
     ${kv('Trener', GROUPS.find((x) => x.ime === p.grupe[0]).trener)}</div>`;
   const clanarina = (admin || roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Članarina</h4>${kv('Status', clan(p.clanarina))}${kv('Zadnja uplata', d.zadnjaUplata)}
     ${admin ? `<button class="btn ghost block" data-toast="Povijest uplata — sljedeći korak">Povijest uplata</button>` : ''}</div>` : '';
+  const falco = trener ? '' : `<div class="card pf-sec"><h4>Falcoini</h4>${kv('Stanje', fc(FALCOINI[p.id] || 0))}</div>`;
   const kontakt = (admin || trener) ? `<div class="card pf-sec"><h4>Roditelj / kontakt</h4>${kv('Ime', p.roditelj)}${kv('Mobitel', d.mob)}${admin ? kv('E-mail', d.email) : ''}</div>` : '';
   const potvrde = (admin || roditelj) ? `<div class="card pf-sec"><h4>Potvrde i privole</h4>${kv('Potvrda 2026/27', `kategorija ${kategorija(p)}`)}${kv('Pravila privatnosti', 'prihvaćeno 2023.')}${kv('Fotografija', p.foto ? 'dopuštena' : 'dopuštena, fotografija još nije dodana')}
     ${admin ? `<button class="btn ghost block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF potvrde">Preuzmi potvrdu (PDF)</button>` : ''}</div>` : '';
   const akcije = admin ? `<div class="pf-actions"><button class="btn" data-toast="Uređivanje profila — sljedeći korak">Uredi podatke</button><button class="btn ghost" data-toast="Učitavanje fotografije — sljedeći korak">${ic('upload', 18)} Fotografija</button><button class="btn ghost" data-toast="Promjena grupe — sljedeći korak">Promijeni grupu</button></div>` : '';
-  return hero + `<div class="pf-grid">${osobno}${treninzi}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
+  return hero + `<div class="pf-grid">${osobno}${treninzi}${falco}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
 }
 const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
 /* ---------- NOVOSTI ---------- */
@@ -177,6 +181,46 @@ function novostCard(n) {
       <span class="meta">${n.dat}</span></div>
     <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><p class="news-text">${n.tekst}</p><span class="more">Prikaži više</span></div>`;
 }
+/* ---------- FALCOINI I ORMAR ---------- */
+const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;
+const fc = (n, s = 16) => `<span class="fc">${coinSvg(s)}<b>${n}</b></span>`;
+const IGR_ID = 1; // prototip: prijavljena igračica je Ana Horvat
+const saldo = () => FALCOINI[IGR_ID];
+const plus = (n) => `<b class="amt ${n < 0 ? 'neg' : 'pos'}">${n > 0 ? '+' : ''}${n}</b>`;
+const pravilo = (k) => FALCOIN_PRAVILA.find((r) => r.k === k).iznos;
+const toastIn = (msg) => { const t = $('#toastIn'); if (!t) return; t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); };
+function overlay(html, cls = '') {
+  const dev = $('.device'); if (!dev) return;
+  const old = dev.querySelector('.m-overlay.fx'); if (old) old.remove();
+  const o = document.createElement('div'); o.className = `m-overlay fx ${cls}`; o.innerHTML = `<div class="m-sheet">${html}</div>`; dev.appendChild(o);
+}
+const closeOverlay = () => { const o = document.querySelector('.m-overlay.fx'); if (o) o.remove(); };
+function scanSheet() {
+  overlay(`<div class="viewfinder"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i><div class="laser"></div>${ic('qr', 54)}</div>
+    <h2>Skeniraj QR kod</h2><p>Usmjeri kameru na QR kod koji prikazuje trener.</p>
+    <button class="btn red block" data-scanok>Simuliraj skeniranje</button><button class="btn ghost block" data-fxclose>Odustani</button>
+    <small>Samo u prototipu: u pravoj aplikaciji se ovdje otvara kamera.</small>`);
+}
+function scanResult() {
+  if (state.skenirano) { overlay(`<div class="scan-res warn">${ic('check', 34)}</div><h2>Već si evidentirana</h2><p>Dolazak za ovaj trening je već spremljen.</p><button class="btn block" data-fxclose>U redu</button>`); return; }
+  const n = pravilo('trening'); state.skenirano = true; FALCOINI[IGR_ID] += n; FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
+  overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${n} Falcoina</div>
+    <p>U14 · Dvorana A · 17:30<br>Novo stanje: <b>${saldo()}</b></p><button class="btn red block" data-fxclose>Super</button>`);
+}
+function redeemSheet(id) {
+  const a = ORMAR.find((x) => x.id === id);
+  overlay(`<div class="item-tile big">${a.ime.charAt(0)}</div><h2>${a.ime}</h2><div style="display:flex;justify-content:center">${fc(a.cijena, 22)}</div>
+    <p>Stanje nakon zamjene: <b>${saldo() - a.cijena}</b><br>Artikl preuzimaš kod trenera na treningu.</p>
+    <button class="btn red block" data-redeemok="${id}">Zamijeni</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
+}
+function falcoiniHistory() {
+  return `<div class="card"><div class="list">${FALCOIN_POVIJEST.map((t) => `<div class="row"><div class="grow"><h3 style="font-size:var(--fs-sm)">${t.opis}</h3><div class="meta">${t.dat}</div></div>${plus(t.iznos)}</div>`).join('')}</div></div>`;
+}
+function ormarGrid() {
+  return `<div class="ormar-grid">${ORMAR.map((a) => { const moze = saldo() >= a.cijena && a.zaliha > 0;
+    return `<div class="card item"><div class="item-tile">${a.ime.charAt(0)}</div><h3>${a.ime}</h3>${fc(a.cijena)}
+      <button class="btn ${moze ? 'red' : 'ghost'} sm block" ${moze ? `data-redeem="${a.id}"` : 'disabled'}>${a.zaliha < 1 ? 'Nema na zalihi' : moze ? 'Zamijeni' : `Fali ${a.cijena - saldo()}`}</button></div>`; }).join('')}</div>`;
+}
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
 const att = {}; PLAYERS.slice(0, 8).forEach((p, i) => (att[p.id] = i !== 4 && i !== 7));
@@ -186,11 +230,24 @@ const SCREENS = {
     tabs: tabbar('trener', TRENER_TABS, 'danas'),
     body: `<div class="section-title">Danas</div>` +
       (TRENINZI[TODAY].filter((t) => t.g !== 'SEN').map((t) => `<div class="card stack">${trenRow(t, chip('8 igračica', 'navy'))}
-        <button class="btn block" data-go="trener-dolasci">${ic('check', 18)} Označi dolaske</button></div>`).join('')) +
+        <div class="row" style="gap:10px"><button class="btn grow" data-go="trener-dolasci">${ic('check', 18)} Dolasci</button><button class="btn red grow" data-go="trener-qr">${ic('qr', 18)} QR za dolazak</button></div></div>`).join('')) +
       `<div class="section-title">Ovaj tjedan</div>
        <div class="card"><div class="row spread"><div><h3>Dolaznost</h3><div class="meta">Prosjek tvojih grupa</div></div><b style="font-size:var(--fs-xl);font-weight:900">84%</b></div>
        <div class="progress" style="margin-top:12px"><i style="width:84%"></i></div></div>`,
   }),
+  'trener-qr': () => {
+    const tipovi = [['trening', 'Trening'], ['utakmica', 'Utakmica'], ['turnir', 'Turnir']];
+    return {
+      header: mHeader('QR za dolazak', 'U14 · Uto 24.11. · 17:30'),
+      tabs: tabbar('trener', TRENER_TABS, 'danas'),
+      body: `<a class="link back pf-back" data-go="trener-danas">← Danas</a>
+        <div class="seg2">${tipovi.map(([k, l]) => `<button type="button" class="${state.qrTip === k ? 'on' : ''}" data-qrtip="${k}">${l}</button>`).join('')}</div>
+        <div class="card qr-card"><img src="assets/qr-primjer.svg" alt="QR kod za dolazak"><div class="meta">Igračice skeniraju kod u aplikaciji</div>
+          <div class="fc-badge">${fc('+' + pravilo(state.qrTip), 18)}<span>po igračici</span></div></div>
+        <div class="card"><div class="row spread"><h3>Skenirano</h3><b id="qrN" style="font-weight:900">5 / 8</b></div><div class="progress" style="margin-top:10px"><i style="width:62%"></i></div>
+          <div class="meta" style="margin-top:10px">Kod vrijedi samo za ovaj termin. Tko nema mobitel, označi ga ručno u Dolascima.</div></div>`,
+    };
+  },
   'trener-dolasci': () => {
     const lista = PLAYERS.slice(0, 8);
     const n = lista.filter((p) => att[p.id]).length;
@@ -346,7 +403,23 @@ const SCREENS = {
     body: `<div class="card stack"><div class="meta">Sljedeći trening</div>
         <div class="row"><div class="time-block gold"><b>17:30</b><span>Danas</span></div><div class="grow"><h3>U14</h3><div class="meta">Dvorana A</div></div></div></div>
       <div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
-        <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>`,
+        <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>
+      <div class="card row spread fc-card" data-go="igracica-falcoini"><div class="row" style="gap:12px">${coinSvg(34)}<div><h3>Falcoini</h3><div class="meta">Skeniraj QR na treningu</div></div></div><b style="font-size:var(--fs-xl);font-weight:900">${saldo()}</b></div>`,
+  }),
+  'igracica-falcoini': () => ({
+    header: mHeader('Falcoini', 'Skupljaj i mijenjaj u Ormaru'),
+    tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
+    body: `<div class="card fc-hero">${coinSvg(56)}<div class="fc-num">${saldo()}</div><div class="fc-lbl">Falcoina</div>
+        <button class="btn red block" data-scan>${ic('qr', 20)} Skeniraj QR za dolazak</button></div>
+      <button class="btn ghost block" data-go="igracica-ormar">${ic('bag', 18)} Otvori Ormar</button>
+      <div class="section-title">Kako zarađuješ</div>
+      <div class="card"><div class="list">${FALCOIN_PRAVILA.map((r) => `<div class="row spread"><span style="font-size:var(--fs-sm)">${r.label}</span>${fc(r.iznos)}</div>`).join('')}</div></div>
+      <div class="section-title">Povijest</div>${falcoiniHistory()}`,
+  }),
+  'igracica-ormar': () => ({
+    header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
+    tabs: tabbar('igracica', IGRACICA_TABS, 'ormar'),
+    body: `<div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarGrid()}`,
   }),
   'igracica-profil': () => ({
     header: mHeader('Moj profil', 'Ana Horvat'),
@@ -370,10 +443,10 @@ const SCREENS = {
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
-const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
+const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -402,6 +475,25 @@ const ADMIN = {
       <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f, i) => `<span class="chip ${i ? '' : 'on'}" data-f="${f}">${f}</span>`).join('')}</div></div>
     <table><thead><tr><th>Ime</th><th>Godište</th><th>Grupe</th><th>Roditelj</th><th>Članarina</th></tr></thead><tbody id="rows">${memberRows()}</tbody></table>`,
   profil: () => profilBody(profilIgr(), 'admin'),
+  falcoini: () => `<div class="page-head"><div><h1>Falcoini</h1><div class="sub">Pravila bodovanja i ljestvica</div></div></div>
+    <div class="pf-grid">
+      <div class="card pf-sec"><h4>Pravila bodovanja</h4>${FALCOIN_PRAVILA.map((r) => `<div class="pf-kv"><span>${r.label}</span><span class="row" style="gap:8px">${coinSvg(18)}<input class="input fc-in" type="number" min="0" value="${r.iznos}" data-rule="${r.k}"></span></div>`).join('')}
+        <button class="btn ghost" data-toast="Pravila spremljena (prototip)">Spremi pravila</button></div>
+      <div class="card pf-sec"><h4>Ljestvica sezone</h4>${PLAYERS.slice().sort((a, b) => FALCOINI[b.id] - FALCOINI[a.id]).slice(0, 6).map((p, i) => `<div class="pf-kv"><span class="row" style="gap:10px"><b style="width:18px;color:var(--muted)">${i + 1}.</b>${av(p, 'sm')}<span style="color:var(--text)">${p.ime}</span></span>${fc(FALCOINI[p.id])}</div>`).join('')}</div>
+      <div class="card pf-sec"><h4>Ručno dodjeljivanje</h4>
+        <div class="field"><label>Igračica</label><select class="input" id="fcWho">${PLAYERS.map((p) => `<option value="${p.id}">${p.ime}</option>`).join('')}</select></div>
+        <div class="two"><div class="field"><label>Razlog</label><input class="input" id="fcWhy" placeholder="npr. pomoć na turniru"></div><div class="field"><label>Iznos</label><input class="input" id="fcAmt" type="number" value="15"></div></div>
+        <button class="btn" data-fcgive>Dodijeli Falcoine</button></div>
+      <div class="card pf-sec"><h4>Kako se bilježi dolazak</h4>
+        <div class="meta" style="line-height:1.6">Trener otvori QR za termin u svojoj aplikaciji, igračice ga skeniraju u svojoj. Kod vrijedi samo za taj termin, a igračica po terminu dobije bodove jednom. Trener može dolazak označiti i ručno.</div></div>
+    </div>`,
+  ormar: () => `<div class="page-head"><div><h1>Ormar</h1><div class="sub">Artikli za zamjenu i narudžbe</div></div><div class="grow"></div>
+      <button class="btn" data-toast="Novi artikl — sljedeći korak">${ic('plus', 18)} Novi artikl</button></div>
+    <h2 style="font-size:var(--fs-lg);margin:0 0 10px">Narudžbe</h2>
+    <table><thead><tr><th>Igračica</th><th>Artikl</th><th>Cijena</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>${NARUDZBE.map((n, i) => `<tr><td><b>${n.igr}</b></td><td>${n.artikl}</td><td>${fc(n.cijena)}</td><td>${n.dat}</td>
+      <td>${n.st === 'čeka' ? chip('Čeka izdavanje', 'warn') : chip('Izdano', 'ok')}</td><td>${n.st === 'čeka' ? `<button class="btn ghost sm" data-izdano="${i}">Označi izdano</button>` : ''}</td></tr>`).join('')}</tbody></table>
+    <h2 style="font-size:var(--fs-lg);margin:28px 0 10px">Artikli</h2>
+    <table><thead><tr><th>Artikl</th><th>Cijena</th><th>Zaliha</th></tr></thead><tbody>${ORMAR.map((a) => `<tr><td><div class="who"><span class="item-tile sm">${a.ime.charAt(0)}</span>${a.ime}</div></td><td>${fc(a.cijena)}</td><td>${a.zaliha > 4 ? a.zaliha : chip(a.zaliha + ' (malo)', 'warn')}</td></tr>`).join('')}</tbody></table>`,
   novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje</div></div><div class="grow"></div>
       <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
     <table><thead><tr><th>Objava</th><th>Za</th><th>Datum</th><th>Pročitalo</th></tr></thead><tbody>${NOVOSTI.map((n) => `<tr><td><b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div></td>
@@ -426,7 +518,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citano: new Set([3, 4]) };
+const state = { dan: TODAY, bio: false, citano: new Set([3, 4]), skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -592,6 +684,16 @@ document.addEventListener('click', (e) => {
   }
   const go = e.target.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
   const dan = e.target.closest('[data-dan]'); if (dan) { state.dan = +dan.dataset.dan; render(); return; }
+  if (e.target.closest('[data-scan]')) { scanSheet(); return; }
+  if (e.target.closest('[data-scanok]')) { scanResult(); return; }
+  if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
+  const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }
+  const rk = e.target.closest('[data-redeemok]');
+  if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); if (saldo() >= a.cijena && a.zaliha > 0) { FALCOINI[IGR_ID] -= a.cijena; a.zaliha--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, cijena: a.cijena, dat: '24.11.2026.', st: 'čeka' }); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Zamjena: ${a.ime}`, iznos: -a.cijena }); }
+    closeOverlay(); render(); toastIn('Narudžba poslana — preuzmi na treningu'); return; }
+  const qt = e.target.closest('[data-qrtip]'); if (qt) { state.qrTip = qt.dataset.qrtip; render(); return; }
+  const iz = e.target.closest('[data-izdano]'); if (iz) { NARUDZBE[+iz.dataset.izdano].st = 'izdano'; render(); return; }
+  if (e.target.closest('[data-fcgive]')) { const id = +$('#fcWho').value, n = +$('#fcAmt').value; if (n) { FALCOINI[id] += n; if (id === IGR_ID) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: $('#fcWhy').value || 'Ručno dodijeljeno', iznos: n }); render(); } return; }
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';

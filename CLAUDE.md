@@ -88,6 +88,16 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Admin ima stranicu **Novosti**: popis objava s oznakom, publikom (svi ili jedna grupa) i brojem pročitanih, te "Nova objava" (naslov, tekst, za koga, oznaka, prikvači).
 - Roditelj vidi objave za "Svi" i za grupe svojih djevojčica. Push obavijesti i e-mail za nove objave dolaze kasnije (nisu u prototipu).
 
+## Falcoini i Ormar
+
+- **Falcoin** je klupska virtualna valuta; igračice ih skupljaju dolascima (trening, utakmica, turnir, bonusi) i mijenjaju za artikle u klupskom webshopu **Ormar**.
+- **Bilježenje dolaska QR kodom:** trener u svojoj aplikaciji otvori QR za termin (bira vrstu: trening / utakmica / turnir), igračica ga skenira u svojoj aplikaciji → dolazak se sprema i dobiva Falcoine.
+  Kod vrijedi samo za taj termin, jedan dolazak po igračici po terminu, trener može označiti dolazak i ručno (Dolasci). Prava aplikacija: QR s potpisanim tokenom (termin + vrijeme), kamera u PWA-u.
+- Bodovi (admin ih mijenja): trening 10, utakmica 25, turnir 40, bonus za niz od 5 treninga 20, ručno dodjeljivanje (npr. pomoć u organizaciji).
+- Igračica: tabovi **Falcoini** (stanje, skeniranje, povijest, kako zarađuješ) i **Ormar** (artikli, "Zamijeni"; stanje se odmah umanjuje, artikl se preuzima kod trenera).
+- Admin: stranice **Falcoini** (pravila, ljestvica, ručno dodjeljivanje) i **Ormar** (narudžbe s "Označi izdano", artikli i zaliha). Falcoini se vide i na profilu igračice (ne treneru).
+- Otvoreno: vrijede li Falcoini po sezoni ili stalno; treba li roditelj potvrditi zamjenu; trebaju li se bodovi poništiti ako trener ispravi dolazak; prave slike artikala.
+
 ## Opcije (zupčanik)
 
 - Zupčanik gore desno na svim ekranima za prijavljene (mobitel: u zaglavlju; admin: u kutu glavnog dijela).

@@ -461,3 +461,37 @@ textarea.input { font-family: inherit; resize: vertical; }
 .chip.danger { background: #f7dede; color: #a33838; }
 
 .admin .page-head { padding-right: 64px; }
+
+/* ---------- Falcoini, Ormar, QR ---------- */
+.fc { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; }
+.fc b { font-weight: 800; }
+.fcoin { flex-shrink: 0; display: block; }
+.amt { font-weight: 900; font-size: var(--fs-md, 15px); }
+.amt.pos { color: #1f8a4c; } .amt.neg { color: var(--red); }
+.fc-hero { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; padding: 24px 18px 20px; background: linear-gradient(160deg, #1b2a62, var(--navy)); color: #fff; }
+.fc-hero .fc-num { font-size: 56px; font-weight: 900; line-height: 1; margin-top: 8px; }
+.fc-hero .fc-lbl { opacity: .7; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--fs-xs); margin-bottom: 14px; }
+.fc-card { cursor: pointer; }
+.section-title { margin-top: 6px; }
+.ormar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.card.item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 14px 12px; }
+.card.item h3 { font-size: var(--fs-sm); font-weight: 800; min-height: 2.6em; display: flex; align-items: center; }
+.item-tile { width: 76px; height: 76px; border-radius: 18px; background: linear-gradient(135deg, var(--navy-100), var(--silver-100)); color: var(--navy); font-weight: 900; font-size: 30px; display: grid; place-items: center; }
+.item-tile.big { width: 96px; height: 96px; font-size: 40px; margin: 0 auto 4px; }
+.item-tile.sm { width: 32px; height: 32px; font-size: 14px; border-radius: 8px; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.viewfinder { position: relative; width: 190px; height: 190px; margin: 0 auto 8px; display: grid; place-items: center; color: var(--silver); background: var(--silver-100); border-radius: 20px; overflow: hidden; }
+.viewfinder .c { position: absolute; width: 34px; height: 34px; border: 4px solid var(--gold); }
+.viewfinder .tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-radius: 10px 0 0 0; }
+.viewfinder .tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; border-radius: 0 10px 0 0; }
+.viewfinder .bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; border-radius: 0 0 0 10px; }
+.viewfinder .br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; border-radius: 0 0 10px 0; }
+.laser { position: absolute; left: 14px; right: 14px; height: 3px; background: var(--red); border-radius: 2px; box-shadow: 0 0 10px var(--red); animation: laser 1.6s ease-in-out infinite alternate; }
+@keyframes laser { from { top: 22px; } to { top: 164px; } }
+.scan-res { display: flex; justify-content: center; margin: 4px 0; color: var(--navy); }
+.scan-res.warn { color: var(--gold); }
+.scan-plus { font-size: 34px; font-weight: 900; color: var(--navy); }
+.qr-card { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 22px 18px; text-align: center; }
+.qr-card img { width: min(240px, 78%); height: auto; border: 8px solid #fff; border-radius: 14px; box-shadow: 0 0 0 2px var(--silver-100); }
+.fc-badge { display: flex; align-items: center; gap: 10px; font-size: var(--fs-sm); color: var(--muted); font-weight: 600; }
+.fc-in { width: 84px; padding: 8px 10px; text-align: right; }
