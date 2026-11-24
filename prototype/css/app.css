@@ -599,3 +599,9 @@ td .who span { font-weight: 600; }
 .sd-day { width: 46px; }
 .sd { gap: 4px; padding: 8px 2px; }
 .sd-t i { margin-left: 2px; }
+
+.dot-wait { background: #b7bdc9; }
+.sched-head { display: flex; flex-direction: column; gap: 6px; padding: 14px 4px 0; }
+.sched-head h2 { font-size: var(--fs-lg); }
+.sched-head .sched-legend { justify-content: flex-start; flex-wrap: wrap; gap: 6px 12px; }
+.sched-legend span { display: inline-flex; align-items: center; }

@@ -174,9 +174,10 @@ function rasporedScreen(filterGrupe, tocke = false) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
-      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${tocke && i < TODAY ? `<i class="dot-${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'yes' : 'no'}" title="${DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'Bila si' : 'Nisi bila'}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
+      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${tocke ? `<i class="${i < TODAY ? (DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'dot-yes' : 'dot-no') : 'dot-wait'}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
-  return `<div class="card sched-week">${redovi}</div>${tocke ? '<div class="sched-legend"><span><i class="dot-yes"></i> bila si na treningu</span><span><i class="dot-no"></i> nisi bila</span></div>' : ''}${RASPORED_NAPOMENA}`;
+  const naslov = tocke ? `<div class="sched-head"><h2>Treninzi ovaj tjedan</h2><div class="sched-legend"><span><i class="dot-yes"></i> bila si i odradila</span><span><i class="dot-no"></i> nisi bila</span><span><i class="dot-wait"></i> još nije bio trening</span></div></div>` : '';
+  return `${naslov}<div class="card sched-week">${redovi}</div>${RASPORED_NAPOMENA}`;
 }
 
 /* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
