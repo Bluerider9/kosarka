@@ -524,7 +524,7 @@ const SCREENS = {
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
-const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Termini', 'cal'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
+const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;

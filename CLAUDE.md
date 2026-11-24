@@ -119,7 +119,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - **Iduća utakmica** za njezinu grupu: datum i vrijeme, uz oznake "Datum i vrijeme još nisu potvrđeni" i "Dvorana još nije potvrđena" dok admin ne potvrdi.
 - Fotografija je u traci iznad donjeg izbornika (samo početna), izvire iz zlatnog kruga i iznad okvira trake; zaglavlje je bez slike.
 
-## Raspored (kod igračice tab "Termini", naslov "Treninzi i utakmice")
+## Raspored (kod igračice tab "Raspored", naslov stranice "Treninzi i utakmice")
 
 - Prikazuje se **samo aktivni tjedan** (pon–ned), svi dani ispisani jedan ispod drugog s treninzima (vrijeme, grupa, dvorana); današnji dan je istaknut, prošli blijedi. Bez biranja dana.
 - Na rasporedu igračice uz treninge stoje točke: **zelena** (bila), **žuta** (kasnila), **crvena** (nije bila); bez legende; današnji dan se označava samo bojom pozadine.
