@@ -353,3 +353,24 @@ tr.click { cursor: pointer; }
 .logo-badge.xs img { height: 20px; filter: drop-shadow(1px 0 0 #dbe3ec) drop-shadow(-1px 0 0 #dbe3ec) drop-shadow(0 1px 0 #dbe3ec) drop-shadow(0 -1px 0 #dbe3ec); }
 .mail-head .logo-badge img { height: 34px; }
 .sidebar .logo .logo-badge img { height: 42px; }
+
+/* ---------- zupčanik (opcije) ---------- */
+.cog { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; color: #fff; background: rgba(255,255,255,.14); position: relative; z-index: 3; transition: background .15s, transform .1s; }
+.cog:hover { background: rgba(255,255,255,.24); }
+.cog:active { transform: scale(.94) rotate(30deg); }
+.main { position: relative; }
+.cog.admin-cog { position: absolute; top: 28px; right: 32px; color: var(--navy); background: var(--surface); box-shadow: var(--shadow-1); }
+.cog.admin-cog:hover { background: var(--navy-100); }
+.opt-list { display: flex; flex-direction: column; text-align: left; }
+.opt-row { display: flex; align-items: center; gap: 12px; padding: 15px 4px; border-bottom: 1px solid var(--line); font-weight: 700; font-size: var(--fs-md); cursor: pointer; color: var(--text); }
+.opt-row:last-child { border-bottom: 0; }
+.opt-row small { display: block; font-weight: 500; font-size: var(--fs-xs); color: var(--muted); margin-top: 2px; }
+.opt-row svg { color: var(--muted); }
+.opt-row.danger { color: var(--red); }
+.m-sheet.opts { text-align: left; gap: 4px; padding-bottom: 18px; }
+.m-sheet.opts h2 { font-size: var(--fs-xl); }
+
+/* naslovnica igračice: fotografija lijevo od zupčanika da ga ne prekriva */
+.app-header.hero .hero-photo { right: 58px; height: 150px; bottom: -30px; }
+.app-header.hero::before { right: 6px; bottom: -78px; width: 190px; height: 190px; }
+.app-header.hero .cog { background: rgba(24,36,84,.55); }

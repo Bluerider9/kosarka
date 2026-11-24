@@ -17,6 +17,8 @@ const ICON = {
   upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  cog: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  chev: '<path d="M9 6l6 6-6 6"/>',
   finger: '<path d="M12 11v3a8 8 0 0 1-1.5 4.7M7 11a5 5 0 0 1 10 0v2a13 13 0 0 1-1.2 5.4M3.5 9.5A9 9 0 0 1 20.5 9.5M12 15a17 17 0 0 1-1.2 4.7M7 14.5a21 21 0 0 1-.7 4"/>',
   cup: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 2v3M11 2v3M15 2v3"/>',
 };
@@ -79,9 +81,10 @@ function modal(html) {
 const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.remove(); };
 
 /* ---------- mobilni zajednički dijelovi ---------- */
-function mHeader(naslov, sub, foto = false) {
+function mHeader(naslov, sub, foto = false, cog = true) {
   return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row">${badge()}
-    <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div></div>
+    <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div>
+    ${cog ? `<button class="cog" data-opt aria-label="Opcije">${ic('cog', 22)}</button>` : ''}</div>
     ${foto ? `<img class="hero-photo" src="${FOTO}" alt="">` : ''}</div>`;
 }
 function tabbar(uloga, tabs, aktivan) {
@@ -205,7 +208,7 @@ const SCREENS = {
 
   /* ---------- JAVNA PRIJAVA ---------- */
   'prijava-forma': () => ({
-    header: mHeader('Prijava nove članice', 'ŽKK Falcons Zagreb'),
+    header: mHeader('Prijava nove članice', 'ŽKK Falcons Zagreb', false, false),
     tabs: '',
     body: `<a class="link back" data-go="start-login">← Imam račun, prijavi me</a><form id="prijavaForm" class="stack" novalidate>
       <div class="card stack"><div class="row spread"><h3>Podaci o djevojčici</h3><button type="button" class="btn ghost sm" data-fill>Popuni primjerom</button></div>
@@ -228,7 +231,7 @@ const SCREENS = {
   'prijava-poslano': () => {
     const p = state.zadnja || SAMPLE;
     return {
-      header: mHeader('Prijava poslana', 'Hvala!'),
+      header: mHeader('Prijava poslana', 'Hvala!', false, false),
       tabs: '',
       body: `<div class="card stack" style="text-align:center;padding:28px 20px"><div style="font-size:42px">✅</div><h2 style="font-size:var(--fs-xl)">Primili smo prijavu za ${p.ime}</h2>
         <div class="meta">Potvrdu smo poslali na <b style="color:var(--text)">${p.email}</b>.</div></div>
@@ -306,7 +309,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY };
+const state = { dan: TODAY, bio: false };
 let toastT;
 
 function toast(msg) {
@@ -324,7 +327,7 @@ function render() {
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
       ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
-      <button>${ic('user', 20)}Mislav</button></aside><main class="main">${ADMIN[a]()}</main></div>`;
+      <button>${ic('user', 20)}Mislav</button></aside><main class="main"><button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
   }
   stage.className = 'stage';
@@ -344,6 +347,30 @@ function bioSheet() {
     <button class="btn ghost block" data-bio="no">Ne sada</button>
     <small>Možeš ga uključiti i kasnije u Profilu.</small></div>`;
   dev.appendChild(o);
+}
+const optRow = (label, extra = '', attrs = '') => `<div class="opt-row ${attrs}">${label}${extra}</div>`;
+function optSheet() {
+  const dev = $('.device'); if (!dev || dev.querySelector('.opt')) return;
+  const o = document.createElement('div'); o.className = 'm-overlay opt';
+  o.innerHTML = `<div class="m-sheet opts"><div class="row spread" style="margin-bottom:6px"><h2>Opcije</h2><button class="btn ghost sm" data-optclose>Zatvori</button></div>
+    <div class="opt-list">
+      <div class="opt-row" data-toast="Moj profil — sljedeći korak"><span class="grow">Moj profil</span>${ic('chev', 18)}</div>
+      <div class="opt-row attend ${state.bio ? 'on' : ''}" data-optbio><span class="grow">Brza prijava<small>Otisak prsta / Face ID</small></span><div class="toggle"></div></div>
+      <div class="opt-row" data-toast="Upute za instalaciju — sljedeći korak"><span class="grow">Upute za instalaciju aplikacije</span>${ic('chev', 18)}</div>
+      <div class="opt-row" data-toast="Pravila privatnosti — sljedeći korak"><span class="grow">Pravila privatnosti</span>${ic('chev', 18)}</div>
+      <div class="opt-row danger" data-go="start-login"><span class="grow">Odjava</span></div>
+    </div></div>`;
+  dev.appendChild(o);
+}
+function optAdmin() {
+  modal(`<div class="row spread" style="margin-bottom:6px"><h2 style="font-size:var(--fs-xl)">Opcije</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+    <div class="opt-list">
+      <div class="opt-row" data-toast="Moj profil — sljedeći korak"><span class="grow">Moj profil</span>${ic('chev', 18)}</div>
+      <div class="opt-row" data-toast="Postavke kluba: grupe, škole, sezone — sljedeći korak"><span class="grow">Postavke kluba<small>Grupe, popis škola, sezone</small></span>${ic('chev', 18)}</div>
+      <div class="opt-row" data-toast="Korisnici i uloge — sljedeći korak"><span class="grow">Korisnici i uloge<small>Treneri, administratori</small></span>${ic('chev', 18)}</div>
+      <div class="opt-row" data-toast="Predlošci e-mailova — sljedeći korak"><span class="grow">Predlošci e-mailova</span>${ic('chev', 18)}</div>
+      <div class="opt-row danger" data-go="start-login"><span class="grow">Odjava</span></div>
+    </div>`);
 }
 function showErr(form, name, msg) {
   const f = form.querySelector(`[data-field="${name}"]`);
@@ -374,6 +401,12 @@ document.addEventListener('submit', (e) => {
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
 document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-opt]')) { optSheet(); return; }
+  if (e.target.closest('[data-opt-admin]')) { optAdmin(); return; }
+  if (e.target.closest('[data-optclose]') || e.target.classList.contains('opt')) { const o = document.querySelector('.m-overlay.opt'); if (o) o.remove(); return; }
+  const ob = e.target.closest('[data-optbio]');
+  if (ob) { state.bio = !state.bio; ob.classList.toggle('on', state.bio); return; }
+  if (e.target.closest('[data-go]')) closeModal();
   const eye = e.target.closest('[data-eye]');
   if (eye) { const i = eye.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; return; }
   const bio = e.target.closest('[data-bio]');

@@ -68,6 +68,12 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
   ("Uključi brzu prijavu?" — Uključi / Ne sada), a može se uključiti i kasnije u Profilu. Na iPhoneu se nudi unutar
   instalirane aplikacije (PWA ima odvojenu prijavu od Safarija).
 
+## Opcije (zupčanik)
+
+- Zupčanik gore desno na svim ekranima za prijavljene (mobitel: u zaglavlju; admin: u kutu glavnog dijela).
+- Mobitel: Moj profil, Brza prijava (prekidač za otisak prsta / Face ID), Upute za instalaciju, Pravila privatnosti, Odjava.
+- Admin: Moj profil, Postavke kluba (grupe, popis škola, sezone), Korisnici i uloge, Predlošci e-mailova, Odjava.
+
 ## Struktura
 
 - `prototype/` — klikabilni HTML prototip (mobitel + admin desktop), izmišljeni podaci
