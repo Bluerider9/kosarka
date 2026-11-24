@@ -664,3 +664,19 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .next-day { display: flex; flex-direction: column; gap: 1px; border-top: 1px solid var(--line); padding-top: 8px; font-size: 12px; }
 .next-day b { color: var(--navy); font-weight: 800; }
 .next-day span { color: var(--muted); font-weight: 600; }
+
+.sched-matches { padding: 10px var(--s3); gap: 2px; display: flex; flex-direction: column; }
+.sched-matches h3 { font-size: var(--fs-sm); margin-bottom: 4px; }
+.mt { display: flex; align-items: center; gap: 10px; padding: 6px 2px; border-top: 1px solid var(--line); }
+.mt-d { width: 66px; flex-shrink: 0; display: flex; flex-direction: column; line-height: 1.15; }
+.mt-d b { font-size: 12px; font-weight: 800; color: var(--navy); }
+.mt-d span { font-size: 11px; color: var(--muted); font-weight: 600; }
+.mt-o { flex: 1; display: flex; flex-direction: column; font-size: 12px; line-height: 1.2; }
+.mt-o b { font-weight: 700; }
+.mt-o small { color: #8a5a00; font-weight: 600; font-size: 11px; }
+.mt-r { font-weight: 900; font-size: 13px; }
+.mt-r.w { color: #1d7a43; }
+.mt-r.l { color: var(--red); }
+
+.sched-week .sd { padding: 5px 2px; }
+.sched-week { padding: 4px var(--s3); }

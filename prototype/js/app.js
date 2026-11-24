@@ -185,13 +185,22 @@ const dolazakStatus = (i, t) => { const v = dolazak(i, t); return v === undefine
 const dotCls = (i, t) => ({ da: 'dot-yes', kasni: 'dot-late', ne: 'dot-no', cekaj: 'dot-wait' })[dolazakStatus(i, t)];
 const minute = (n) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'minutu' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'minute' : 'minuta'}`;
 const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t); return { da: 'Bila si i odradila', kasni: `Kasnila ${minute(v)}`, ne: 'Nisi bila', cekaj: 'Još nije bio trening' }[s]; };
+// utakmice igračice: 'igrala' (odigrane) i 'pozvana' (na popisu za iduću) — izmišljeni podaci
+const UTAKMICE_IGR = [
+  { dat: 'Sub 28.11.', vr: '11:00', opis: 'Prvenstvo U14', st: 'pozvana', nap: 'termin nije potvrđen' },
+  { dat: 'Sub 22.11.', vr: '', opis: 'Prvenstvo U14 · ŽKK Primjer 2', st: 'igrala', rez: '54 : 48' },
+  { dat: 'Sub 15.11.', vr: '', opis: 'Prvenstvo U14 · ŽKK Primjer 1', st: 'igrala', rez: '41 : 47' },
+];
+const utakmiceIgr = () => `<div class="card sched-matches"><h3>Utakmice</h3>${UTAKMICE_IGR.map((u) => `<div class="mt"><div class="mt-d"><b>${u.dat}</b><span>${u.vr || 'odigrano'}</span></div>
+  <div class="mt-o"><b>${u.opis}</b>${u.nap ? `<small>${u.nap}</small>` : ''}</div>
+  ${u.st === 'pozvana' ? chip('Pozvana', 'warn') : `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>`}</div>`).join('')}</div>`;
 function rasporedScreen(filterGrupe, tocke = false) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
       <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${tocke && (i < TODAY || dolazak(i, t)) ? `<i class="${dotCls(i, t)}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
-  return `<div class="card sched-week">${redovi}</div>${tocke ? '<div class="sched-legend"><span><i class="dot-yes"></i> bila si na treningu</span><span><i class="dot-no"></i> nisi bila</span></div>' : ''}${RASPORED_NAPOMENA}`;
+  return `<div class="card sched-week">${redovi}</div>${tocke ? '<div class="sched-legend"><span><i class="dot-yes"></i> bila si na treningu</span><span><i class="dot-no"></i> nisi bila</span></div>' : ''}${tocke ? utakmiceIgr() : ''}${RASPORED_NAPOMENA}`;
 }
 
 /* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
