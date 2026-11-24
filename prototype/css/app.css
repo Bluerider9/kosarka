@@ -407,3 +407,7 @@ select.input option { color: #182454; background: #fff; font-family: inherit; }
 /* ---------- potpis: tekst BLUE RIDER DESIGN umjesto logotipa ---------- */
 .bluerider { font-size: 12px; font-weight: 800; letter-spacing: .14em; color: #fff; text-decoration: none; white-space: nowrap; border-bottom: 1.5px solid var(--gold); padding: 0 0 2px; border-radius: 0; }
 .bluerider:hover { color: var(--gold); }
+
+/* potpis: podvlaka ne smije pomaknuti tekst; razmak slova ne smije otkloniti centar */
+.bluerider { border-bottom: 0; padding: 0; margin-right: -.14em; line-height: 16px; background: linear-gradient(var(--gold), var(--gold)) 0 100% / calc(100% - .14em) 1.5px no-repeat; padding-bottom: 3px; margin-bottom: -3px; }
+.madeby { align-items: center; }
