@@ -463,6 +463,7 @@ const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
+const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
 const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
@@ -558,7 +559,7 @@ function render() {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
-      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
+      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}${id === 'ormar' && novihNarudzbi() ? `<span class="badge">${novihNarudzbi()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
       <button>${ic('user', 20)}Mislav</button></aside><main class="main"><button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
   }
