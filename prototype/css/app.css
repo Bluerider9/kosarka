@@ -224,3 +224,38 @@ tr.click { cursor: pointer; }
 .mail-body h2 { font-size: 20px; margin-bottom: 10px; }
 .mail-btn { display: inline-block; background: var(--red); color: #fff; font-weight: 800; padding: 13px 28px; border-radius: 10px; }
 .mail-box { background: var(--silver-100); border-radius: 10px; padding: 14px 16px; margin-top: 8px; }
+
+/* ---------- početna / prijava ---------- */
+.login { flex: 1; display: flex; flex-direction: column; background: radial-gradient(120% 90% at 50% 0%, #243272 0%, var(--navy) 55%, var(--navy-700) 100%); overflow-y: auto; }
+.login-top { padding: 44px 24px 34px; display: flex; flex-direction: column; align-items: center; gap: 14px; color: #fff; flex-shrink: 0; }
+.crest.big { width: 96px; height: 96px; font-size: 44px; border-width: 3px; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+.login-brand { font-weight: 900; font-size: var(--fs-lg); letter-spacing: .14em; text-align: center; line-height: 1.15; }
+.login-brand small { display: block; font-weight: 600; font-size: var(--fs-xs); letter-spacing: .3em; color: var(--gold); margin-top: 3px; }
+.login-card { background: var(--bg); border-radius: 28px 28px 0 0; padding: 22px 20px 18px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.seg2 { display: flex; background: var(--silver-100); border-radius: var(--r-md); padding: 4px; }
+.seg2 button { flex: 1; padding: 11px 0; border-radius: 9px; font-weight: 800; font-size: var(--fs-sm); color: var(--muted); }
+.seg2 button.on { background: var(--navy); color: #fff; box-shadow: var(--shadow-1); }
+.pw { position: relative; }
+.pw .input { padding-right: 46px; }
+.pw .eye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: grid; place-items: center; color: var(--muted); }
+.link { color: var(--navy); font-weight: 700; font-size: var(--fs-sm); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.link.back { display: inline-block; margin-bottom: 4px; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: var(--fs-xs); font-weight: 700; }
+.or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.noacc { text-align: center; font-size: var(--fs-sm); color: var(--muted); }
+.madeby { margin-top: auto; padding-top: 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: var(--fs-xs); font-weight: 600; color: var(--muted); }
+.madeby .cup { display: inline-flex; vertical-align: -3px; color: var(--red); }
+.bluerider { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: var(--r-pill); background: var(--surface); box-shadow: var(--shadow-1); color: var(--navy); text-decoration: none; transition: transform .1s; }
+.bluerider:active { transform: scale(.97); }
+.bl-mark { width: 26px; height: 26px; border-radius: 8px; background: #1f6fe0; color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 14px; }
+.bl-name { font-weight: 900; font-size: 12px; letter-spacing: .08em; line-height: 1.05; }
+.bl-name small { display: block; font-weight: 600; font-size: 8px; letter-spacing: .3em; color: var(--muted); }
+
+/* izbornik prototipa: jedan red i na uskim ekranima */
+.proto-bar { flex-wrap: nowrap; }
+.proto-bar .seg { overflow-x: auto; min-width: 0; scrollbar-width: none; }
+.proto-bar .seg::-webkit-scrollbar { display: none; }
+.proto-bar .seg button { white-space: nowrap; }
+.proto-bar .brand { flex-shrink: 0; }
+@media (max-width: 700px) { .proto-bar .brand .t { display: none; } .proto-bar .note { display: none; } }
+@media (max-width: 520px) { #app { width: 100%; } }

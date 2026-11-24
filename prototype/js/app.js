@@ -16,6 +16,9 @@ const ICON = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  finger: '<path d="M12 11v3a8 8 0 0 1-1.5 4.7M7 11a5 5 0 0 1 10 0v2a13 13 0 0 1-1.2 5.4M3.5 9.5A9 9 0 0 1 20.5 9.5M12 15a17 17 0 0 1-1.2 4.7M7 14.5a21 21 0 0 1-.7 4"/>',
+  cup: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 2v3M11 2v3M15 2v3"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
 const FOTO = 'assets/primjer-igracica.png'; // u pravoj aplikaciji: fotografija svake igračice
@@ -174,11 +177,34 @@ const SCREENS = {
       <button class="btn block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF">${ic('download', 18)} Preuzmi potvrdu (PDF)</button></div>`).join(''),
   }),
 
+  /* ---------- POČETNA (prijava) ---------- */
+  'start-login': () => ({
+    bare: true,
+    body: `<div class="login">
+      <div class="login-top"><div class="crest big" title="Rezervirano za logo Falconsa">F</div><div class="login-brand">ŽKK FALCONS<small>ZAGREB</small></div></div>
+      <div class="login-card">
+        <div class="seg2"><button class="on" type="button">Prijava</button><button type="button" data-go="prijava-forma">Registracija</button></div>
+        <form id="loginForm" class="stack" novalidate>
+          <div class="field" data-field="email"><label>E-mail</label><input class="input" name="email" type="email" placeholder="tvoj@email.com" autocomplete="username webauthn"><small class="err"></small></div>
+          <div class="field" data-field="lozinka"><label>Lozinka</label><div class="pw"><input class="input" name="lozinka" type="password" placeholder="Unesi lozinku" autocomplete="current-password"><button type="button" class="eye" data-eye aria-label="Prikaži lozinku">${ic('eye', 20)}</button></div><small class="err"></small></div>
+          <div class="row spread"><label class="check" style="align-items:center"><input type="checkbox" name="zapamti" checked><span>Ostani prijavljena</span></label><a class="link" data-toast="Link za novu lozinku šalje se na e-mail">Zaboravljena lozinka?</a></div>
+          <button class="btn red block" type="submit">Prijavi se</button>
+          <div class="or"><span>ili</span></div>
+          <button class="btn ghost block" type="button" data-bio>${ic('finger', 20)} Prijava otiskom prsta / Face ID-jem</button>
+        </form>
+        <div class="noacc">Nemaš račun? <a class="link" data-go="prijava-forma">Zatraži ga ovdje</a></div>
+        <div class="madeby">
+          <span>App made by lots of <span class="cup">${ic('cup', 16)}</span> by</span>
+          <a class="bluerider" href="https://bluerider.hr" target="_blank" rel="noopener" title="Bluerider Design"><span class="bl-mark">B</span><span class="bl-name">BLUERIDER<small>DESIGN</small></span></a>
+        </div>
+      </div></div>`,
+  }),
+
   /* ---------- JAVNA PRIJAVA ---------- */
   'prijava-forma': () => ({
     header: mHeader('Prijava nove članice', 'ŽKK Falcons Zagreb'),
     tabs: '',
-    body: `<form id="prijavaForm" class="stack" novalidate>
+    body: `<a class="link back" data-go="start-login">← Imam račun, prijavi me</a><form id="prijavaForm" class="stack" novalidate>
       <div class="card stack"><div class="row spread"><h3>Podaci o djevojčici</h3><button type="button" class="btn ghost sm" data-fill>Popuni primjerom</button></div>
         <div class="two">${field('ime', 'Ime')}${field('prezime', 'Prezime')}</div>
         <div class="two">${field('spol', 'Spol', { opts: ['Ž', 'M'] })}${field('rod', 'Datum rođenja', { type: 'date', ph: '' })}</div>
@@ -275,8 +301,8 @@ const ADMIN = {
 };
 
 /* ---------- usmjeravanje i prikaz ---------- */
-const ROLES = [['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
-const DEFAULT_SCREEN = { trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
+const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
+const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
 const state = { dan: TODAY };
 let toastT;
 
@@ -286,7 +312,7 @@ function toast(msg) {
 }
 
 function render() {
-  const hash = location.hash.slice(1) || 'trener-danas';
+  const hash = location.hash.slice(1) || 'start-login';
   const [uloga, ...r] = hash.split('-'); const ekran = r.join('-');
   const app = $('#app'); const stage = $('#stage');
   $('#roleSeg').innerHTML = ROLES.map(([id, l]) => `<button class="${id === uloga ? 'on' : ''}" data-go="${id}-${DEFAULT_SCREEN[id]}">${l}</button>`).join('');
@@ -299,8 +325,10 @@ function render() {
     return;
   }
   stage.className = 'stage';
-  const s = (SCREENS[`${uloga}-${ekran}`] || SCREENS['trener-danas'])();
-  app.innerHTML = `<div class="device">${s.header}<div class="app-body">${s.body}</div>${s.tabs}<div class="toast" id="toastIn"></div></div>`;
+  const s = (SCREENS[`${uloga}-${ekran}`] || SCREENS['start-login'])();
+  app.innerHTML = s.bare
+    ? `<div class="device">${s.body}<div class="toast" id="toastIn"></div></div>`
+    : `<div class="device">${s.header}<div class="app-body">${s.body}</div>${s.tabs}<div class="toast" id="toastIn"></div></div>`;
 }
 
 function showErr(form, name, msg) {
@@ -318,6 +346,13 @@ function validate(form) {
   return ok ? d : null;
 }
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'loginForm') {
+    e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
+    showErr(f, 'email', d.email ? '' : 'Upiši e-mail'); showErr(f, 'lozinka', d.lozinka ? '' : 'Upiši lozinku');
+    if (!d.email || !d.lozinka) ok = false;
+    if (ok) location.hash = 'roditelj-pocetna'; // u pravoj aplikaciji: uloga dolazi iz računa
+    return;
+  }
   if (e.target.id !== 'prijavaForm') return; e.preventDefault();
   const d = validate(e.target); if (!d) { const b = e.target.querySelector('.bad, .err:not(:empty)'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   const dup = prijave.some((p) => p.oib === d.oib); // u pravoj aplikaciji: i provjera protiv postojećih članica
@@ -325,6 +360,9 @@ document.addEventListener('submit', (e) => {
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
 document.addEventListener('click', (e) => {
+  const eye = e.target.closest('[data-eye]');
+  if (eye) { const i = eye.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; return; }
+  if (e.target.closest('[data-bio]')) { const t = $('#toastIn'); t.textContent = 'U pravoj aplikaciji: potvrda otiskom prsta / Face ID-jem'; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); setTimeout(() => (location.hash = 'roditelj-pocetna'), 900); return; }
   if (e.target.closest('[data-fill]')) {
     const f = $('#prijavaForm'); Object.entries(SAMPLE).forEach(([k, v]) => { const el = f.elements[k]; if (el) el.value = v; });
     f.elements.privola.checked = true; return;
