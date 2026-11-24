@@ -214,7 +214,7 @@ const SCREENS = {
         <div class="noacc">Nemaš račun? <a class="link" data-go="prijava-forma">Zatraži ga ovdje</a></div>
       </div>
       <div class="madeby">
-          <span>App made by lots of <span class="cup">${ic('cup', 16)}</span> by</span>
+          <span>Made by lots of <span class="cup">${ic('cup', 16)}</span> by</span>
           <a class="bluerider" href="https://bluerider.hr" target="_blank" rel="noopener" title="Bluerider Design — bluerider.hr">BLUE RIDER DESIGN</a>
         </div>
       </div>`,

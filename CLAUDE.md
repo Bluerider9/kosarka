@@ -34,7 +34,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
   **emblem sokola bez pozadine i bez bijelog kvadratića**; tamnoplava krila na navy podlozi drži tanki srebrni obrub
   (CSS `drop-shadow`, kao obrub na originalnom logotipu) — `.logo-badge`.
   **Početna (prijava) je iznimka**: središnji logo (pola veličine) na plavoj podlozi.
-- Potpis "App made by lots of ☕ by BLUE RIDER DESIGN": **tekst** (ne logotip), velika slova, razmaknuta, zlatni podvlaka; link na https://bluerider.hr.
+- Potpis "Made by lots of ☕ by BLUE RIDER DESIGN": **tekst** (ne logotip), velika slova, razmaknuta, zlatni podvlaka; link na https://bluerider.hr.
 
 ## Poslovna pravila koja treba poštovati
 
