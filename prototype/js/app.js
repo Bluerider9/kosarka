@@ -247,7 +247,7 @@ const SCREENS = {
           <div class="field"><label>Napomena</label><textarea class="input" name="napomena" rows="3" placeholder="neobavezno"></textarea></div>
           <div class="sub-title">Privole</div>
           <label class="check"><input type="checkbox" name="privola"><span>Kao roditelj/skrbnik djevojčice dajem privolu za obradu njezinih i mojih osobnih podataka (ime, OIB, adresa, kontakt) u svrhu članstva u klubu, u skladu s <a class="link" data-privacy>pravilima privatnosti</a>.</span></label><small class="err" data-err="privola"></small>
-          <label class="check"><input type="checkbox" name="fotoPrivola"><span>Kao roditelj/skrbnik dopuštam korištenje fotografije djevojčice unutar klupske aplikacije. <em>(neobavezno)</em></span></label>
+          <label class="check"><input type="checkbox" name="fotoPrivola"><span>Kao roditelj/skrbnik dopuštam korištenje fotografije djevojčice unutar klupske aplikacije.</span></label><small class="err" data-err="fotoPrivola"></small>
           <div class="meta">Privolu možete povući u svakom trenutku obraćanjem klubu.</div>
         </div>
 
@@ -423,7 +423,9 @@ function validate(form, step) {
   if (need.includes('rod') && d.rod && !datOk(d.rod)) { showErr(form, 'rod', 'Upiši datum kao dd.mm.gggg'); ok = false; }
   if (need.includes('oib') && d.oib && !oibOk(d.oib)) { showErr(form, 'oib', 'OIB nije ispravan'); ok = false; }
   if (need.includes('email') && d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) { showErr(form, 'email', 'Unesi ispravan e-mail'); ok = false; }
-  if (step !== 1) { const pe = form.querySelector('[data-err="privola"]'); pe.textContent = d.privola ? '' : 'Privola je obavezna za prijavu'; if (!d.privola) ok = false; }
+  if (step !== 1) {
+    [['privola', 'Privola je obavezna za prijavu'], ['fotoPrivola', 'Privola za fotografiju je obavezna']].forEach(([k, msg]) => { form.querySelector(`[data-err="${k}"]`).textContent = d[k] ? '' : msg; if (!d[k]) ok = false; });
+  }
   return ok ? d : null;
 }
 function goStep(form, n) {
@@ -469,7 +471,7 @@ document.addEventListener('click', (e) => {
   }
   if (e.target.closest('[data-fill]')) {
     const f = $('#prijavaForm'); Object.entries(SAMPLE).forEach(([k, v]) => { const el = f.elements[k]; if (el) el.value = k === 'rod' ? v.split('-').reverse().join('.') : v; });
-    f.elements.privola.checked = true; return;
+    f.elements.privola.checked = true; f.elements.fotoPrivola.checked = true; return;
   }
   if (e.target.closest('[data-close]') || e.target.classList.contains('modal')) { closeModal(); return; }
   const op = e.target.closest('[data-open]');
