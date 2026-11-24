@@ -136,9 +136,7 @@ const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', datum: 'Subota 28.
 function tjedanKartica() {
   const stavke = DANI.flatMap((d, i) => (TRENINZI[i] || []).filter((t) => t.g === 'U14').map((t) => ({ d, i, t })));
   const boja = ({ i, t }) => (i < TODAY ? (DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`] ? 'dot-yes' : 'dot-no') : 'dot-wait');
-  return `<div class="card week-dots"><h3>Treninzi ovaj tjedan</h3>
-    <div class="wd-row">${stavke.map((s) => `<div class="wd ${s.i === TODAY ? 'today' : ''}"><i class="${boja(s)}"></i><b>${s.d}</b><small>${23 + s.i}.11.</small></div>`).join('')}</div>
-    <div class="sched-legend"><span><i class="dot-yes"></i> bila si i odradila</span><span><i class="dot-no"></i> nisi bila</span><span><i class="dot-wait"></i> još nije bio trening</span></div></div>`;
+  return `<div class="card week-dots row spread"><h3>Treninzi ovaj tjedan</h3><div class="wd-row">${stavke.map((s) => `<i class="${boja(s)}"></i>`).join('')}</div></div>`;
 }
 function treningKartica() {
   const r = state.rsvp; const otv = rsvpOtvoren();
