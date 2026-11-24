@@ -97,8 +97,8 @@ const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.
 
 /* ---------- mobilni zajednički dijelovi ---------- */
 function mHeader(naslov, sub, foto = false, cog = true) {
-  return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row">
-    <div class="grow"><img class="hdr-wordmark" src="assets/oko-soko-logo-light.svg" alt="${APP_NAME}"><h1>${naslov}</h1><div class="sub">${sub}</div></div>
+  return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row">${badge()}
+    <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div>
     ${cog ? `<button class="cog" data-opt aria-label="Opcije">${ic('cog', 22)}</button>` : ''}</div>
     ${foto ? `<img class="hero-photo" src="${FOTO}" alt="">` : ''}</div>`;
 }
@@ -358,7 +358,7 @@ function render() {
   if (uloga === 'admin') {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
-    app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo"><div><img class="side-wordmark" src="assets/oko-soko-logo-light.svg" alt="${APP_NAME}"><small>Administracija · ŽKK Falcons</small></div></div>
+    app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
       ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
       <button>${ic('user', 20)}Mislav</button></aside><main class="main"><button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
