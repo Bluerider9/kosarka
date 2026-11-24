@@ -211,22 +211,32 @@ function scanResult() {
 }
 function redeemSheet(id) {
   const a = ORMAR.find((x) => x.id === id); const max = r2(Math.min(a.cijena, saldo()));
-  state.redeem = { id, f: max };
-  overlay(`<div class="item-tile big">${a.ime.charAt(0)}</div><h2>${a.ime}</h2><div class="meta" style="margin-top:-4px">Cijena <b>${fmt(a.cijena)}</b> (1 Falcoin = 1 €)</div>
+  const prva = a.velicine.find((v) => v.n) || a.velicine[0];
+  state.redeem = { id, f: max, size: prva.v };
+  overlay(`${itemTile(a, 'big')}<h2>${a.ime}</h2>${a.opis ? `<div class="meta" style="margin-top:-4px">${a.opis}</div>` : ''}
+    <div class="sizes">${a.velicine.map((v) => `<button type="button" class="size ${v.v === prva.v ? 'on' : ''} ${v.n === null ? 'pre' : ''}" data-size="${v.v}">${v.v}<small>${v.n === null ? 'predbilježba' : `${v.n} kom`}</small></button>`).join('')}</div>
+    <div class="meta">Cijena <b>${fmt(a.cijena)}</b> (1 Falcoin = 1 €)</div>
     <div class="split"><div class="split-row"><span>Plaćam Falcoinima</span><b id="rdF">${fmt(max)}</b></div>
       <input type="range" class="slider" min="0" max="${max}" step="0.01" value="${max}" data-fcslider ${max === 0 ? 'disabled' : ''}>
       <div class="split-row cash"><span>Doplaćujem gotovinom</span><b id="rdC">${fmt(a.cijena - max)} €</b></div></div>
     <p id="rdNote">${rdNote(a, max)}</p>
     <button class="btn red block" data-redeemok="${id}">Naruči</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
 }
-const rdNote = (a, f) => `Stanje nakon narudžbe: <b>${fmt(saldo() - f)}</b><br>${a.cijena - f > 0.004 ? `Gotovinu doplaćuješ pri preuzimanju kod trenera.` : 'Artikl preuzimaš kod trenera na treningu.'}`;
+const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)}</b><br>${v.n === null ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
 function falcoiniHistory() {
   return `<div class="card"><div class="list">${FALCOIN_POVIJEST.map((t) => `<div class="row"><div class="grow"><h3 style="font-size:var(--fs-sm)">${t.opis}</h3><div class="meta">${t.dat}</div></div>${plus(t.iznos)}</div>`).join('')}</div></div>`;
 }
+const zaliha = (a) => a.velicine.reduce((s, v) => s + (v.n || 0), 0);
+const imaPre = (a) => a.velicine.some((v) => v.n === null);
+const itemTile = (a, cls = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img src="${a.slika}" alt="" loading="lazy" onerror="this.remove()"></div>`;
+const cijenaHtml = (a, s = 16) => `<span class="price">${a.staraCijena ? `<s>${fmt(a.staraCijena)}</s>` : ''}${fc(a.cijena, s)}</span>`;
 function ormarGrid() {
-  return `<div class="ormar-grid">${ORMAR.map((a) => { const moze = a.zaliha > 0; const puno = saldo() >= a.cijena;
-    return `<div class="card item"><div class="item-tile">${a.ime.charAt(0)}</div><h3>${a.ime}</h3>${fc(a.cijena)}
-      <button class="btn ${moze ? (puno ? 'red' : 'navy') : 'ghost'} sm block" ${moze ? `data-redeem="${a.id}"` : 'disabled'}>${a.zaliha < 1 ? 'Nema na zalihi' : puno ? 'Zamijeni' : 'Zamijeni + doplati'}</button></div>`; }).join('')}</div>`;
+  const kat = state.ormarKat || 'Sve';
+  const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
+  return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a) => { const puno = saldo() >= a.cijena;
+    return `<div class="card item">${itemTile(a)}<h3>${a.ime}</h3>${cijenaHtml(a)}
+      <div class="stock">${zaliha(a) ? `na stanju ${zaliha(a)}` : ''}${zaliha(a) && imaPre(a) ? ' · ' : ''}${imaPre(a) ? 'predbilježba' : ''}</div>
+      <button class="btn ${puno ? 'red' : 'navy'} sm block" data-redeem="${a.id}">${puno ? 'Zamijeni' : 'Zamijeni + doplati'}</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
@@ -500,12 +510,13 @@ const ADMIN = {
     <div class="card row spread" style="margin-bottom:16px"><div><h3>Za naplatiti gotovinom</h3><div class="meta">${NARUDZBE.filter((n) => n.st === 'čeka' && n.gotovina > 0).length} narudžbi čeka preuzimanje s doplatom</div></div>
       <b style="font-size:var(--fs-xl);font-weight:900">${fmt(NARUDZBE.filter((n) => n.st === 'čeka').reduce((s, n) => s + n.gotovina, 0))} €</b></div>
     <h2 style="font-size:var(--fs-lg);margin:0 0 10px">Narudžbe</h2>
-    <table><thead><tr><th>Igračica</th><th>Artikl</th><th>Falcoini</th><th>Gotovina</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>${NARUDZBE.map((n, i) => `<tr><td><b>${n.igr}</b></td><td>${n.artikl}<div class="meta">cijena ${fmt(n.cijena)}</div></td><td>${fc(n.f)}</td>
+    <table><thead><tr><th>Igračica</th><th>Artikl</th><th>Falcoini</th><th>Gotovina</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>${NARUDZBE.map((n, i) => `<tr><td><b>${n.igr}</b></td><td>${n.artikl}<div class="meta">veličina ${n.velicina}${n.pre ? ' · ' + 'predbilježba' : ''} · cijena ${fmt(n.cijena)}</div></td><td>${fc(n.f)}</td>
       <td>${n.gotovina > 0 ? `<b>${fmt(n.gotovina)} €</b>` : '—'}</td><td>${n.dat}</td>
       <td>${n.st === 'čeka' ? chip('Čeka preuzimanje', 'warn') : n.st === 'izdano' ? chip('Izdano', 'ok') : chip('Otkazano', 'danger')}</td>
       <td>${n.st === 'čeka' ? `<div class="row" style="gap:6px"><button class="btn ghost sm" data-izdano="${i}">${n.gotovina > 0 ? 'Izdano i naplaćeno' : 'Izdano'}</button><button class="btn ghost sm" data-otkazi="${i}">Otkaži</button></div>` : ''}</td></tr>`).join('')}</tbody></table>
     <h2 style="font-size:var(--fs-lg);margin:28px 0 10px">Artikli</h2>
-    <table><thead><tr><th>Artikl</th><th>Cijena (F = €)</th><th>Zaliha</th></tr></thead><tbody>${ORMAR.map((a) => `<tr><td><div class="who"><span class="item-tile sm">${a.ime.charAt(0)}</span>${a.ime}</div></td><td>${fc(a.cijena)}</td><td>${a.zaliha > 4 ? a.zaliha : chip(a.zaliha + ' (malo)', 'warn')}</td></tr>`).join('')}</tbody></table>`,
+    <table><thead><tr><th>Artikl</th><th>Kategorija</th><th>Cijena (F = €)</th><th>Zaliha</th></tr></thead><tbody>${ORMAR.map((a) => `<tr><td><div class="who">${itemTile(a, 'sm')}<span>${a.ime}</span></div></td><td>${chip(a.kat, 'navy')}</td><td>${cijenaHtml(a)}</td>
+      <td>${zaliha(a) ? `${zaliha(a)} kom` : '—'}${imaPre(a) ? ` ${chip('predbilježba', 'warn')}` : ''}</td></tr>`).join('')}</tbody></table>`,
   novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje</div></div><div class="grow"></div>
       <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
     <table><thead><tr><th>Objava</th><th>Za</th><th>Datum</th><th>Pročitalo</th></tr></thead><tbody>${NOVOSTI.map((n) => `<tr><td><b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div></td>
@@ -700,15 +711,18 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
   const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }
+  const sz = e.target.closest('[data-size]');
+  if (sz && state.redeem) { state.redeem.size = sz.dataset.size; document.querySelectorAll('.sizes .size').forEach((b) => b.classList.toggle('on', b === sz)); const a = ORMAR.find((x) => x.id === state.redeem.id); $('#rdNote').innerHTML = rdNote(a, state.redeem.f); return; }
+  const ok = e.target.closest('[data-okat]'); if (ok) { state.ormarKat = ok.dataset.okat; render(); return; }
   const rk = e.target.closest('[data-redeemok]');
-  if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const f = r2(Math.min((state.redeem || {}).f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f);
-    if (a.zaliha > 0) { FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); a.zaliha--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, cijena: a.cijena, f, gotovina: cash, dat: '24.11.2026.', st: 'čeka' });
-      if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime}`, iznos: -f }); }
+  if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const f = r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f);
+    if (v.n !== 0) { FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (v.n !== null) v.n--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre: v.n === null, cijena: a.cijena, f, gotovina: cash, dat: '24.11.2026.', st: 'čeka' });
+      if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f }); }
     closeOverlay(); render(); toastIn(cash > 0 ? `Narudžba poslana — doplati ${fmt(cash)} € pri preuzimanju` : 'Narudžba poslana — preuzmi na treningu'); return; }
   const qt = e.target.closest('[data-qrtip]'); if (qt) { state.qrTip = qt.dataset.qrtip; render(); return; }
   const iz = e.target.closest('[data-izdano]'); if (iz) { NARUDZBE[+iz.dataset.izdano].st = 'izdano'; render(); return; }
   const ot = e.target.closest('[data-otkazi]');
-  if (ot) { const n = NARUDZBE[+ot.dataset.otkazi]; n.st = 'otkazano'; const pl = PLAYERS.find((p) => p.ime === n.igr); const a = ORMAR.find((x) => x.ime === n.artikl); if (a) a.zaliha++;
+  if (ot) { const n = NARUDZBE[+ot.dataset.otkazi]; n.st = 'otkazano'; const pl = PLAYERS.find((p) => p.ime === n.igr); const a = ORMAR.find((x) => x.ime === n.artikl); const vv = a && a.velicine.find((x) => x.v === n.velicina); if (vv && vv.n !== null && !n.pre) vv.n++;
     if (pl) { FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n.f); if (pl.id === IGR_ID && n.f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Povrat: ${n.artikl} (otkazano)`, iznos: n.f }); } render(); return; }
   const fg = e.target.closest('[data-fcgive]');
   if (fg) { const sign = +fg.dataset.fcgive, id = +$('#fcWho').value, n = r2(Math.abs(+$('#fcAmt').value)), why = $('#fcWhy').value.trim(), err = $('#fcErr'); const ime = PLAYERS.find((p) => p.id === id).ime;

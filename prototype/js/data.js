@@ -87,13 +87,25 @@ const FALCOIN_PRAVILA = [
   { k: 'niz', label: 'Niz od 5 treninga zaredom (bonus)', iznos: 2.0 },
   { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 1.5 },
 ];
+// Stvarni katalog s ormar.zkkfalcons.hr (stanje 24.11.2026.). n = na stanju, n: null = predbilježba. Slike se učitavaju sa shopa.
+const ORMAR_KATEGORIJE = ['Sve', 'Majice', 'Čarape', 'Torbe', 'Paketi'];
 const ORMAR = [
-  { id: 1, ime: 'Narukvica Falcons', cijena: 6.0, zaliha: 24 },
-  { id: 2, ime: 'Set naljepnica', cijena: 4.0, zaliha: 40 },
-  { id: 3, ime: 'Boca za vodu', cijena: 15.0, zaliha: 12 },
-  { id: 4, ime: 'Čarape Falcons', cijena: 20.0, zaliha: 9 },
-  { id: 5, ime: 'Majica za zagrijavanje', cijena: 40.0, zaliha: 6 },
-  { id: 6, ime: 'Ruksak za dvoranu', cijena: 70.0, zaliha: 3 },
+  { id: 1, ime: "Paket čarapa – 3 para", cijena: 25.0, staraCijena: 30.0, kat: "Paketi", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_64462ca82f456aaa.jpg', opis: "Čarape \"FLCN\" bijele, plave i crvene", velicine: [{ v: "37–41", n: 73 }, { v: "42–46", n: 19 }] },
+  { id: 2, ime: "Trening paket", cijena: 20.0, staraCijena: 24.0, kat: "Paketi", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_bcb638b037eb80e5.jpg', opis: "T-shirt \"Logo one color\" crvena + T-shirt \"Falcons Basketball\"", velicine: [{ v: "S", n: 4 }, { v: "Kids XS", n: 2 }, { v: "Kids M", n: 8 }, { v: "Kids L", n: 26 }, { v: "Kids XL", n: 7 }, { v: "M", n: null }, { v: "L", n: null }, { v: "XL", n: null }] },
+  { id: 3, ime: "Falcons Zagreb", cijena: 12.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_f16f8512c532d374.jpg', velicine: [{ v: "XS", n: null }, { v: "S", n: null }, { v: "M", n: null }, { v: "L", n: null }, { v: "XL", n: null }, { v: "XXL", n: null }] },
+  { id: 4, ime: "Čarape \"FLCN\" bijele", cijena: 10.0, kat: "Čarape", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_64462ca82f456aaa.jpg', velicine: [{ v: "37–41", n: 74 }, { v: "42–46", n: 19 }] },
+  { id: 5, ime: "Čarape \"FLCN\" plave", cijena: 10.0, kat: "Čarape", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_b7074e76170f907e.jpg', velicine: [{ v: "37–41", n: 74 }, { v: "42–46", n: 19 }] },
+  { id: 6, ime: "Čarape \"FLCN\" crvene", cijena: 10.0, kat: "Čarape", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_45f290ea6b2ebbe8.jpg', velicine: [{ v: "37–41", n: 73 }, { v: "42–46", n: 19 }] },
+  { id: 7, ime: "Ruksak \"Falcons\"", cijena: 50.0, kat: "Torbe", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_6a67064e287b461a.jpg', opis: "Ruksaci su naručeni — predbilježba", velicine: [{ v: "Jedna veličina", n: null }] },
+  { id: 8, ime: "T-shirt \"Logo one color\" plava", cijena: 12.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_42dd971bd5c22d7a.jpg', velicine: [{ v: "XS", n: 3 }, { v: "S", n: 2 }, { v: "XL", n: 3 }, { v: "M", n: null }, { v: "L", n: null }, { v: "XXL", n: null }] },
+  { id: 9, ime: "T-shirt \"Logo one color\" crvena", cijena: 12.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_bcb638b037eb80e5.jpg', velicine: [{ v: "XS", n: 3 }, { v: "S", n: 4 }, { v: "Kids XS", n: 2 }, { v: "Kids M", n: 8 }, { v: "Kids L", n: 26 }, { v: "Kids XL", n: 7 }, { v: "M", n: null }, { v: "L", n: null }, { v: "XL", n: null }, { v: "XXL", n: null }] },
+  { id: 10, ime: "T-shirt \"Falcon\"", cijena: 17.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_e502d54fa3ade141.jpg', velicine: [{ v: "M", n: 1 }, { v: "L", n: 3 }, { v: "XL", n: 2 }, { v: "XS", n: null }, { v: "S", n: null }, { v: "XXL", n: null }] },
+  { id: 11, ime: "T-shirt \"Falcons Colorful\"", cijena: 17.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_3a402266f6887976.jpg', velicine: [{ v: "XS", n: 1 }, { v: "L", n: 1 }, { v: "XL", n: 2 }, { v: "S", n: null }, { v: "M", n: null }, { v: "XXL", n: null }] },
+  { id: 12, ime: "T-shirt \"FLCN\" crvena", cijena: 12.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_2e958618c771473b.jpg', velicine: [{ v: "S", n: 1 }, { v: "L", n: 1 }, { v: "XL", n: 3 }, { v: "XS", n: null }, { v: "M", n: null }, { v: "XXL", n: null }] },
+  { id: 13, ime: "T-shirt \"FLCN\" plava", cijena: 12.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_27331364a8e239ab.jpg', velicine: [{ v: "XS", n: 1 }, { v: "L", n: 3 }, { v: "S", n: null }, { v: "M", n: null }, { v: "XL", n: null }, { v: "XXL", n: null }] },
+  { id: 14, ime: "T-shirt \"Falcons Basketball\"", cijena: 12.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_9633b109daddf24e.jpg', velicine: [{ v: "S", n: 8 }, { v: "M", n: 2 }, { v: "L", n: 3 }, { v: "XL", n: 1 }, { v: "Kids XS", n: 2 }, { v: "Kids M", n: 8 }, { v: "Kids L", n: 26 }, { v: "Kids XL", n: 7 }, { v: "XS", n: null }, { v: "XXL", n: null }] },
+  { id: 15, ime: "T-shirt \"Logo\" plava", cijena: 17.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_53b95a5086465648.jpg', velicine: [{ v: "XS", n: null }, { v: "S", n: null }, { v: "M", n: null }, { v: "L", n: null }, { v: "XL", n: null }, { v: "XXL", n: null }] },
+  { id: 16, ime: "T-shirt \"Logo\" crvena", cijena: 17.0, kat: "Majice", slika: 'https://ormar.zkkfalcons.hr/uploads/products/p_c9d8ee8aa1311b81.jpg', velicine: [{ v: "XS", n: null }, { v: "S", n: null }, { v: "M", n: null }, { v: "L", n: null }, { v: "XL", n: null }, { v: "XXL", n: null }] },
 ];
 const FALCOINI = { 1: 18.5, 2: 24.0, 3: 9.5, 4: 31.0, 5: 6.0, 6: 15.0, 7: 20.5, 8: 4.0, 9: 27.5, 10: 33.0, 11: 12.0, 12: 9.0 };
 const FALCOIN_POVIJEST = [
@@ -101,12 +113,13 @@ const FALCOIN_POVIJEST = [
   { dat: '20.11.', opis: 'Trening U14', iznos: 1.0 },
   { dat: '18.11.', opis: 'Trening U14', iznos: 1.0 },
   { dat: '17.11.', opis: 'Bonus: niz od 5 treninga', iznos: 2.0 },
-  { dat: '14.11.', opis: 'Zamjena: Set naljepnica', iznos: -4.0 },
+  { dat: '14.11.', opis: 'Zamjena: Čarape "FLCN" bijele', iznos: -10.0 },
   { dat: '13.11.', opis: 'Trening U14', iznos: 1.0 },
 ];
 // f = plaćeno Falcoinima (rezervirano pri narudžbi), gotovina = ostatak za naplatiti pri preuzimanju
 const NARUDZBE = [
-  { igr: 'Mia Kovač', artikl: 'Boca za vodu', cijena: 15.0, f: 10.0, gotovina: 5.0, dat: '23.11.2026.', st: 'čeka' },
-  { igr: 'Petra Marić', artikl: 'Narukvica Falcons', cijena: 6.0, f: 6.0, gotovina: 0, dat: '22.11.2026.', st: 'čeka' },
-  { igr: 'Ana Horvat', artikl: 'Set naljepnica', cijena: 4.0, f: 4.0, gotovina: 0, dat: '14.11.2026.', st: 'izdano' },
+  { igr: 'Mia Kovač', artikl: 'T-shirt "Logo one color" crvena', velicina: 'Kids L', pre: false, cijena: 12.0, f: 8.0, gotovina: 4.0, dat: '23.11.2026.', st: 'čeka' },
+  { igr: 'Petra Marić', artikl: 'Čarape "FLCN" plave', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '22.11.2026.', st: 'čeka' },
+  { igr: 'Lana Babić', artikl: 'T-shirt "Logo" crvena', velicina: 'M', pre: true, cijena: 17.0, f: 9.5, gotovina: 7.5, dat: '21.11.2026.', st: 'čeka' },
+  { igr: 'Ana Horvat', artikl: 'Čarape "FLCN" bijele', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '14.11.2026.', st: 'izdano' },
 ];
