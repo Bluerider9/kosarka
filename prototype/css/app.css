@@ -656,3 +656,11 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.week-dots { margin-top: 14px; }
 .hero-strip { height: 72px; }
 .card.week-dots { margin-top: 8px; }
+
+.hdr-att { font-size: var(--fs-xs); opacity: .9; }
+.hdr-att b { color: var(--gold); font-weight: 900; }
+.hdr-prog { height: 5px; border-radius: 3px; background: rgba(255,255,255,.2); margin-top: 5px; width: 150px; overflow: hidden; }
+.hdr-prog i { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
+.next-day { display: flex; flex-direction: column; gap: 1px; border-top: 1px solid var(--line); padding-top: 8px; font-size: 12px; }
+.next-day b { color: var(--navy); font-weight: 800; }
+.next-day span { color: var(--muted); font-weight: 600; }
