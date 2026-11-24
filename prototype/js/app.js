@@ -18,13 +18,18 @@ const ICON = {
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+const FOTO = 'assets/primjer-igracica.png'; // u pravoj aplikaciji: fotografija svake igračice
+const av = (p, cls = '') => p.foto
+  ? `<div class="avatar ${cls} photo"><img src="${FOTO}" alt="${p.ime}"></div>`
+  : `<div class="avatar ${cls}">${ini(p.ime)}</div>`;
 const chip = (t, c = '') => `<span class="chip ${c}">${t}</span>`;
 const clan = (k) => chip(CLANARINA[k].label, CLANARINA[k].cls);
 
 /* ---------- mobilni zajednički dijelovi ---------- */
-function mHeader(naslov, sub) {
-  return `<div class="app-header"><div class="row"><div class="crest" title="Rezervirano za logo">F</div>
-    <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div></div></div>`;
+function mHeader(naslov, sub, foto = false) {
+  return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row"><div class="crest" title="Rezervirano za logo">F</div>
+    <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div></div>
+    ${foto ? `<img class="hero-photo" src="${FOTO}" alt="">` : ''}</div>`;
 }
 function tabbar(uloga, tabs, aktivan) {
   return `<nav class="tabbar">${tabs.map(([id, label, icon]) =>
@@ -68,7 +73,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''}" data-att="${p.id}">
-          <div class="avatar sm">${ini(p.ime)}</div><div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div><div class="toggle"></div></div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div><div class="toggle"></div></div>`).join('')}</div></div>
         <button class="btn red block" data-toast="Dolasci spremljeni">Spremi dolaske</button>`,
     };
   },
@@ -89,8 +94,9 @@ const SCREENS = {
   'roditelj-pocetna': () => ({
     header: mHeader('Bok, Marijo', 'Tvoje igračice'),
     tabs: tabbar('roditelj', RODITELJ_TABS, 'pocetna'),
-    body: [PLAYERS[0], PLAYERS[10]].map((p) => `<div class="card stack">
-        <div class="row"><div class="avatar">${ini(p.ime)}</div><div class="grow"><h3>${p.ime}</h3><div class="meta">${p.grupe.join(', ')}</div></div>${clan(p.clanarina)}</div>
+    body: [PLAYERS[0], PLAYERS[10], PLAYERS[2]].slice(0, 2).map((p) => `<div class="card stack pcard ${p.foto ? 'withphoto' : ''}">
+        ${p.foto ? `<img class="corner-photo" src="${FOTO}" alt="">` : ''}
+        <div class="pc-top"><div class="pc-name">${p.ime}</div><div class="meta">${p.grupe.join(', ')}</div><div style="margin-top:8px">${clan(p.clanarina)}</div></div>
         <div class="row" style="background:var(--silver-100);border-radius:var(--r-md);padding:12px">
           <div class="time-block gold"><b>${p.god === 2012 ? '17:30' : '15:00'}</b><span>${p.god === 2012 ? 'Čet' : 'Sri'}</span></div>
           <div class="grow"><div class="meta">Sljedeći trening</div><h3>${p.grupe[0]}</h3></div></div></div>`).join('') +
@@ -117,14 +123,14 @@ const SCREENS = {
   'roditelj-potvrde': () => ({
     header: mHeader('Potvrde', 'Potvrda o članstvu u klubu'),
     tabs: tabbar('roditelj', RODITELJ_TABS, 'potvrde'),
-    body: [PLAYERS[0], PLAYERS[10]].map((p) => `<div class="card stack"><div class="row"><div class="avatar">${ini(p.ime)}</div>
+    body: [PLAYERS[0], PLAYERS[10]].map((p) => `<div class="card stack"><div class="row">${av(p)}
       <div class="grow"><h3>${p.ime}</h3><div class="meta">Sezona 2026./2027.</div></div></div>
       <button class="btn block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF">${ic('download', 18)} Preuzmi potvrdu (PDF)</button></div>`).join(''),
   }),
 
   /* ---------- IGRAČICA ---------- */
   'igracica-pocetna': () => ({
-    header: mHeader('Bok, Ana', 'U14'),
+    header: mHeader('Bok, Ana', 'U14', true),
     tabs: tabbar('igracica', IGRACICA_TABS, 'pocetna'),
     body: `<div class="card stack"><div class="meta">Sljedeći trening</div>
         <div class="row"><div class="time-block gold"><b>17:30</b><span>Danas</span></div><div class="grow"><h3>U14</h3><div class="meta">Dvorana A</div></div></div></div>
@@ -144,7 +150,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
-  .map((p) => `<tr><td><div class="who"><div class="avatar sm">${ini(p.ime)}</div>${p.ime}</div></td><td>${p.god}.</td>
+  .map((p) => `<tr><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
     <td>${p.grupe.map((x) => chip(x, 'navy')).join(' ')}</td><td>${p.roditelj}</td><td>${clan(p.clanarina)}</td></tr>`).join('');
 
 const ADMIN = {

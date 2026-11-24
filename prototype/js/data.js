@@ -8,17 +8,17 @@ const GROUPS = [
 ];
 
 const PLAYERS = [
-  { id: 1, ime: 'Ana Horvat', god: 2012, grupe: ['U14'], roditelj: 'Marija Horvat', clanarina: 'ok' },
-  { id: 2, ime: 'Mia Kovač', god: 2012, grupe: ['U14'], roditelj: 'Petar Kovač', clanarina: 'ok' },
+  { id: 1, foto: true, ime: 'Ana Horvat', god: 2012, grupe: ['U14'], roditelj: 'Marija Horvat', clanarina: 'ok' },
+  { id: 2, foto: true, ime: 'Mia Kovač', god: 2012, grupe: ['U14'], roditelj: 'Petar Kovač', clanarina: 'ok' },
   { id: 3, ime: 'Lana Babić', god: 2013, grupe: ['U14', 'U12'], roditelj: 'Ivana Babić', clanarina: 'due' },
-  { id: 4, ime: 'Petra Marić', god: 2011, grupe: ['U14'], roditelj: 'Josip Marić', clanarina: 'ok' },
+  { id: 4, foto: true, ime: 'Petra Marić', god: 2011, grupe: ['U14'], roditelj: 'Josip Marić', clanarina: 'ok' },
   { id: 5, ime: 'Ivana Jurić', god: 2012, grupe: ['U14'], roditelj: 'Katarina Jurić', clanarina: 'late' },
-  { id: 6, ime: 'Sara Novak', god: 2013, grupe: ['U14'], roditelj: 'Tomislav Novak', clanarina: 'ok' },
-  { id: 7, ime: 'Marta Knežević', god: 2012, grupe: ['U14'], roditelj: 'Ema Knežević', clanarina: 'ok' },
+  { id: 6, foto: true, ime: 'Sara Novak', god: 2013, grupe: ['U14'], roditelj: 'Tomislav Novak', clanarina: 'ok' },
+  { id: 7, foto: true, ime: 'Marta Knežević', god: 2012, grupe: ['U14'], roditelj: 'Ema Knežević', clanarina: 'ok' },
   { id: 8, ime: 'Luna Vuković', god: 2012, grupe: ['U14'], roditelj: 'Davor Vuković', clanarina: 'due' },
-  { id: 9, ime: 'Nika Pavlić', god: 2010, grupe: ['U16'], roditelj: 'Sanja Pavlić', clanarina: 'ok' },
+  { id: 9, foto: true, ime: 'Nika Pavlić', god: 2010, grupe: ['U16'], roditelj: 'Sanja Pavlić', clanarina: 'ok' },
   { id: 10, ime: 'Eva Božić', god: 2010, grupe: ['U16', 'SEN'], roditelj: 'Mario Božić', clanarina: 'ok' },
-  { id: 11, ime: 'Lea Matić', god: 2016, grupe: ['Škola košarke'], roditelj: 'Dora Matić', clanarina: 'due' },
+  { id: 11, foto: true, ime: 'Lea Matić', god: 2016, grupe: ['Škola košarke'], roditelj: 'Dora Matić', clanarina: 'due' },
   { id: 12, ime: 'Tena Perić', god: 2008, grupe: ['SEN'], roditelj: '—', clanarina: 'ok' },
 ];
 
