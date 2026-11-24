@@ -17,7 +17,8 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Staging: app.zkkfalcons.hr (odvojena baza). Live portal se ne dira dok nije spremno.
 - Jezik sučelja: **hrvatski**. Kod i komentari mogu biti na hrvatskom ili engleskom, ali dosljedno.
 
-- **Radni naziv aplikacije: Oko Soko** (slogan "Oko Soko vidi sve"; maskota kluba je Falko). Naziv je u `prototype/js/app.js` (`APP_NAME`), mijenja se na jednom mjestu. Još treba provjeriti je li ime slobodno.
+- **Radni naziv aplikacije: Oko Soko** (maskota kluba je Falko). Naziv je u `prototype/js/app.js` (`APP_NAME`), mijenja se na jednom mjestu. Još treba provjeriti je li ime slobodno.
+  Logotip: `prototype/assets/oko-soko-logo-light.svg` (bijela slova, za tamnu podlogu) i `oko-soko-logo-dark.svg` (navy slova, za svijetlu) — Montserrat Black u krivuljama; dva "O" u OKO su oči sokola (zlatna šarenica, spušteni kapci, pogled prema K).
 
 ## Dizajn (ŽKK Falcons)
 

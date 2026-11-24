@@ -25,7 +25,6 @@ const ICON = {
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
 const LOGO = 'assets/falcons-logo.png';
 const APP_NAME = 'Oko Soko'; // radni naziv aplikacije — mijenja se samo ovdje
-const APP_SLOGAN = 'Oko Soko vidi sve';
 const BLUERIDER = 'assets/bluerider-lockup-light.svg';
 const EMBLEM = 'assets/falcons-emblem.svg';
 const badge = (cls = '') => `<div class="logo-badge ${cls}"><img src="${EMBLEM}" alt="ŽKK Falcons Zagreb"></div>`;
@@ -204,7 +203,7 @@ const SCREENS = {
   'start-login': () => ({
     bare: true,
     body: `<div class="login">
-      <div class="login-top"><img class="login-logo" src="${LOGO}" alt="ŽKK Zagreb Falcons"><div class="app-name">${APP_NAME}</div><div class="app-slogan">${APP_SLOGAN}</div></div>
+      <div class="login-top"><img class="login-logo" src="${LOGO}" alt="ŽKK Zagreb Falcons"><img class="app-wordmark" src="assets/oko-soko-logo-light.svg" alt="${APP_NAME}"></div>
       <div class="login-card">
         <div class="seg2"><button class="on" type="button">Prijava</button><button type="button" data-go="prijava-forma">Registracija</button></div>
         <form id="loginForm" class="stack" novalidate>
