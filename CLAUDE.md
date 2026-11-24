@@ -36,6 +36,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
   Na ekranima za prijavljene korisnike (zaglavlja, admin izbornik, welcome mail) u gornjem lijevom kutu stoji samo
   **emblem sokola bez pozadine i bez bijelog kvadratića**; tamnoplava krila na navy podlozi drži tanki srebrni obrub
   (CSS `drop-shadow`, kao obrub na originalnom logotipu) — `.logo-badge`.
+  **PRIVREMENO (dok se ne odluči): u zaglavljima i admin izborniku umjesto emblema stoji logotip Oko Soko** (`oko-soko-logo-light.svg`); emblem ostaje u traci prototipa i mailu.
   **Početna (prijava) je iznimka**: središnji logo (pola veličine) na plavoj podlozi.
 - Potpis "Made by lots of ☕ by BLUE RIDER DESIGN": **tekst** (ne logotip), velika slova, razmaknuta, zlatni podvlaka; link na https://bluerider.hr.
 

@@ -417,3 +417,8 @@ select.input option { color: #182454; background: #fff; font-family: inherit; }
 .app-slogan { font-size: var(--fs-sm); font-weight: 700; letter-spacing: .06em; color: var(--gold); margin-top: -4px; }
 
 .app-wordmark { width: min(210px, 62%); height: auto; display: block; margin-top: 8px; }
+
+/* ---------- naziv Oko Soko u zaglavlju (privremeno umjesto emblema) ---------- */
+.hdr-wordmark { height: 17px; width: auto; display: block; margin: 0 0 8px; }
+.side-wordmark { width: 168px; height: auto; display: block; margin-bottom: 6px; }
+.sidebar .logo small { display: block; }
