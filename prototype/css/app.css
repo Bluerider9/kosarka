@@ -564,3 +564,21 @@ td .who span { font-weight: 600; }
 .sched-day h3 { font-size: var(--fs-md); }
 .sched-day.today { border: 2px solid var(--gold); }
 .sched-day.past { opacity: .6; }
+
+/* raspored: cijeli tjedan na jednom zaslonu, bez skrolanja */
+.sched-week { padding: 6px var(--s3); gap: 0; }
+.sd { display: flex; gap: 12px; align-items: flex-start; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+.sd:last-child { border-bottom: 0; }
+.sd-day { width: 52px; flex-shrink: 0; display: flex; flex-direction: column; line-height: 1.15; }
+.sd-day b { font-weight: 800; font-size: var(--fs-sm); color: var(--navy); }
+.sd-day span { font-size: 11px; color: var(--muted); font-weight: 600; }
+.sd-list { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.sd-t { display: flex; align-items: baseline; gap: 8px; font-size: var(--fs-sm); }
+.sd-t b { font-weight: 900; color: var(--navy); min-width: 44px; }
+.sd-t span { font-weight: 800; background: var(--navy-100); color: var(--navy); padding: 1px 8px; border-radius: 999px; font-size: var(--fs-xs); }
+.sd-t small { color: var(--muted); font-weight: 600; font-size: var(--fs-xs); }
+.sd-none { color: var(--muted); font-size: var(--fs-sm); }
+.sd.today { background: #fff7e6; border-radius: 12px; border-bottom-color: transparent; }
+.sd.today .sd-day span::after { content: ' · danas'; font-weight: 800; color: #8a5a00; }
+.sd-day { width: 74px; }
+.sd.past { opacity: .55; }

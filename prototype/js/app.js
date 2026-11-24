@@ -169,13 +169,12 @@ function trenRow(t, extra = '') {
 const DANI_PUNO = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
 const RASPORED_NAPOMENA = `<div class="sched-note">${ic('cal', 16)}<span>Raspored za idući tjedan ažurira se <b>nedjeljom u podne</b>.</span></div>`;
 function rasporedScreen(filterGrupe) {
-    const dani = DANI_PUNO.map((ime, i) => {
+  const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
-    const jeDanas = i === TODAY;
-    return `<div class="card sched-day ${jeDanas ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="row spread"><h3>${ime}</h3><span class="meta">${23 + i}.11.${jeDanas ? ' · ' + 'danas' : ''}</span></div>
-      ${lista.length ? `<div class="list">${lista.map((t) => trenRow(t)).join('')}</div>` : '<div class="meta">Nema treninga.</div>'}</div>`;
+    return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
+      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}</b><span>${t.g}</span><small>${t.d}</small></div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
-  return `${RASPORED_NAPOMENA}${dani}`;
+  return `<div class="card sched-week">${redovi}</div>${RASPORED_NAPOMENA}`;
 }
 
 /* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
