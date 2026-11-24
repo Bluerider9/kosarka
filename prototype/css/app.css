@@ -686,3 +686,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .sched-legend { margin: 2px 0 6px; }
 .app-body .sched-note { font-size: 11px; padding: 8px 10px; gap: 6px; white-space: nowrap; }
 .sched-legend { margin: 0 0 2px; }
+.h1-sm { font-size: .72em; white-space: nowrap; display: inline-block; }
