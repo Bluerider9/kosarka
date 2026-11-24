@@ -23,7 +23,8 @@ const ICON = {
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
 const LOGO = 'assets/falcons-logo.png';
 const BLUERIDER = 'assets/bluerider-logo-light.svg';
-const badge = (cls = '') => `<div class="logo-badge ${cls}"><img src="${LOGO}" alt="ŽKK Falcons Zagreb"></div>`;
+const EMBLEM = 'assets/falcons-emblem.svg';
+const badge = (cls = '') => `<div class="logo-badge ${cls}"><img src="${EMBLEM}" alt="ŽKK Falcons Zagreb"></div>`;
 const FOTO = 'assets/primjer-igracica.png'; // u pravoj aplikaciji: fotografija svake igračice
 const av = (p, cls = '') => p.foto
   ? `<div class="avatar ${cls} photo"><img src="${FOTO}" alt="${p.ime}"></div>`

@@ -285,3 +285,11 @@ tr.click { cursor: pointer; }
 .logo-badge.xs img { height: 22px; }
 .mail-head .logo-badge img { height: 32px; }
 .madeby { padding-bottom: 28px; }
+
+/* emblem sokola u značkama (širi od visine) */
+.logo-badge { padding: 4px 8px; }
+.logo-badge img { height: 28px; }
+.logo-badge.lg img { height: 32px; }
+.logo-badge.xs img { height: 18px; }
+.mail-head .logo-badge img { height: 28px; }
+.bluerider img { height: 54px; }
