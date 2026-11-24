@@ -699,3 +699,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.earn { padding: 6px 14px; }
 .card.earn .row { padding: 4px 0; font-size: 12px; }
 .card.earn .row span { font-size: 12px !important; }
+.fc-hero.compact { margin-top: 12px; }
