@@ -135,12 +135,9 @@ const rsvpOtvoren = () => minuta(PROTO_SADA) <= minuta(rsvpRok());
 const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', datum: 'Subota 28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false };
 const tjedanStavke = () => DANI.flatMap((d, i) => (TRENINZI[i] || []).filter((t) => t.g === 'U14').map((t) => ({ d, i, t })));
 function tjedanKartica() {
-  return `<div class="card week-dots row spread" data-tjedan><h3>Treninzi ovaj tjedan</h3><div class="wd-row">${tjedanStavke().map((s) => `<i class="${dotCls(s.i, s.t)}"></i>`).join('')}<span class="wd-chev">${ic('chev', 18)}</span></div></div>`;
-}
-function tjedanSheet() {
-  overlay(`<div class="row spread" style="margin-bottom:6px"><h2>Treninzi ovaj tjedan</h2><button class="btn ghost sm" data-fxclose>Zatvori</button></div>
-    <div class="list">${tjedanStavke().map((s) => `<div class="row"><i class="${dotCls(s.i, s.t)} big"></i><div class="grow"><h3 style="font-size:var(--fs-sm)">${DANI_PUNO[s.i]} ${23 + s.i}.11.</h3><div class="meta">${s.t.v}–${s.t.do} · ${s.t.d}</div><div class="meta" style="color:var(--text);font-weight:600">${dolazakTekst(s.i, s.t)}</div></div></div>`).join('')}</div>
-    <div class="sched-legend"><span><i class="dot-yes"></i> bila</span><span><i class="dot-late"></i> kasnila</span><span><i class="dot-no"></i> nije bila</span><span><i class="dot-wait"></i> još nije bio</span></div>`);
+  return `<div class="card week-dots" data-tjedan><div class="wk-head"><h3>Treninzi ovaj tjedan</h3><div class="wd-row">${tjedanStavke().map((s) => `<i class="${dotCls(s.i, s.t)}"></i>`).join('')}<span class="wd-chev">${ic('chev', 18)}</span></div></div>
+    <div class="wk-detail"><div class="list">${tjedanStavke().map((s) => `<div class="row"><i class="${dotCls(s.i, s.t)} big"></i><div class="grow"><h3 style="font-size:var(--fs-sm)">${DANI_PUNO[s.i]} ${23 + s.i}.11. · ${s.t.v}–${s.t.do}</h3><div class="meta">${dolazakTekst(s.i, s.t)}</div></div></div>`).join('')}</div>
+      <div class="sched-legend"><span><i class="dot-yes"></i> bila</span><span><i class="dot-late"></i> kasnila</span><span><i class="dot-no"></i> nije bila</span><span><i class="dot-wait"></i> još nije bio</span></div></div></div>`;
 }
 function treningKartica() {
   const r = state.rsvp; const otv = rsvpOtvoren();
@@ -815,7 +812,7 @@ document.addEventListener('click', (e) => {
   if (rs && !rs.disabled) { state.rsvp = rs.dataset.rsvp; render(); toastIn(state.rsvp === 'da' ? 'Javljeno: dolaziš na trening' : 'Javljeno: ne dolaziš na trening'); return; }
   const lt = e.target.closest('[data-late]');
   if (lt) { const id = +lt.dataset.late; kasn[id] = KASN_KORACI[(KASN_KORACI.indexOf(kasn[id] || 0) + 1) % KASN_KORACI.length]; render(); return; }
-  if (e.target.closest('[data-tjedan]')) { tjedanSheet(); return; }
+  const tj = e.target.closest('[data-tjedan]'); if (tj) { tj.classList.toggle('open'); return; }
   const a = e.target.closest('[data-att]');
   if (a) {
     const id = +a.dataset.att; att[id] = !att[id]; if (!att[id]) kasn[id] = 0; render(); return;

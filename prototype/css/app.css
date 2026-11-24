@@ -613,7 +613,13 @@ td .who span { font-weight: 600; }
 .week-dots .sched-legend { justify-content: flex-start; flex-wrap: wrap; gap: 6px 12px; }
 .sched-legend span { display: inline-flex; align-items: center; }
 
-.card.week-dots { padding: 12px var(--s4); flex-direction: row; align-items: center; }
+.card.week-dots { padding: 12px var(--s4); flex-direction: column; align-items: stretch; gap: 0; }
+.wk-head { display: flex; align-items: center; justify-content: space-between; }
+.wk-detail { display: none; padding-top: 12px; flex-direction: column; gap: 10px; }
+.week-dots.open .wk-detail { display: flex; }
+.wd-chev svg { transition: transform .2s; }
+.week-dots.open .wd-chev svg { transform: rotate(90deg); }
+.wk-detail .row .grow, .wk-detail .row h3, .wk-detail .meta { text-align: left; }
 .card.week-dots h3 { font-size: var(--fs-sm); }
 .week-dots .wd-row { display: flex; gap: 8px; }
 .week-dots .wd-row i { width: 18px; height: 18px; border-radius: 50%; display: block; margin: 0; }
