@@ -323,3 +323,18 @@ tr.click { cursor: pointer; }
 .bio-ico { width: 68px; height: 68px; border-radius: 50%; background: var(--navy-100); color: var(--navy); display: grid; place-items: center; margin: 0 auto 4px; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes up { from { transform: translateY(40px); } to { transform: none; } }
+
+/* ---------- značka s logotipom: uvijek u gornjem kutu, bijeli kvadratić ---------- */
+.logo-badge { width: 48px; height: 48px; padding: 5px; border-radius: 12px; display: grid; place-items: center; background: #fff; }
+.logo-badge img { width: 100%; height: auto; max-height: 100%; object-fit: contain; }
+.logo-badge.lg { width: 54px; height: 54px; padding: 5px; }
+.logo-badge.xs { width: 30px; height: 30px; padding: 3px; border-radius: 8px; }
+.mail-head .logo-badge { width: 46px; height: 46px; }
+.sidebar .logo .logo-badge { width: 54px; height: 54px; }
+
+/* početna: isto zaglavlje kao ostali ekrani, kartica u sredini */
+.login-top { display: flex; align-items: center; gap: 12px; padding: 22px 20px 0; text-align: left; color: #fff; }
+.login-top .lt { display: block; font-size: var(--fs-lg); font-weight: 900; letter-spacing: -.01em; }
+.login-top small { display: block; font-size: var(--fs-sm); opacity: .7; margin-top: 2px; }
+.login-card { margin: auto 16px; }
+.login-top { flex-direction: row; justify-content: flex-start; align-items: center; }
