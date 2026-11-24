@@ -40,6 +40,21 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Uplate se svaki ponedjeljak uvoze iz Erste izvoda (WRI format) i sparuju s članovima.
 - Podaci o članovima i uplatama sada postoje samo u Relagu: treba plan migracije.
 
+## Prijava nove članice (javni obrazac)
+
+- Javni link (bez prijave) → obrazac → tablica `prijave` sa statusom "čeka" → admin potvrđuje i dodjeljuje grupu →
+  tek tada nastaju igračica, roditeljski račun i veza, i šalje se welcome mail (link za lozinku + upute za instalaciju).
+  (Prijedlog "mail tek nakon potvrde admina" — čeka potvrdu vlasnika.)
+- Polja (kao u Relagu): ime, prezime, spol (default Ž), datum rođenja, adresa, poštanski broj, mjesto, OIB,
+  mobitel, e-mail roditelja, grupa, napomena + privole (privatnost obavezna; fotografija odvojeno).
+- Grupa u obrascu: **Selekcija** (admin kasnije određuje U12/U14/U16/SEN) ili **Škola košarke – OŠ 1, OŠ 2…**
+  (popis škola upravlja admin).
+- OIB: provjera kontrolne znamenke (ISO 7064 MOD 11,10); OIB ne sadrži datum rođenja, zato se pita posebno.
+- `igracice.oib` i `roditelji.email` jedinstveni; isti e-mail + nova djevojčica → veže se na postojećeg roditelja;
+  poznati OIB → prijava se označi "moguća dvostruka".
+- Instalacija je PWA (ne trgovina aplikacija): Android Chrome "Instaliraj aplikaciju", iPhone Safari "Dodaj na početni zaslon".
+- Fotografiju igračice naknadno učitava admin (privola za fotografiju se pamti uz igračicu).
+
 ## Struktura
 
 - `prototype/` — klikabilni HTML prototip (mobitel + admin desktop), izmišljeni podaci

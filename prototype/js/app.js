@@ -25,6 +25,52 @@ const av = (p, cls = '') => p.foto
 const chip = (t, c = '') => `<span class="chip ${c}">${t}</span>`;
 const clan = (k) => chip(CLANARINA[k].label, CLANARINA[k].cls);
 
+/* ---------- prijave (javni obrazac -> admin) ---------- */
+const GRUPE_PRIJAVA = ['Selekcija', 'Škola košarke – OŠ 1', 'Škola košarke – OŠ 2', 'Škola košarke – OŠ 3'];
+const GRUPE_DODJELA = ['U12', 'U14', 'U16', 'SEN', 'Škola košarke – OŠ 1', 'Škola košarke – OŠ 2', 'Škola košarke – OŠ 3'];
+const prijave = [
+  { id: 101, dat: '24.11.2026.', ime: 'Dora', prezime: 'Šarić', spol: 'Ž', rod: '2014-03-18', adresa: 'Ulica primjera 12', pbr: '10000', mjesto: 'Zagreb', oib: '54321098766', mob: '091 234 5678', email: 'roditelj.saric@example.com', grupa: 'Selekcija', napomena: 'Igrala dvije godine u školskoj ekipi.', foto: true, status: 'ceka' },
+  { id: 102, dat: '23.11.2026.', ime: 'Ema', prezime: 'Kovač', spol: 'Ž', rod: '2016-09-02', adresa: 'Trg primjera 3', pbr: '10020', mjesto: 'Zagreb', oib: '87654321011', mob: '098 111 2233', email: 'kovac.ema.mama@example.com', grupa: 'Škola košarke – OŠ 1', napomena: '', foto: false, status: 'ceka', dup: true },
+  { id: 100, dat: '20.11.2026.', ime: 'Tia', prezime: 'Lončar', spol: 'Ž', rod: '2013-06-11', adresa: 'Cesta primjera 7', pbr: '10010', mjesto: 'Zagreb', oib: '11111111119', mob: '095 555 1212', email: 'loncar.tia@example.com', grupa: 'Selekcija', napomena: '', foto: true, status: 'odobreno', dodijeljeno: 'U14' },
+];
+const pending = () => prijave.filter((p) => p.status === 'ceka').length;
+const STATUS_P = { ceka: ['Čeka potvrdu', 'warn'], odobreno: ['Odobreno', 'ok'], odbijeno: ['Odbijeno', 'danger'] };
+const fmtDat = (iso) => iso ? iso.split('-').reverse().join('.') + '.' : '';
+function oibOk(v) {
+  if (!/^\d{11}$/.test(v)) return false;
+  let a = 10;
+  for (let i = 0; i < 10; i++) { a = (a + +v[i]) % 10; if (a === 0) a = 10; a = (a * 2) % 11; }
+  const k = 11 - a === 10 ? 0 : 11 - a;
+  return k === +v[10];
+}
+const SAMPLE = { ime: 'Mila', prezime: 'Pavić', spol: 'Ž', rod: '2014-05-20', adresa: 'Ulica primjera 5', pbr: '10000', mjesto: 'Zagreb', oib: '12345678903', mob: '091 000 1111', email: 'roditelj@example.com', grupa: 'Selekcija' };
+
+function field(name, label, o = {}) {
+  const { type = 'text', ph = 'obavezno', extra = '', opts } = o;
+  const input = opts
+    ? `<select class="input" name="${name}">${opts.map((x) => `<option>${x}</option>`).join('')}</select>`
+    : `<input class="input" name="${name}" type="${type}" placeholder="${ph}" ${extra}>`;
+  return `<div class="field" data-field="${name}"><label>${label}</label>${input}<small class="err"></small></div>`;
+}
+function mailPreview(p) {
+  const step = (n, t) => `<div style="display:flex;gap:10px;margin:6px 0"><b style="flex:0 0 22px;height:22px;border-radius:50%;background:#182454;color:#fff;font-size:12px;display:grid;place-items:center">${n}</b><span>${t}</span></div>`;
+  return `<div class="mail"><div class="mail-head"><div class="crest">F</div><b>ŽKK FALCONS ZAGREB</b></div>
+    <div class="mail-body"><h2>Dobrodošla u Falcons, ${p.ime}! 🏀</h2>
+    <p>Prijava za ${p.ime} ${p.prezime} je potvrđena${p.dodijeljeno ? ` i raspoređena u grupu <b>${p.dodijeljeno}</b>` : ''}. Napravili smo vam račun u klupskoj aplikaciji, gdje pratite raspored treninga, članarinu i potvrde.</p>
+    <p style="text-align:center;margin:20px 0"><span class="mail-btn">Postavi lozinku</span></p>
+    <p style="font-size:12px;color:#6b7686;text-align:center">Link vrijedi 7 dana.</p>
+    <div class="mail-box"><b>Instaliraj aplikaciju na mobitel</b>
+      <div style="margin-top:10px"><b style="font-size:13px">Android (Chrome)</b>${step(1, 'Otvori link iz maila u Chromeu')}${step(2, 'Dodirni ⋮ pa <b>Instaliraj aplikaciju</b>')}</div>
+      <div style="margin-top:12px"><b style="font-size:13px">iPhone (Safari)</b>${step(1, 'Otvori link u <b>Safariju</b> (ne u mail aplikaciji)')}${step(2, 'Dodirni gumb Dijeli pa <b>Dodaj na početni zaslon</b>')}</div></div>
+    <p style="font-size:12px;color:#6b7686;margin-top:18px">Ako imaš pitanja, odgovori na ovaj mail.<br>ŽKK Falcons Zagreb</p></div></div>`;
+}
+function modal(html) {
+  const old = document.querySelector('.modal'); if (old) old.remove();
+  const m = document.createElement('div'); m.className = 'modal';
+  m.innerHTML = `<div class="sheet">${html}</div>`; document.body.appendChild(m);
+}
+const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.remove(); };
+
 /* ---------- mobilni zajednički dijelovi ---------- */
 function mHeader(naslov, sub, foto = false) {
   return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row"><div class="crest" title="Rezervirano za logo">F</div>
@@ -128,6 +174,42 @@ const SCREENS = {
       <button class="btn block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF">${ic('download', 18)} Preuzmi potvrdu (PDF)</button></div>`).join(''),
   }),
 
+  /* ---------- JAVNA PRIJAVA ---------- */
+  'prijava-forma': () => ({
+    header: mHeader('Prijava nove članice', 'ŽKK Falcons Zagreb'),
+    tabs: '',
+    body: `<form id="prijavaForm" class="stack" novalidate>
+      <div class="card stack"><div class="row spread"><h3>Podaci o djevojčici</h3><button type="button" class="btn ghost sm" data-fill>Popuni primjerom</button></div>
+        <div class="two">${field('ime', 'Ime')}${field('prezime', 'Prezime')}</div>
+        <div class="two">${field('spol', 'Spol', { opts: ['Ž', 'M'] })}${field('rod', 'Datum rođenja', { type: 'date', ph: '' })}</div>
+        ${field('oib', 'OIB', { ph: '11 znamenki', extra: 'inputmode="numeric" maxlength="11"' })}
+        ${field('adresa', 'Adresa')}
+        <div class="two" style="grid-template-columns:1fr 1.4fr">${field('pbr', 'Poštanski broj', { extra: 'inputmode="numeric" maxlength="5"' })}${field('mjesto', 'Mjesto')}</div></div>
+      <div class="card stack"><h3>Kontakt roditelja</h3>
+        ${field('mob', 'Mobitel', { type: 'tel' })}${field('email', 'E-mail', { type: 'email' })}
+        <div class="meta">Na ovaj e-mail stiže potvrda prijave i pristup aplikaciji.</div></div>
+      <div class="card stack"><h3>Grupa</h3>${field('grupa', 'Grupa', { opts: GRUPE_PRIJAVA })}
+        <div class="meta">Ako se prijavljujete u selekciju, trener određuje u koju točno spada.</div>
+        <div class="field"><label>Napomena</label><textarea class="input" name="napomena" rows="3" placeholder="neobavezno"></textarea></div></div>
+      <div class="card stack">
+        <label class="check"><input type="checkbox" name="privola" required><span>Prihvaćam <u>pravila privatnosti</u> i obradu osobnih podataka (OIB, adresa) u svrhu članstva u klubu.</span></label><small class="err" data-err="privola"></small>
+        <label class="check"><input type="checkbox" name="fotoPrivola"><span>Dopuštam korištenje fotografije djevojčice unutar klupske aplikacije.</span></label></div>
+      <button class="btn red block" type="submit">Pošalji prijavu</button><div style="height:8px"></div></form>`,
+  }),
+  'prijava-poslano': () => {
+    const p = state.zadnja || SAMPLE;
+    return {
+      header: mHeader('Prijava poslana', 'Hvala!'),
+      tabs: '',
+      body: `<div class="card stack" style="text-align:center;padding:28px 20px"><div style="font-size:42px">✅</div><h2 style="font-size:var(--fs-xl)">Primili smo prijavu za ${p.ime}</h2>
+        <div class="meta">Potvrdu smo poslali na <b style="color:var(--text)">${p.email}</b>.</div></div>
+        <div class="card stack"><h3>Što dalje?</h3>
+        <div class="row"><span class="chip navy">1</span><div class="grow meta">Klub pregleda prijavu i dodjeljuje grupu.</div></div>
+        <div class="row"><span class="chip navy">2</span><div class="grow meta">Dobit ćete e-mail s linkom za postavljanje lozinke i uputama za instalaciju aplikacije.</div></div>
+        <div class="row"><span class="chip navy">3</span><div class="grow meta">Fotografiju djevojčice dodaje klub nakon potvrde.</div></div></div>`,
+    };
+  },
+
   /* ---------- IGRAČICA ---------- */
   'igracica-pocetna': () => ({
     header: mHeader('Bok, Ana', 'U14', true),
@@ -147,13 +229,18 @@ const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal']];
 
 /* ---------- ADMIN (desktop) ---------- */
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
     <td>${p.grupe.map((x) => chip(x, 'navy')).join(' ')}</td><td>${p.roditelj}</td><td>${clan(p.clanarina)}</td></tr>`).join('');
 
 const ADMIN = {
+  prijave: () => `<div class="page-head"><div><h1>Prijave</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
+      <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
+    <table><thead><tr><th>Datum</th><th>Djevojčica</th><th>Godište</th><th>Zatražena grupa</th><th>Kontakt roditelja</th><th>Status</th></tr></thead><tbody>${prijave.map((p) =>
+      `<tr class="click" data-open="${p.id}"><td>${p.dat}</td><td><div class="who">${av(p, 'sm')}${p.ime} ${p.prezime}</div></td><td>${p.rod.slice(0, 4)}.</td><td>${chip(p.grupa, 'navy')}</td>
+      <td>${p.email}</td><td>${chip(STATUS_P[p.status][0], STATUS_P[p.status][1])}${p.dup && p.status === 'ceka' ? ' ' + chip('Moguća dvostruka', 'danger') : ''}</td></tr>`).join('')}</tbody></table>`,
   pregled: () => `<div class="page-head"><div><h1>Pregled</h1><div class="sub">Utorak, 24. studenoga 2026.</div></div></div>
     <div class="stats">
       <div class="stat"><div class="lbl">Aktivne članice</div><div class="val">128</div><div class="hint">+6 ovaj mjesec</div></div>
@@ -188,7 +275,8 @@ const ADMIN = {
 };
 
 /* ---------- usmjeravanje i prikaz ---------- */
-const ROLES = [['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['admin', 'Admin (desktop)']];
+const ROLES = [['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
+const DEFAULT_SCREEN = { trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
 const state = { dan: TODAY };
 let toastT;
 
@@ -201,12 +289,12 @@ function render() {
   const hash = location.hash.slice(1) || 'trener-danas';
   const [uloga, ...r] = hash.split('-'); const ekran = r.join('-');
   const app = $('#app'); const stage = $('#stage');
-  $('#roleSeg').innerHTML = ROLES.map(([id, l]) => `<button class="${id === uloga ? 'on' : ''}" data-go="${id}-${id === 'admin' ? 'pregled' : id === 'trener' ? 'danas' : 'pocetna'}">${l}</button>`).join('');
+  $('#roleSeg').innerHTML = ROLES.map(([id, l]) => `<button class="${id === uloga ? 'on' : ''}" data-go="${id}-${DEFAULT_SCREEN[id]}">${l}</button>`).join('');
   if (uloga === 'admin') {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo"><div class="crest">F</div><div><b>FALCONS</b><small>Administracija</small></div></div>
-      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}</button>`).join('')}<div class="sp"></div>
+      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
       <button>${ic('user', 20)}Mislav</button></aside><main class="main">${ADMIN[a]()}</main></div>`;
     return;
   }
@@ -215,7 +303,55 @@ function render() {
   app.innerHTML = `<div class="device">${s.header}<div class="app-body">${s.body}</div>${s.tabs}<div class="toast" id="toastIn"></div></div>`;
 }
 
+function showErr(form, name, msg) {
+  const f = form.querySelector(`[data-field="${name}"]`);
+  if (f) { f.querySelector('.input').classList.toggle('bad', !!msg); f.querySelector('.err').textContent = msg || ''; }
+}
+function readForm(form) { const d = {}; new FormData(form).forEach((v, k) => (d[k] = v.toString().trim())); return d; }
+function validate(form) {
+  const d = readForm(form); let ok = true;
+  const need = ['ime', 'prezime', 'rod', 'adresa', 'pbr', 'mjesto', 'oib', 'mob', 'email'];
+  need.forEach((k) => { const bad = !d[k]; showErr(form, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
+  if (d.oib && !oibOk(d.oib)) { showErr(form, 'oib', 'OIB nije ispravan'); ok = false; }
+  if (d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) { showErr(form, 'email', 'Unesi ispravan e-mail'); ok = false; }
+  const pe = form.querySelector('[data-err="privola"]'); pe.textContent = d.privola ? '' : 'Privola je obavezna za prijavu'; if (!d.privola) ok = false;
+  return ok ? d : null;
+}
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'prijavaForm') return; e.preventDefault();
+  const d = validate(e.target); if (!d) { const b = e.target.querySelector('.bad, .err:not(:empty)'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+  const dup = prijave.some((p) => p.oib === d.oib); // u pravoj aplikaciji: i provjera protiv postojećih članica
+  const p = { id: Date.now(), dat: '24.11.2026.', ...d, foto: false, status: 'ceka', dup };
+  prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
+});
 document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-fill]')) {
+    const f = $('#prijavaForm'); Object.entries(SAMPLE).forEach(([k, v]) => { const el = f.elements[k]; if (el) el.value = v; });
+    f.elements.privola.checked = true; return;
+  }
+  if (e.target.closest('[data-close]') || e.target.classList.contains('modal')) { closeModal(); return; }
+  const op = e.target.closest('[data-open]');
+  if (op) {
+    const p = prijave.find((x) => x.id === +op.dataset.open);
+    const red = (l, v) => `<div class="kv"><span>${l}</span><b>${v || '—'}</b></div>`;
+    modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">${p.ime} ${p.prezime}</h2>${chip(STATUS_P[p.status][0], STATUS_P[p.status][1])}</div>
+      ${p.dup && p.status === 'ceka' ? '<div class="alert">⚠ OIB se podudara s postojećom prijavom/članicom. Provjeri prije potvrde.</div>' : ''}
+      <div class="kvs">${red('Spol', p.spol)}${red('Datum rođenja', fmtDat(p.rod))}${red('OIB', p.oib)}${red('Adresa', `${p.adresa}, ${p.pbr} ${p.mjesto}`)}
+      ${red('Mobitel', p.mob)}${red('E-mail', p.email)}${red('Zatražena grupa', p.grupa)}${red('Napomena', p.napomena)}${red('Privola za fotografiju', p.foto ? 'Da' : 'Ne')}</div>
+      ${p.status === 'ceka' ? `<div class="field" style="margin-top:16px"><label>Dodijeli grupu</label><select class="input" id="dodjela">${GRUPE_DODJELA.map((g) => `<option ${g === (p.grupa === 'Selekcija' ? 'U14' : p.grupa) ? 'selected' : ''}>${g}</option>`).join('')}</select></div>
+      <div class="row" style="margin-top:16px;gap:8px"><button class="btn red grow" data-act="odobri" data-id="${p.id}">Potvrdi i pošalji welcome mail</button><button class="btn ghost" data-act="odbij" data-id="${p.id}">Odbij</button></div>`
+      : `<div class="row" style="margin-top:16px;gap:8px"><button class="btn ghost grow" data-act="mail" data-id="${p.id}">Pogledaj welcome mail</button><button class="btn ghost" data-close>Zatvori</button></div>`}
+      <div class="meta" style="margin-top:12px">Fotografiju igračice dodaješ na njenom profilu nakon potvrde.</div>`);
+    return;
+  }
+  const act = e.target.closest('[data-act]');
+  if (act) {
+    const p = prijave.find((x) => x.id === +act.dataset.id);
+    if (act.dataset.act === 'odobri') { p.status = 'odobreno'; p.dodijeljeno = $('#dodjela').value; render(); modal(`<div class="meta" style="margin-bottom:10px">✓ Prijava potvrđena. Ovaj e-mail je poslan na <b>${p.email}</b>:</div>${mailPreview(p)}<button class="btn block" style="margin-top:14px" data-close>Zatvori</button>`); }
+    else if (act.dataset.act === 'odbij') { p.status = 'odbijeno'; render(); closeModal(); }
+    else if (act.dataset.act === 'mail') { modal(`${mailPreview(p)}<button class="btn block" style="margin-top:14px" data-close>Zatvori</button>`); }
+    return;
+  }
   const go = e.target.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
   const dan = e.target.closest('[data-dan]'); if (dan) { state.dan = +dan.dataset.dan; render(); return; }
   const a = e.target.closest('[data-att]');
