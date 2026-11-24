@@ -422,13 +422,3 @@ select.input option { color: #182454; background: #fff; font-family: inherit; }
 .hdr-wordmark { height: 17px; width: auto; display: block; margin: 0 0 8px; }
 .side-wordmark { width: 168px; height: auto; display: block; margin-bottom: 6px; }
 .sidebar .logo small { display: block; }
-
-/* ---------- zaglavlje: gornji red (logotip + zupčanik), pa pozdrav s više zraka ---------- */
-.app-header { padding-bottom: 26px; }
-.app-header .hdr-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; }
-.app-header .hdr-wordmark { height: 18px; width: auto; margin: 0; }
-.app-header .hdr-main { margin-top: 22px; }
-.app-header .hdr-main h1 { font-size: 30px; line-height: 1.1; letter-spacing: -.01em; }
-.app-header .hdr-main .sub { margin-top: 8px; font-size: var(--fs-md, 15px); opacity: .75; }
-.app-header.hero { padding-bottom: 56px; }
-.app-header.hero .hdr-main { max-width: 55%; }
