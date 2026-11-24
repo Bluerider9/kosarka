@@ -293,3 +293,8 @@ tr.click { cursor: pointer; }
 .logo-badge.xs img { height: 18px; }
 .mail-head .logo-badge img { height: 28px; }
 .bluerider img { height: 54px; }
+
+/* kompaktan potpis: tekst i logo u jednom redu */
+.madeby { flex-direction: row; justify-content: center; align-items: center; flex-wrap: nowrap; gap: 10px; padding: 14px 16px 16px; font-size: 11px; }
+.madeby > span:first-child { white-space: nowrap; }
+.bluerider img { height: 24px; width: auto; }
