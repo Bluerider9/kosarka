@@ -429,8 +429,8 @@ const SCREENS = {
 
   /* ---------- IGRAČICA ---------- */
   'igracica-pocetna': () => ({
-    header: mHeader('Bok, Ana', 'U14', true),
-    tabs: tabbar('igracica', IGRACICA_TABS, 'pocetna'),
+    header: mHeader('Bok, Ana', 'U14'),
+    tabs: `<div class="hero-strip"><div class="hs-text"><b>Samo naprijed, Ana!</b><span>Svaki trening je korak bliže.</span></div><img src="${FOTO}" alt=""></div>` + tabbar('igracica', IGRACICA_TABS, 'pocetna'),
     body: `<div class="card stack"><div class="meta">Sljedeći trening</div>
         <div class="row"><div class="time-block gold"><b>17:30</b><span>Danas</span></div><div class="grow"><h3>U14</h3><div class="meta">Dvorana A</div></div></div></div>
       <div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
