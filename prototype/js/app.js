@@ -185,7 +185,7 @@ const SCREENS = {
   'start-login': () => ({
     bare: true,
     body: `<div class="login">
-      <div class="login-top">${badge('lg')}<div><b class="lt">ŽKK Falcons Zagreb</b><small>Klupska aplikacija</small></div></div>
+      <div class="login-top"><img class="login-logo" src="${LOGO}" alt="ŽKK Zagreb Falcons"></div>
       <div class="login-card">
         <div class="seg2"><button class="on" type="button">Prijava</button><button type="button" data-go="prijava-forma">Registracija</button></div>
         <form id="loginForm" class="stack" novalidate>

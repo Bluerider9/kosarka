@@ -338,3 +338,7 @@ tr.click { cursor: pointer; }
 .login-top small { display: block; font-size: var(--fs-sm); opacity: .7; margin-top: 2px; }
 .login-card { margin: auto 16px; }
 .login-top { flex-direction: row; justify-content: flex-start; align-items: center; }
+
+/* početna kao prije: središnji logo na plavoj podlozi, kartica odmah ispod */
+.login-top { flex-direction: column; justify-content: center; align-items: center; padding: 30px 24px 18px; text-align: center; }
+.login-card { margin: 0 16px; }
