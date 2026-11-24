@@ -75,6 +75,13 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
   ("Uključi brzu prijavu?" — Uključi / Ne sada), a može se uključiti i kasnije u Profilu. Na iPhoneu se nudi unutar
   instalirane aplikacije (PWA ima odvojenu prijavu od Safarija).
 
+## Profil igračice
+
+- Svaka igračica ima **profil** (fotografija, grupe, kategorija po godištu, dolaznost, članarina, osobni podaci, roditelj/kontakt, potvrde i privole).
+- Vidljivost po ulozi: **admin** sve (uključujući OIB, e-mail, povijest uplata, uređivanje, fotografija, promjena grupe); **roditelj** njezin profil bez kontakta
+  (adresa, članarina, potvrde, privole); **trener** grupe, osnovne podatke i kontakt roditelja, bez OIB-a i financija; **igračica** vlastiti profil (tab "Profil").
+- Ulazi: admin → Članovi → red; roditelj → gumb "Profil" na kartici; trener → Dolasci → strelica uz ime; igračica → tab Profil.
+
 ## Opcije (zupčanik)
 
 - Zupčanik gore desno na svim ekranima za prijavljene (mobitel: u zaglavlju; admin: u kutu glavnog dijela).

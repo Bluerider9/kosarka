@@ -121,6 +121,38 @@ function rasporedScreen(filterGrupe) {
   return strip + body;
 }
 
+/* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
+const MAJICA = ['140', '152', '164', '152', '140', '128', '152', '164', '164', '164', 'M', '116'];
+const kategorija = (p) => p.grupe.includes('Škola košarke') ? 'škola košarke' : p.god >= 2014 ? 'U12' : p.god >= 2012 ? 'U14' : p.god >= 2010 ? 'U16' : 'SEN';
+function detalji(p) {
+  const i = p.id;
+  return { rod: `${String((i * 3) % 27 + 1).padStart(2, '0')}.${String((i * 5) % 12 + 1).padStart(2, '0')}.${p.god}.`,
+    oib: `5432109876${i % 10}`, adresa: `Ulica primjera ${i + 3}, 10000 Zagreb`, mob: `09${i % 9 + 1} ${100 + i * 7} ${1000 + i * 13}`,
+    email: `${p.roditelj.split(' ').pop().toLowerCase().replace(/[čćž]/g, 'c')}@example.com`, majica: MAJICA[(i - 1) % MAJICA.length],
+    dolaznost: i === 1 ? 91 : 70 + (i * 7) % 28, treninga: 36 + (i * 5) % 20, od: i % 3 === 0 ? '2024.' : '2023.', zadnjaUplata: '24.11.2026.' };
+}
+const kv = (k, v) => `<div class="pf-kv"><span>${k}</span><b>${v}</b></div>`;
+function profilBody(p, uloga) {
+  const d = detalji(p); const admin = uloga === 'admin', trener = uloga === 'trener', roditelj = uloga === 'roditelj';
+  const natrag = { admin: ['admin-clanovi', 'Članovi'], trener: ['trener-dolasci', 'Dolasci'], roditelj: ['roditelj-pocetna', 'Početna'] }[uloga];
+  const hero = `${natrag ? `<a class="link back pf-back" data-go="${natrag[0]}">← ${natrag[1]}</a>` : ''}
+    <div class="card pf-hero">${av(p, 'xl')}<h2>${p.ime}</h2>
+      <div class="row" style="justify-content:center;flex-wrap:wrap;gap:6px">${p.grupe.map((x) => chip(x, 'navy')).join('')}</div>
+      <div class="meta">Članica od ${d.od} · kategorija ${kategorija(p)}</div></div>
+    <div class="pf-stats"><div class="card"><b>${d.dolaznost}%</b><span>Dolaznost</span></div><div class="card"><b>${d.treninga}</b><span>Treninga</span></div><div class="card">${clan(p.clanarina)}<span>Članarina</span></div></div>`;
+  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}${kv('Veličina majice', d.majica)}
+    ${(admin || roditelj) ? kv('Adresa', d.adresa) : ''}${admin ? kv('OIB', d.oib) : ''}</div>`;
+  const treninzi = `<div class="card pf-sec"><h4>Grupe i treninzi</h4>${p.grupe.map((g) => { const gr = GROUPS.find((x) => x.ime === g); return kv(g, gr ? gr.raspored : ''); }).join('')}
+    ${kv('Trener', GROUPS.find((x) => x.ime === p.grupe[0]).trener)}</div>`;
+  const clanarina = (admin || roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Članarina</h4>${kv('Status', clan(p.clanarina))}${kv('Zadnja uplata', d.zadnjaUplata)}
+    ${admin ? `<button class="btn ghost block" data-toast="Povijest uplata — sljedeći korak">Povijest uplata</button>` : ''}</div>` : '';
+  const kontakt = (admin || trener) ? `<div class="card pf-sec"><h4>Roditelj / kontakt</h4>${kv('Ime', p.roditelj)}${kv('Mobitel', d.mob)}${admin ? kv('E-mail', d.email) : ''}</div>` : '';
+  const potvrde = (admin || roditelj) ? `<div class="card pf-sec"><h4>Potvrde i privole</h4>${kv('Potvrda 2026/27', `kategorija ${kategorija(p)}`)}${kv('Pravila privatnosti', 'prihvaćeno 2023.')}${kv('Fotografija', p.foto ? 'dopuštena' : 'dopuštena, fotografija još nije dodana')}
+    ${admin ? `<button class="btn ghost block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF potvrde">Preuzmi potvrdu (PDF)</button>` : ''}</div>` : '';
+  const akcije = admin ? `<div class="pf-actions"><button class="btn" data-toast="Uređivanje profila — sljedeći korak">Uredi podatke</button><button class="btn ghost" data-toast="Učitavanje fotografije — sljedeći korak">${ic('upload', 18)} Fotografija</button><button class="btn ghost" data-toast="Promjena grupe — sljedeći korak">Promijeni grupu</button></div>` : '';
+  return hero + `<div class="pf-grid">${osobno}${treninzi}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
+}
+const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
 const att = {}; PLAYERS.slice(0, 8).forEach((p, i) => (att[p.id] = i !== 4 && i !== 7));
@@ -144,7 +176,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''}" data-att="${p.id}">
-          ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div><div class="toggle"></div></div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button><div class="toggle"></div></div>`).join('')}</div></div>
         <button class="btn red block" data-toast="Dolasci spremljeni">Spremi dolaske</button>`,
     };
   },
@@ -170,7 +202,8 @@ const SCREENS = {
         <div class="pc-top"><div class="pc-name">${p.ime}</div><div class="meta">${p.grupe.join(', ')}</div><div style="margin-top:8px">${clan(p.clanarina)}</div></div>
         <div class="row" style="background:var(--silver-100);border-radius:var(--r-md);padding:12px">
           <div class="time-block gold"><b>${p.god === 2012 ? '17:30' : '15:00'}</b><span>${p.god === 2012 ? 'Čet' : 'Sri'}</span></div>
-          <div class="grow"><div class="meta">Sljedeći trening</div><h3>${p.grupe[0]}</h3></div></div></div>`).join('') +
+          <div class="grow"><div class="meta">Sljedeći trening</div><h3>${p.grupe[0]}</h3></div></div>
+        <button class="btn ghost block" data-profil="${p.id}">Profil ${ic('chev', 16)}</button></div>`).join('') +
       `<div class="card row"><div class="grow"><h3>Dospjelo za platiti</h3><div class="meta">Lea · studeni 2026.</div></div><b style="font-size:var(--fs-lg);font-weight:900">30 €</b></div>
        <button class="btn red block" data-go="roditelj-clanarina">${ic('wallet', 18)} Podaci za uplatu</button>`,
   }),
@@ -284,6 +317,21 @@ const SCREENS = {
       <div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
         <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>`,
   }),
+  'igracica-profil': () => ({
+    header: mHeader('Moj profil', 'Ana Horvat'),
+    tabs: tabbar('igracica', IGRACICA_TABS, 'profil'),
+    body: profilBody(PLAYERS[0], 'igracica'),
+  }),
+  'roditelj-igracica': () => ({
+    header: mHeader('Profil', profilIgr().ime),
+    tabs: tabbar('roditelj', RODITELJ_TABS, 'pocetna'),
+    body: profilBody(profilIgr(), 'roditelj'),
+  }),
+  'trener-igracica': () => ({
+    header: mHeader('Profil', profilIgr().ime),
+    tabs: tabbar('trener', TRENER_TABS, 'dolasci'),
+    body: profilBody(profilIgr(), 'trener'),
+  }),
   'igracica-raspored': () => ({
     header: mHeader('Raspored', 'U14'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'raspored'),
@@ -291,13 +339,13 @@ const SCREENS = {
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
-const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal']];
+const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
 const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
-  .map((p) => `<tr><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
+  .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
     <td>${p.grupe.map((x) => chip(x, 'navy')).join(' ')}</td><td>${p.roditelj}</td><td>${clan(p.clanarina)}</td></tr>`).join('');
 
 const ADMIN = {
@@ -322,6 +370,7 @@ const ADMIN = {
     <div class="toolbar"><label class="search">${ic('search', 18)}<input id="q" placeholder="Pretraži po imenu…"></label>
       <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f, i) => `<span class="chip ${i ? '' : 'on'}" data-f="${f}">${f}</span>`).join('')}</div></div>
     <table><thead><tr><th>Ime</th><th>Godište</th><th>Grupe</th><th>Roditelj</th><th>Članarina</th></tr></thead><tbody id="rows">${memberRows()}</tbody></table>`,
+  profil: () => profilBody(profilIgr(), 'admin'),
   grupe: () => `<div class="page-head"><div><h1>Grupe</h1><div class="sub">${GROUPS.length} grupa</div></div><div class="grow"></div>
       <button class="btn" data-toast="Nova grupa — sljedeći korak">${ic('plus', 18)} Nova grupa</button></div>
     <div class="grid-3">${GROUPS.map((g) => `<div class="card stack"><div class="row spread"><h2 style="font-size:var(--fs-xl)">${g.ime}</h2>${chip(g.cl + ' članica', 'navy')}</div>
@@ -359,7 +408,7 @@ function render() {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
-      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
+      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
       <button>${ic('user', 20)}Mislav</button></aside><main class="main"><button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
   }
@@ -501,6 +550,8 @@ document.addEventListener('click', (e) => {
   }
   const go = e.target.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
   const dan = e.target.closest('[data-dan]'); if (dan) { state.dan = +dan.dataset.dan; render(); return; }
+  const pr = e.target.closest('[data-profil]');
+  if (pr) { state.profil = +pr.dataset.profil; const u = location.hash.slice(1).split('-')[0]; location.hash = u === 'admin' ? 'admin-profil' : `${u}-igracica`; return; }
   const a = e.target.closest('[data-att]');
   if (a) {
     const id = +a.dataset.att; att[id] = !att[id]; a.classList.toggle('on', att[id]);

@@ -417,3 +417,30 @@ select.input option { color: #182454; background: #fff; font-family: inherit; }
 .app-slogan { font-size: var(--fs-sm); font-weight: 700; letter-spacing: .06em; color: var(--gold); margin-top: -4px; }
 
 .app-wordmark { width: min(210px, 62%); height: auto; display: block; margin-top: 8px; }
+
+/* ---------- profil igračice ---------- */
+.avatar.xl { width: 104px; height: 104px; font-size: 32px; box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--gold); }
+.pf-back { margin: 2px 2px 0 !important; }
+.pf-hero { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 26px 18px 22px; }
+.pf-hero h2 { font-size: var(--fs-xl); font-weight: 900; margin-top: 8px; }
+.pf-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+.pf-stats .card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 14px 6px; text-align: center; min-height: 74px; }
+.pf-stats b { font-size: var(--fs-xl); font-weight: 900; line-height: 1; }
+.pf-stats span:not(.chip) { font-size: var(--fs-xs); color: var(--muted); font-weight: 600; }
+.pf-grid { display: grid; gap: 12px; }
+.pf-sec { display: flex; flex-direction: column; gap: 10px; }
+.pf-sec h4 { font-size: var(--fs-xs); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.pf-kv { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: var(--fs-sm); padding: 6px 0; border-bottom: 1px solid var(--silver-100); }
+.pf-kv:last-of-type { border-bottom: 0; }
+.pf-kv span { color: var(--muted); }
+.pf-kv b { font-weight: 700; text-align: right; }
+.pf-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.pf-open { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--navy); background: var(--navy-100); flex-shrink: 0; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: var(--navy-100); }
+.admin .main .pf-hero { flex-direction: row; text-align: left; justify-content: flex-start; gap: 22px; flex-wrap: wrap; }
+.admin .main .pf-hero h2 { margin: 0; }
+.admin .main .pf-hero > * { align-self: center; }
+.admin .main .pf-stats { max-width: 560px; }
+.admin .main .pf-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+.admin .main .pf-back { display: inline-block; margin: 0 0 16px !important; }
