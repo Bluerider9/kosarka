@@ -166,15 +166,16 @@ function trenRow(t, extra = '') {
   return `<div class="row"><div class="time-block"><b>${t.v}</b><span>do ${t.do}</span></div>
     <div class="grow"><h3>${t.g}</h3><div class="meta">${t.d}</div></div>${extra}</div>`;
 }
+const DANI_PUNO = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
+const RASPORED_NAPOMENA = `<div class="sched-note">${ic('cal', 16)}<span>Raspored za idući tjedan ažurira se <b>nedjeljom u podne</b>.</span></div>`;
 function rasporedScreen(filterGrupe) {
-  const dan = state.dan;
-  const strip = `<div class="daystrip">${DANI.map((d, i) =>
-    `<button class="${i === dan ? 'on' : ''}" data-dan="${i}">${d}<b>${23 + i}</b></button>`).join('')}</div>`;
-  let lista = (TRENINZI[dan] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
-  const body = lista.length
-    ? `<div class="card"><div class="list">${lista.map((t) => trenRow(t)).join('')}</div></div>`
-    : `<div class="card meta" style="text-align:center;padding:32px 16px">Nema treninga ovaj dan.</div>`;
-  return strip + body;
+    const dani = DANI_PUNO.map((ime, i) => {
+    const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
+    const jeDanas = i === TODAY;
+    return `<div class="card sched-day ${jeDanas ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="row spread"><h3>${ime}</h3><span class="meta">${23 + i}.11.${jeDanas ? ' · ' + 'danas' : ''}</span></div>
+      ${lista.length ? `<div class="list">${lista.map((t) => trenRow(t)).join('')}</div>` : '<div class="meta">Nema treninga.</div>'}</div>`;
+  }).join('');
+  return `${RASPORED_NAPOMENA}${dani}`;
 }
 
 /* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
@@ -320,7 +321,7 @@ const SCREENS = {
     };
   },
   'trener-raspored': () => ({
-    header: mHeader('Raspored', 'Tjedan 24. – 30. 11.'),
+    header: mHeader('Raspored', 'Tjedan 23. – 29. 11.'),
     tabs: tabbar('trener', TRENER_TABS, 'raspored'),
     body: rasporedScreen(['U12', 'U14']),
   }),
@@ -565,9 +566,9 @@ const ADMIN = {
       <button class="btn" data-toast="Nova grupa — sljedeći korak">${ic('plus', 18)} Nova grupa</button></div>
     <div class="grid-3">${GROUPS.map((g) => `<div class="card stack"><div class="row spread"><h2 style="font-size:var(--fs-xl)">${g.ime}</h2>${chip(g.cl + ' članica', 'navy')}</div>
       <div class="meta">Trener: <b style="color:var(--text)">${g.trener}</b></div><div class="meta">${g.raspored}</div></div>`).join('')}</div>`,
-  raspored: () => `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Tjedni raspored treninga</div></div><div class="grow"></div>
+  raspored: () => `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Tjedan 23. – 29. 11.</div></div><div class="grow"></div>
       <button class="btn" data-toast="Novi termin — sljedeći korak">${ic('plus', 18)} Novi termin</button></div>
-    <table><thead><tr><th>Dan</th><th>Vrijeme</th><th>Grupa</th><th>Dvorana</th></tr></thead><tbody>${DANI.flatMap((d, i) =>
+    ${RASPORED_NAPOMENA}<table><thead><tr><th>Dan</th><th>Vrijeme</th><th>Grupa</th><th>Dvorana</th></tr></thead><tbody>${DANI.flatMap((d, i) =>
       (TRENINZI[i] || []).map((t, j) => `<tr><td>${j ? '' : '<b>' + d + '</b>'}</td><td>${t.v} – ${t.do}</td><td>${chip(t.g, 'navy')}</td><td>${t.d}</td></tr>`)).join('')}</tbody></table>`,
   clanarine: () => `<div class="page-head"><div><h1>Članarine</h1><div class="sub">Uplate i uvoz bankovnog izvoda</div></div></div>
     <div class="dropzone" style="margin-bottom:24px"><div style="color:var(--navy);margin-bottom:8px;display:flex;justify-content:center">${ic('upload', 28)}</div>

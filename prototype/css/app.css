@@ -556,3 +556,11 @@ td .who span { font-weight: 600; }
 .rsvp-msg.no { background: var(--red-100); color: var(--red); }
 .match-flags { display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-xs); font-weight: 700; color: #8a5a00; }
 .match-flags span { display: flex; align-items: center; gap: 6px; background: #fff4de; padding: 7px 10px; border-radius: 10px; }
+
+/* ---------- raspored po danima ---------- */
+.sched-note { display: flex; gap: 8px; align-items: center; background: var(--navy-100); color: var(--navy); border-radius: 12px; padding: 10px 12px; font-size: var(--fs-xs); font-weight: 600; }
+.admin .sched-note { max-width: 560px; margin-bottom: 16px; }
+.sched-day { gap: 8px; display: flex; flex-direction: column; }
+.sched-day h3 { font-size: var(--fs-md); }
+.sched-day.today { border: 2px solid var(--gold); }
+.sched-day.past { opacity: .6; }
