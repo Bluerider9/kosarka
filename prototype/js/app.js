@@ -458,7 +458,7 @@ const SCREENS = {
 
   /* ---------- IGRAČICA ---------- */
   'igracica-pocetna': () => ({
-    header: mHeader('Bok, Ana', 'U14'),
+    header: mHeader('Bok, Ana', ''),
     tabs: `<div class="hero-strip"><div class="hs-text"><b>Samo naprijed, Ana!</b><span>Svaki trening je korak bliže.</span></div><img src="${FOTO}" alt=""></div>` + tabbar('igracica', IGRACICA_TABS, 'pocetna'),
     body: treningKartica() + utakmicaKartica() + `<div class="card"><div class="row spread"><div><h3>Moja dolaznost</h3><div class="meta">Ova sezona</div></div><b style="font-size:var(--fs-xl);font-weight:900">91%</b></div>
         <div class="progress" style="margin-top:12px"><i style="width:91%"></i></div></div>
@@ -495,7 +495,7 @@ const SCREENS = {
     body: profilBody(profilIgr(), 'trener'),
   }),
   'igracica-raspored': () => ({
-    header: mHeader('Raspored', 'U14'),
+    header: mHeader('Raspored', ''),
     tabs: tabbar('igracica', IGRACICA_TABS, 'raspored'),
     body: rasporedScreen(['U14'], true),
   }),
