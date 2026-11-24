@@ -110,11 +110,25 @@ function privacySheet() {
 }
 const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.remove(); };
 
+/* ---------- obavijesti (zvono) ---------- */
+const OBAVIJESTI = {
+  igracica: [{ naslov: 'Falcoini za dolazak', tekst: 'Dobila si +1,00 Falcoin za dolazak na trening U14 (20.11.).', vr: '20.11. 19:05', nova: false }],
+  roditelj: [], trener: [],
+  admin: [{ naslov: 'Nove prijave', tekst: '2 nove prijave čekaju potvrdu.', vr: '23.11. 18:40', nova: true }],
+};
+const uloga = () => location.hash.slice(1).split('-')[0];
+const notify = (za, naslov, tekst) => OBAVIJESTI[za].unshift({ naslov, tekst, vr: 'Upravo sada', nova: true });
+const novihObavijesti = (u = uloga()) => (OBAVIJESTI[u] || []).filter((n) => n.nova).length;
+const bellBtn = (cls = '', attr = 'data-bell') => `<button class="cog bell ${cls}" ${attr} aria-label="Obavijesti">${ic('bell', 22)}${novihObavijesti() ? `<span class="nb">${novihObavijesti()}</span>` : ''}</button>`;
+const bellList = () => { const l = OBAVIJESTI[uloga()] || []; return l.length ? `<div class="list">${l.map((n) => `<div class="row notif ${n.nova ? 'new' : ''}"><span class="n-ico">${ic('bell', 16)}</span><div class="grow"><h3 style="font-size:var(--fs-sm)">${n.naslov}</h3><div class="meta" style="color:var(--text)">${n.tekst}</div><div class="meta">${n.vr}</div></div></div>`).join('')}</div>` : '<p class="meta" style="text-align:center;padding:12px 0">Nema obavijesti.</p>'; };
+const markRead = () => { (OBAVIJESTI[uloga()] || []).forEach((n) => (n.nova = false)); document.querySelectorAll('.bell .nb').forEach((x) => x.remove()); };
+const awarded = {};
+
 /* ---------- mobilni zajednički dijelovi ---------- */
 function mHeader(naslov, sub, foto = false, cog = true) {
   return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row">${badge()}
     <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div>
-    ${cog ? `<button class="cog" data-opt aria-label="Opcije">${ic('cog', 22)}</button>` : ''}</div>
+    ${cog ? bellBtn() : ''}${cog ? `<button class="cog" data-opt aria-label="Opcije">${ic('cog', 22)}</button>` : ''}</div>
     ${foto ? `<img class="hero-photo" src="${FOTO}" alt="">` : ''}</div>`;
 }
 function tabbar(uloga, tabs, aktivan) {
@@ -205,7 +219,7 @@ function scanSheet() {
 }
 function scanResult() {
   if (state.skenirano) { overlay(`<div class="scan-res warn">${ic('check', 34)}</div><h2>Već si evidentirana</h2><p>Dolazak za ovaj trening je već spremljen.</p><button class="btn block" data-fxclose>U redu</button>`); return; }
-  const n = pravilo('trening'); state.skenirano = true; FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
+  const n = pravilo('trening'); state.skenirano = true; awarded[IGR_ID] = true; att[IGR_ID] = true; FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
   overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${fmt(n)} Falcoina</div>
     <p>U14 · Dvorana A · 17:30<br>Novo stanje: <b>${fmt(saldo())}</b></p><button class="btn red block" data-fxclose>Super</button>`);
 }
@@ -275,7 +289,7 @@ const SCREENS = {
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''}" data-att="${p.id}">
           ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3></div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button><div class="toggle"></div></div>`).join('')}</div></div>
-        <button class="btn red block" data-toast="Dolasci spremljeni">Spremi dolaske</button>`,
+        <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
   'trener-raspored': () => ({
@@ -560,7 +574,7 @@ function render() {
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
       ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}${id === 'ormar' && novihNarudzbi() ? `<span class="badge">${novihNarudzbi()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
-      <button>${ic('user', 20)}Mislav</button></aside><main class="main"><button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
+      <button>${ic('user', 20)}Mislav</button></aside><main class="main">${bellBtn('admin-bell', 'data-bell-admin')}<button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
   }
   stage.className = 'stage';
@@ -719,7 +733,7 @@ document.addEventListener('click', (e) => {
   if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const f = r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f);
     if (v.n !== 0) { FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (v.n !== null) v.n--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre: v.n === null, cijena: a.cijena, f, gotovina: cash, dat: '24.11.2026.', st: 'čeka' });
       if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f }); }
-    closeOverlay(); render(); toastIn(cash > 0 ? `Narudžba poslana — doplati ${fmt(cash)} € pri preuzimanju` : 'Narudžba poslana — preuzmi na treningu'); return; }
+    notify('admin', 'Nova narudžba u Ormaru', `Ana Horvat: ${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · naplatiti ${fmt(cash)} €` : ''}`); closeOverlay(); render(); toastIn(cash > 0 ? `Narudžba poslana — doplati ${fmt(cash)} € pri preuzimanju` : 'Narudžba poslana — preuzmi na treningu'); return; }
   const qt = e.target.closest('[data-qrtip]'); if (qt) { state.qrTip = qt.dataset.qrtip; render(); return; }
   const iz = e.target.closest('[data-izdano]'); if (iz) { NARUDZBE[+iz.dataset.izdano].st = 'izdano'; render(); return; }
   const ot = e.target.closest('[data-otkazi]');
@@ -739,6 +753,21 @@ document.addEventListener('click', (e) => {
     if (state.citano.add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
   const pr = e.target.closest('[data-profil]');
   if (pr) { state.profil = +pr.dataset.profil; const u = location.hash.slice(1).split('-')[0]; location.hash = u === 'admin' ? 'admin-profil' : `${u}-igracica`; return; }
+  if (e.target.closest('[data-bell]')) { overlay(`<div class="row spread" style="margin-bottom:6px"><h2>Obavijesti</h2><button class="btn ghost sm" data-fxclose>Zatvori</button></div>${bellList()}`); markRead(); return; }
+  if (e.target.closest('[data-bell-admin]')) { modal(`<div class="row spread" style="margin-bottom:6px"><h2 style="font-size:var(--fs-xl)">Obavijesti</h2><button class="btn ghost sm" data-close>Zatvori</button></div>${bellList()}`); markRead(); return; }
+  if (e.target.closest('[data-attsave]')) {
+    const lista = PLAYERS.slice(0, 8); const n = pravilo('trening'); let dano = 0, vraceno = 0;
+    lista.forEach((p) => {
+      if (att[p.id] && !awarded[p.id]) { awarded[p.id] = true; FALCOINI[p.id] = r2((FALCOINI[p.id] || 0) + n); dano++;
+        if (p.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
+          notify('igracica', 'Falcoini za dolazak', `Dobila si +${fmt(n)} Falcoin za dolazak na trening U14 (24.11.). Novo stanje: ${fmt(saldo())}.`);
+          notify('roditelj', 'Falcoini za dolazak', `${p.ime} je dobila +${fmt(n)} Falcoin za dolazak na trening U14 (24.11.).`); } }
+      else if (!att[p.id] && awarded[p.id]) { awarded[p.id] = false; FALCOINI[p.id] = r2(Math.max(0, FALCOINI[p.id] - n)); vraceno++;
+        if (p.id === IGR_ID) { state.skenirano = false; FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Ispravak dolaska · Trening U14', iznos: -n });
+          notify('igracica', 'Ispravak dolaska', `Dolazak na trening U14 (24.11.) je ispravljen, ${fmt(n)} Falcoin je oduzet.`); } }
+    });
+    toastIn(dano || vraceno ? `Spremljeno · dodijeljeno ${fmt(dano * n)} Falcoina za ${dano} ${dano === 1 ? 'igračicu' : 'igračica'}${vraceno ? `, vraćeno ${vraceno}` : ''}` : 'Dolasci spremljeni — nema promjena'); return;
+  }
   const a = e.target.closest('[data-att]');
   if (a) {
     const id = +a.dataset.att; att[id] = !att[id]; a.classList.toggle('on', att[id]);
