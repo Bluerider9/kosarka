@@ -574,7 +574,7 @@ td .who span { font-weight: 600; }
 .sd-day span { font-size: 11px; color: var(--muted); font-weight: 600; }
 .sd-list { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .sd-t { display: flex; align-items: baseline; gap: 8px; font-size: var(--fs-sm); }
-.sd-t b { font-weight: 900; color: var(--navy); min-width: 44px; }
+.sd-t b { font-weight: 900; color: var(--navy); min-width: 96px; white-space: nowrap; }
 .sd-t span { font-weight: 800; background: var(--navy-100); color: var(--navy); padding: 1px 8px; border-radius: 999px; font-size: var(--fs-xs); }
 .sd-t small { color: var(--muted); font-weight: 600; font-size: var(--fs-xs); }
 .sd-none { color: var(--muted); font-size: var(--fs-sm); }

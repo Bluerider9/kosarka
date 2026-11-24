@@ -172,7 +172,7 @@ function rasporedScreen(filterGrupe) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
-      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}</b><span>${t.g}</span><small>${t.d}</small></div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
+      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${t.g}</span><small>${t.d}</small></div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
   return `<div class="card sched-week">${redovi}</div>${RASPORED_NAPOMENA}`;
 }
