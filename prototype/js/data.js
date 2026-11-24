@@ -63,3 +63,17 @@ const UPLATE = [
   { dat: '23.11.', platitelj: 'ZAGREB D.O.O.', opis: 'Donacija', iznos: 200, st: 'none', clan: 'Nije članarina' },
   { dat: '22.11.', platitelj: 'E KNEZEVIC', opis: 'Marta Knezevic 11', iznos: 35, st: 'ok', clan: 'Marta Knežević' },
 ];
+
+// Novosti za roditelje (grupa: 'Svi' ili naziv grupe). citalo = koliko je roditelja otvorilo objavu.
+const NOVOSTI = [
+  { id: 1, pin: true, oznaka: 'Važno', grupa: 'Svi', dat: '24.11.2026.', naslov: 'Promjena termina u dvorani B ovaj petak',
+    tekst: 'Zbog održavanja dvorane B trening Škole košarke u petak se održava u dvorani A, u isto vrijeme. Molimo roditelje da djecu dovedu 10 minuta ranije kako bismo stigli pripremiti teren.', citalo: 41, od: 52 },
+  { id: 2, oznaka: 'Klub', grupa: 'Svi', dat: '22.11.2026.', naslov: 'Fotografiranje ekipa — subota u 10:00',
+    tekst: 'U subotu snimamo službene fotografije svih ekipa u dvorani A. Dođite u klupskim dresovima, a roditelje molimo da obavezno ponesu potpisanu privolu za fotografiju ako je još nisu predali.', citalo: 78, od: 128 },
+  { id: 3, oznaka: 'Trening', grupa: 'U14', dat: '20.11.2026.', naslov: 'U14: dodatni trening četvrtkom',
+    tekst: 'Do kraja prosinca U14 ima dodatni trening četvrtkom u 17:30. Dolazak je preporučen, a trener Ivan javlja detalje na treningu.', citalo: 12, od: 16 },
+  { id: 4, oznaka: 'Članarina', grupa: 'Svi', dat: '18.11.2026.', naslov: 'Članarina za studeni dospijeva do 30.11.',
+    tekst: 'Podsjećamo da članarina za studeni dospijeva do kraja mjeseca. Podaci za uplatu nalaze se u izborniku Članarina, a uplate se ažuriraju svakog ponedjeljka.', citalo: 96, od: 128 },
+  { id: 5, oznaka: 'Škola košarke', grupa: 'Škola košarke', dat: '15.11.2026.', naslov: 'Škola košarke: nova grupa OŠ 3',
+    tekst: 'Otvaramo novu grupu u OŠ 3, ponedjeljkom i srijedom u 15:00. Ima još nekoliko slobodnih mjesta, a prijava ide preko javnog obrasca.', citalo: 30, od: 38 },
+];

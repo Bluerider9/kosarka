@@ -19,6 +19,7 @@ const ICON = {
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   cog: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   chev: '<path d="M9 6l6 6-6 6"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   finger: '<path d="M12 11v3a8 8 0 0 1-1.5 4.7M7 11a5 5 0 0 1 10 0v2a13 13 0 0 1-1.2 5.4M3.5 9.5A9 9 0 0 1 20.5 9.5M12 15a17 17 0 0 1-1.2 4.7M7 14.5a21 21 0 0 1-.7 4"/>',
   cup: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 2v3M11 2v3M15 2v3"/>',
 };
@@ -79,6 +80,17 @@ function modal(html) {
   const old = document.querySelector('.modal'); if (old) old.remove();
   const m = document.createElement('div'); m.className = 'modal';
   m.innerHTML = `<div class="sheet">${html}</div>`; document.body.appendChild(m);
+}
+function newPostSheet() {
+  modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova objava</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+    <form id="novostForm" class="stack" novalidate>
+      ${field('naslov', 'Naslov')}
+      <div class="field" data-field="tekst"><label>Tekst</label><textarea class="input" name="tekst" rows="5"></textarea><small class="err"></small></div>
+      <div class="two">${field('grupa', 'Za koga', { opts: ['Svi', ...GROUPS.map((g) => g.ime)] })}${field('oznaka', 'Oznaka', { opts: Object.keys(OZNAKE) })}</div>
+      <label class="check"><input type="checkbox" name="pin"><span>Prikvači na vrh</span></label>
+      <div class="meta">Roditelji djevojčica u odabranoj grupi dobivaju objavu u aplikaciji.</div>
+      <div class="row" style="gap:10px"><button class="btn ghost grow" type="button" data-close>Odustani</button><button class="btn red grow" type="submit">Objavi</button></div>
+    </form>`);
 }
 function privacySheet() {
   modal(`<div class="row spread" style="margin-bottom:10px"><h2 style="font-size:var(--fs-xl)">Pravila privatnosti</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
@@ -153,6 +165,18 @@ function profilBody(p, uloga) {
   return hero + `<div class="pf-grid">${osobno}${treninzi}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
 }
 const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
+/* ---------- NOVOSTI ---------- */
+const OZNAKE = { 'Važno': 'danger', 'Klub': 'navy', 'Trening': 'ok', 'Članarina': 'warn', 'Škola košarke': 'navy' };
+const novostiRoditelj = () => NOVOSTI.filter((n) => n.grupa === 'Svi' || ['U14', 'Škola košarke'].includes(n.grupa))
+  .sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
+const neprocitano = () => novostiRoditelj().filter((n) => !state.citano.has(n.id)).length;
+function novostCard(n) {
+  const nova = !state.citano.has(n.id);
+  return `<div class="card news ${nova ? 'unread' : ''}" data-news="${n.id}">
+    <div class="row spread"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(n.grupa) : ''}</div>
+      <span class="meta">${n.dat}</span></div>
+    <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><p class="news-text">${n.tekst}</p><span class="more">Prikaži više</span></div>`;
+}
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
 const att = {}; PLAYERS.slice(0, 8).forEach((p, i) => (att[p.id] = i !== 4 && i !== 7));
@@ -205,7 +229,14 @@ const SCREENS = {
           <div class="grow"><div class="meta">Sljedeći trening</div><h3>${p.grupe[0]}</h3></div></div>
         <button class="btn ghost block" data-profil="${p.id}">Profil ${ic('chev', 16)}</button></div>`).join('') +
       `<div class="card row"><div class="grow"><h3>Dospjelo za platiti</h3><div class="meta">Lea · studeni 2026.</div></div><b style="font-size:var(--fs-lg);font-weight:900">30 €</b></div>
+       <div class="card news-teaser" data-go="roditelj-novosti"><div class="row spread"><div class="row" style="gap:8px"><span class="pin">${ic('bell', 14)}</span><h3>Novosti</h3></div>${neprocitano() ? chip(neprocitano() + ' novo', 'warn') : ''}</div>
+         <div class="meta" style="margin-top:6px">${novostiRoditelj()[0].naslov}</div></div>
        <button class="btn red block" data-go="roditelj-clanarina">${ic('wallet', 18)} Podaci za uplatu</button>`,
+  }),
+  'roditelj-novosti': () => ({
+    header: mHeader('Novosti', neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'),
+    tabs: tabbar('roditelj', RODITELJ_TABS, 'novosti'),
+    body: novostiRoditelj().map(novostCard).join(''),
   }),
   'roditelj-raspored': () => ({
     header: mHeader('Raspored', 'Ana · U14, Lea · Škola košarke'),
@@ -338,11 +369,11 @@ const SCREENS = {
     body: rasporedScreen(['U14']),
   }),
 };
-const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
+const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
 const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -371,6 +402,10 @@ const ADMIN = {
       <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f, i) => `<span class="chip ${i ? '' : 'on'}" data-f="${f}">${f}</span>`).join('')}</div></div>
     <table><thead><tr><th>Ime</th><th>Godište</th><th>Grupe</th><th>Roditelj</th><th>Članarina</th></tr></thead><tbody id="rows">${memberRows()}</tbody></table>`,
   profil: () => profilBody(profilIgr(), 'admin'),
+  novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje</div></div><div class="grow"></div>
+      <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
+    <table><thead><tr><th>Objava</th><th>Za</th><th>Datum</th><th>Pročitalo</th></tr></thead><tbody>${NOVOSTI.map((n) => `<tr><td><b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div></td>
+      <td>${chip(n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa, 'navy')}</td><td>${n.dat}</td><td>${n.citalo ? `${n.citalo} / ${n.od}` : '—'}</td></tr>`).join('')}</tbody></table>`,
   grupe: () => `<div class="page-head"><div><h1>Grupe</h1><div class="sub">${GROUPS.length} grupa</div></div><div class="grow"></div>
       <button class="btn" data-toast="Nova grupa — sljedeći korak">${ic('plus', 18)} Nova grupa</button></div>
     <div class="grid-3">${GROUPS.map((g) => `<div class="card stack"><div class="row spread"><h2 style="font-size:var(--fs-xl)">${g.ime}</h2>${chip(g.cl + ' članica', 'navy')}</div>
@@ -391,7 +426,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false };
+const state = { dan: TODAY, bio: false, citano: new Set([3, 4]) };
 let toastT;
 
 function toast(msg) {
@@ -489,6 +524,13 @@ function goStep(form, n) {
   const body = form.closest('.app-body'); if (body) body.scrollTo({ top: 0, behavior: 'smooth' });
 }
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'novostForm') {
+    e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
+    ['naslov', 'tekst'].forEach((k) => { const bad = !d[k]; showErr(f, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
+    if (!ok) return;
+    NOVOSTI.unshift({ id: Date.now(), pin: !!d.pin, oznaka: d.oznaka, grupa: d.grupa, dat: '24.11.2026.', naslov: d.naslov, tekst: d.tekst, citalo: 0, od: d.grupa === 'Svi' ? 128 : (GROUPS.find((g) => g.ime === d.grupa) || { cl: 0 }).cl });
+    closeModal(); render(); return;
+  }
   if (e.target.id === 'loginForm') {
     e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
     showErr(f, 'email', d.email ? '' : 'Upiši e-mail'); showErr(f, 'lozinka', d.lozinka ? '' : 'Upiši lozinku');
@@ -550,6 +592,10 @@ document.addEventListener('click', (e) => {
   }
   const go = e.target.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
   const dan = e.target.closest('[data-dan]'); if (dan) { state.dan = +dan.dataset.dan; render(); return; }
+  if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
+  const nw = e.target.closest('[data-news]');
+  if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';
+    if (state.citano.add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
   const pr = e.target.closest('[data-profil]');
   if (pr) { state.profil = +pr.dataset.profil; const u = location.hash.slice(1).split('-')[0]; location.hash = u === 'admin' ? 'admin-profil' : `${u}-igracica`; return; }
   const a = e.target.closest('[data-att]');
