@@ -21,6 +21,9 @@ const ICON = {
   cup: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M7 2v3M11 2v3M15 2v3"/>',
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+const LOGO = 'assets/falcons-logo.png';
+const BLUERIDER = 'assets/bluerider-logo-light.svg';
+const badge = (cls = '') => `<div class="logo-badge ${cls}"><img src="${LOGO}" alt="ŽKK Falcons Zagreb"></div>`;
 const FOTO = 'assets/primjer-igracica.png'; // u pravoj aplikaciji: fotografija svake igračice
 const av = (p, cls = '') => p.foto
   ? `<div class="avatar ${cls} photo"><img src="${FOTO}" alt="${p.ime}"></div>`
@@ -57,7 +60,7 @@ function field(name, label, o = {}) {
 }
 function mailPreview(p) {
   const step = (n, t) => `<div style="display:flex;gap:10px;margin:6px 0"><b style="flex:0 0 22px;height:22px;border-radius:50%;background:#182454;color:#fff;font-size:12px;display:grid;place-items:center">${n}</b><span>${t}</span></div>`;
-  return `<div class="mail"><div class="mail-head"><div class="crest">F</div><b>ŽKK FALCONS ZAGREB</b></div>
+  return `<div class="mail"><div class="mail-head">${badge('lg')}<b>ŽKK FALCONS ZAGREB</b></div>
     <div class="mail-body"><h2>Dobrodošla u Falcons, ${p.ime}! 🏀</h2>
     <p>Prijava za ${p.ime} ${p.prezime} je potvrđena${p.dodijeljeno ? ` i raspoređena u grupu <b>${p.dodijeljeno}</b>` : ''}. Napravili smo vam račun u klupskoj aplikaciji, gdje pratite raspored treninga, članarinu i potvrde.</p>
     <p style="text-align:center;margin:20px 0"><span class="mail-btn">Postavi lozinku</span></p>
@@ -76,7 +79,7 @@ const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.
 
 /* ---------- mobilni zajednički dijelovi ---------- */
 function mHeader(naslov, sub, foto = false) {
-  return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row"><div class="crest" title="Rezervirano za logo">F</div>
+  return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row">${badge()}
     <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div></div>
     ${foto ? `<img class="hero-photo" src="${FOTO}" alt="">` : ''}</div>`;
 }
@@ -181,7 +184,7 @@ const SCREENS = {
   'start-login': () => ({
     bare: true,
     body: `<div class="login">
-      <div class="login-top"><div class="crest big" title="Rezervirano za logo Falconsa">F</div><div class="login-brand">ŽKK FALCONS<small>ZAGREB</small></div></div>
+      <div class="login-top"><img class="login-logo" src="${LOGO}" alt="ŽKK Zagreb Falcons"></div>
       <div class="login-card">
         <div class="seg2"><button class="on" type="button">Prijava</button><button type="button" data-go="prijava-forma">Registracija</button></div>
         <form id="loginForm" class="stack" novalidate>
@@ -195,7 +198,7 @@ const SCREENS = {
         <div class="noacc">Nemaš račun? <a class="link" data-go="prijava-forma">Zatraži ga ovdje</a></div>
         <div class="madeby">
           <span>App made by lots of <span class="cup">${ic('cup', 16)}</span> by</span>
-          <a class="bluerider" href="https://bluerider.hr" target="_blank" rel="noopener" title="Bluerider Design"><span class="bl-mark">B</span><span class="bl-name">BLUERIDER<small>DESIGN</small></span></a>
+          <a class="bluerider" href="https://bluerider.hr" target="_blank" rel="noopener" title="Bluerider Design — bluerider.hr"><img src="${BLUERIDER}" alt="Bluerider Design"></a>
         </div>
       </div></div>`,
   }),
@@ -319,7 +322,7 @@ function render() {
   if (uloga === 'admin') {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
-    app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo"><div class="crest">F</div><div><b>FALCONS</b><small>Administracija</small></div></div>
+    app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
       ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
       <button>${ic('user', 20)}Mislav</button></aside><main class="main">${ADMIN[a]()}</main></div>`;
     return;

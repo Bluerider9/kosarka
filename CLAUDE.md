@@ -28,8 +28,10 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 
 - Font: **Montserrat** (naslovi 800/900, tekst 400–600).
 - Boje su izvučene iz PNG logotipa, nisu službene. Provjeriti s brandbookom/vektorom.
-- Logo: original staviti u `assets/` (SVG ili PNG s prozirnom pozadinom). Do tada je u prototipu
-  rezervirano mjesto (placeholder).
+- Logo: `prototype/assets/falcons-logo.png` (obrezan PNG s prozirnom pozadinom; originalni SVG/vektor još treba dodati).
+  Logo ima tamnoplave dijelove: na tamnoj podlozi ide u bijeloj znački, na početnoj na svijetloj podlozi.
+- Potpis "App made by lots of ☕ by Bluerider Design": `prototype/assets/bluerider-logo-light.svg` (svijetla varijanta, za tamnu
+  podlogu), link na https://bluerider.hr.
 
 ## Poslovna pravila koja treba poštovati
 

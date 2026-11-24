@@ -259,3 +259,29 @@ tr.click { cursor: pointer; }
 .proto-bar .brand { flex-shrink: 0; }
 @media (max-width: 700px) { .proto-bar .brand .t { display: none; } .proto-bar .note { display: none; } }
 @media (max-width: 520px) { #app { width: 100%; } }
+
+/* ---------- pravi logotipi ---------- */
+.logo-badge { background: #fff; border-radius: 12px; padding: 4px 6px; display: grid; place-items: center; flex-shrink: 0; height: 44px; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.logo-badge img { height: 100%; width: auto; display: block; }
+.logo-badge.lg { height: 48px; }
+.logo-badge.xs { height: 28px; padding: 2px 4px; border-radius: 8px; }
+
+/* početna: svijetli vrh da se vidi cijeli logo, tamni potpis na dnu */
+.login { background: #fff; }
+.login-top { background: radial-gradient(110% 90% at 50% 0%, #ffffff 40%, var(--silver-100) 100%); padding: 36px 28px 26px; }
+.login-logo { width: min(250px, 70%); height: auto; display: block; filter: drop-shadow(0 6px 10px rgba(24,36,84,.12)); }
+.login-card { border-radius: 28px 28px 0 0; margin-top: -8px; box-shadow: 0 -6px 20px rgba(24,36,84,.07); padding-bottom: 0; }
+.madeby { margin: auto -20px 0; padding: 16px 20px 18px; background: var(--navy); color: rgba(255,255,255,.72); gap: 10px; }
+.madeby .cup { color: var(--gold); }
+.bluerider { background: none; box-shadow: none; padding: 0; border-radius: 0; }
+.bluerider img { height: 64px; width: auto; display: block; }
+.mail-head .logo-badge { height: 40px; }
+.sidebar .logo .logo-badge { height: 44px; }
+
+/* fiksne visine logotipa u značkama */
+.logo-badge { display: flex; align-items: center; justify-content: center; }
+.logo-badge img { height: 34px; width: auto; max-width: none; }
+.logo-badge.lg img { height: 38px; }
+.logo-badge.xs img { height: 22px; }
+.mail-head .logo-badge img { height: 32px; }
+.madeby { padding-bottom: 28px; }
