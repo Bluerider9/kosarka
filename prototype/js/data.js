@@ -33,24 +33,24 @@ const DANI = ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'];
 const TRENINZI = {
   0: [
     { v: '15:00', do: '16:30', g: 'Škola košarke', d: 'Dvorana B' },
-    { v: '17:30', do: '19:00', g: 'U14', d: 'Dvorana A' },
-    { v: '19:00', do: '20:30', g: 'U16', d: 'Dvorana A' },
+    { v: '17:30', do: '19:00', g: 'U14', d: 'OŠ Ante Kovačića' },
+    { v: '19:00', do: '20:30', g: 'U16', d: 'OŠ Ante Kovačića' },
   ],
   1: [
     { v: '16:00', do: '17:30', g: 'U12', d: 'Dvorana B' },
-    { v: '17:30', do: '19:00', g: 'U14', d: 'Dvorana A' },
-    { v: '20:30', do: '22:00', g: 'SEN', d: 'Dvorana A' },
+    { v: '17:30', do: '19:00', g: 'U14', d: 'OŠ Ante Kovačića' },
+    { v: '20:30', do: '22:00', g: 'SEN', d: 'OŠ Ante Kovačića' },
   ],
   2: [
     { v: '15:00', do: '16:30', g: 'Škola košarke', d: 'Dvorana B' },
-    { v: '19:00', do: '20:30', g: 'U16', d: 'Dvorana A' },
+    { v: '19:00', do: '20:30', g: 'U16', d: 'OŠ Ante Kovačića' },
   ],
   3: [
     { v: '16:00', do: '17:30', g: 'U12', d: 'Dvorana B' },
-    { v: '17:30', do: '19:00', g: 'U14', d: 'Dvorana A' },
-    { v: '20:30', do: '22:00', g: 'SEN', d: 'Dvorana A' },
+    { v: '17:30', do: '19:00', g: 'U14', d: 'OŠ Ante Kovačića' },
+    { v: '20:30', do: '22:00', g: 'SEN', d: 'OŠ Ante Kovačića' },
   ],
-  4: [{ v: '19:00', do: '20:30', g: 'U16', d: 'Dvorana A' }],
+  4: [{ v: '19:00', do: '20:30', g: 'U16', d: 'OŠ Ante Kovačića' }],
   5: [],
   6: [],
 };

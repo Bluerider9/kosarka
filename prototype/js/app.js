@@ -127,7 +127,7 @@ const markRead = () => { (OBAVIJESTI[uloga()] || []).forEach((n) => (n.nova = fa
 const awarded = {};
 
 /* ---------- početna igračice: današnji trening (dolazim / ne dolazim) i iduća utakmica ---------- */
-const DANAS_TRENING = { grupa: 'U14', vrijeme: '17:30', dvorana: 'Dvorana A', dan: 'utorak 24.11.' };
+const DANAS_TRENING = { grupa: 'U14', vrijeme: '17:30', dvorana: 'OŠ Ante Kovačića', dan: 'utorak 24.11.' };
 const PROTO_SADA = '12:10'; // "trenutno vrijeme" u prototipu
 const minuta = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60 + m; };
 const rsvpRok = () => { const m = minuta(DANAS_TRENING.vrijeme) - 180; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
@@ -249,7 +249,7 @@ function scanResult() {
   if (state.skenirano) { overlay(`<div class="scan-res warn">${ic('check', 34)}</div><h2>Već si evidentirana</h2><p>Dolazak za ovaj trening je već spremljen.</p><button class="btn block" data-fxclose>U redu</button>`); return; }
   const n = pravilo('trening'); state.skenirano = true; awarded[IGR_ID] = true; att[IGR_ID] = true; FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
   overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${fmt(n)} Falcoina</div>
-    <p>U14 · Dvorana A · 17:30<br>Novo stanje: <b>${fmt(saldo())}</b></p><button class="btn red block" data-fxclose>Super</button>`);
+    <p>U14 · OŠ Ante Kovačića · 17:30<br>Novo stanje: <b>${fmt(saldo())}</b></p><button class="btn red block" data-fxclose>Super</button>`);
 }
 function redeemSheet(id) {
   const a = ORMAR.find((x) => x.id === id); const max = r2(Math.min(a.cijena, saldo()));

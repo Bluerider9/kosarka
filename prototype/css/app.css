@@ -587,3 +587,8 @@ td .who span { font-weight: 600; }
 .dot-yes { background: #2e9e5b; }
 .dot-no { background: var(--red); }
 .sched-legend { display: flex; gap: 16px; justify-content: center; font-size: var(--fs-xs); font-weight: 600; color: var(--muted); }
+.sd-day { width: 56px; }
+.sd { gap: 8px; }
+.sd-t { gap: 6px; }
+.sd-t b { min-width: 88px; font-size: 13px; }
+.sd-t small { white-space: nowrap; }
