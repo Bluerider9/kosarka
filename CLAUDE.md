@@ -96,6 +96,11 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Bodovi (admin ih mijenja): trening 10, utakmica 25, turnir 40, bonus za niz od 5 treninga 20, ručno dodjeljivanje (npr. pomoć u organizaciji).
 - Igračica: tabovi **Falcoini** (stanje, skeniranje, povijest, kako zarađuješ) i **Ormar** (artikli, "Zamijeni"; stanje se odmah umanjuje, artikl se preuzima kod trenera).
 - Admin: stranice **Falcoini** (pravila, ljestvica, ručno dodjeljivanje) i **Ormar** (narudžbe s "Označi izdano", artikli i zaliha). Falcoini se vide i na profilu igračice (ne treneru).
+- **1 Falcoin = 1 €**; svi iznosi (stanje, cijene, pravila bodovanja) imaju **dvije decimale** (hrvatski zapis 12,50). Računa se na cente i zaokružuje na 2 decimale.
+- **Miješano plaćanje:** igračica klizačem bira koliko plaća Falcoinima, ostatak doplaćuje **gotovinom pri preuzimanju**. Pri narudžbi se odabrani Falcoini odmah **rezerviraju** (skidaju sa stanja);
+  admin u Ormaru vidi koliko treba naplatiti ("Izdano i naplaćeno") ili narudžbu **otkaže**, pri čemu se Falcoini vraćaju na stanje (a zaliha povećava). Planirano: automatsko otkazivanje nakon 7 dana.
+- Admin može Falcoine **dodijeliti i oduzeti** (oduzimanje traži razlog; stanje ne može biti negativno). Pravila bodovanja se mijenjaju na stranici Falcoini.
+- Za gotovinu u prodaji robe provjeriti s knjigovođom treba li račun/fiskalizacija.
 - Otvoreno: vrijede li Falcoini po sezoni ili stalno; treba li roditelj potvrditi zamjenu; trebaju li se bodovi poništiti ako trener ispravi dolazak; prave slike artikala.
 
 ## Opcije (zupčanik)

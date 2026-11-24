@@ -79,32 +79,34 @@ const NOVOSTI = [
 ];
 
 // ---------- Falcoini i Ormar (webshop) ----------
+// 1 Falcoin = 1 € (iznosi na dvije decimale). Vrijednosti su izmišljene.
 const FALCOIN_PRAVILA = [
-  { k: 'trening', label: 'Dolazak na trening', iznos: 10 },
-  { k: 'utakmica', label: 'Dolazak na utakmicu', iznos: 25 },
-  { k: 'turnir', label: 'Dolazak na turnir', iznos: 40 },
-  { k: 'niz', label: 'Niz od 5 treninga zaredom (bonus)', iznos: 20 },
-  { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 15 },
+  { k: 'trening', label: 'Dolazak na trening', iznos: 1.0 },
+  { k: 'utakmica', label: 'Dolazak na utakmicu', iznos: 2.5 },
+  { k: 'turnir', label: 'Dolazak na turnir', iznos: 4.0 },
+  { k: 'niz', label: 'Niz od 5 treninga zaredom (bonus)', iznos: 2.0 },
+  { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 1.5 },
 ];
 const ORMAR = [
-  { id: 1, ime: 'Narukvica Falcons', cijena: 60, zaliha: 24 },
-  { id: 2, ime: 'Set naljepnica', cijena: 40, zaliha: 40 },
-  { id: 3, ime: 'Boca za vodu', cijena: 150, zaliha: 12 },
-  { id: 4, ime: 'Čarape Falcons', cijena: 200, zaliha: 9 },
-  { id: 5, ime: 'Majica za zagrijavanje', cijena: 400, zaliha: 6 },
-  { id: 6, ime: 'Ruksak za dvoranu', cijena: 700, zaliha: 3 },
+  { id: 1, ime: 'Narukvica Falcons', cijena: 6.0, zaliha: 24 },
+  { id: 2, ime: 'Set naljepnica', cijena: 4.0, zaliha: 40 },
+  { id: 3, ime: 'Boca za vodu', cijena: 15.0, zaliha: 12 },
+  { id: 4, ime: 'Čarape Falcons', cijena: 20.0, zaliha: 9 },
+  { id: 5, ime: 'Majica za zagrijavanje', cijena: 40.0, zaliha: 6 },
+  { id: 6, ime: 'Ruksak za dvoranu', cijena: 70.0, zaliha: 3 },
 ];
-const FALCOINI = { 1: 185, 2: 240, 3: 95, 4: 310, 5: 60, 6: 150, 7: 205, 8: 40, 9: 275, 10: 330, 11: 120, 12: 90 };
+const FALCOINI = { 1: 18.5, 2: 24.0, 3: 9.5, 4: 31.0, 5: 6.0, 6: 15.0, 7: 20.5, 8: 4.0, 9: 27.5, 10: 33.0, 11: 12.0, 12: 9.0 };
 const FALCOIN_POVIJEST = [
-  { dat: '21.11.', opis: 'Utakmica U14 — gostovanje', iznos: 25 },
-  { dat: '20.11.', opis: 'Trening U14', iznos: 10 },
-  { dat: '18.11.', opis: 'Trening U14', iznos: 10 },
-  { dat: '17.11.', opis: 'Bonus: niz od 5 treninga', iznos: 20 },
-  { dat: '14.11.', opis: 'Zamjena: Set naljepnica', iznos: -40 },
-  { dat: '13.11.', opis: 'Trening U14', iznos: 10 },
+  { dat: '21.11.', opis: 'Utakmica U14 — gostovanje', iznos: 2.5 },
+  { dat: '20.11.', opis: 'Trening U14', iznos: 1.0 },
+  { dat: '18.11.', opis: 'Trening U14', iznos: 1.0 },
+  { dat: '17.11.', opis: 'Bonus: niz od 5 treninga', iznos: 2.0 },
+  { dat: '14.11.', opis: 'Zamjena: Set naljepnica', iznos: -4.0 },
+  { dat: '13.11.', opis: 'Trening U14', iznos: 1.0 },
 ];
+// f = plaćeno Falcoinima (rezervirano pri narudžbi), gotovina = ostatak za naplatiti pri preuzimanju
 const NARUDZBE = [
-  { igr: 'Mia Kovač', artikl: 'Boca za vodu', cijena: 150, dat: '23.11.2026.', st: 'čeka' },
-  { igr: 'Petra Marić', artikl: 'Narukvica Falcons', cijena: 60, dat: '22.11.2026.', st: 'čeka' },
-  { igr: 'Ana Horvat', artikl: 'Set naljepnica', cijena: 40, dat: '14.11.2026.', st: 'izdano' },
+  { igr: 'Mia Kovač', artikl: 'Boca za vodu', cijena: 15.0, f: 10.0, gotovina: 5.0, dat: '23.11.2026.', st: 'čeka' },
+  { igr: 'Petra Marić', artikl: 'Narukvica Falcons', cijena: 6.0, f: 6.0, gotovina: 0, dat: '22.11.2026.', st: 'čeka' },
+  { igr: 'Ana Horvat', artikl: 'Set naljepnica', cijena: 4.0, f: 4.0, gotovina: 0, dat: '14.11.2026.', st: 'izdano' },
 ];
