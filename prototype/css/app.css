@@ -795,3 +795,11 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .kasn-input { color: #182454 !important; -webkit-text-fill-color: #182454; }
 
 .rsvp-chip { display: inline-block; margin: 3px 4px 0 0; border-radius: 999px; padding: 2px 9px; font-size: 10px; font-weight: 800; background: rgba(24,36,84,.08); color: #182454; }
+
+/* najavljen (blaža crvena) nasuprot nenajavljenom (jaka crvena) */
+.attend { --g-ann: linear-gradient(90deg, #fff 0%, #fff 30%, #efa59d 100%); --g-abs: linear-gradient(90deg, #fff 0%, #fff 22%, #cf3326 100%); }
+.attend.st-ann { --cur: var(--g-ann); }
+.abs-chip.ann { background: #fbe3e3; color: #a8483f; }
+.abs-chip.hard { background: #b3261b; color: #fff; }
+.attend.st-ann { background: var(--cur); }
+.abs-chip { white-space: nowrap; }

@@ -330,7 +330,8 @@ function ormarGrid() {
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
-const attSt = (p) => (att[p.id] ? (kasn[p.id] ? 'st-late' : 'st-ok') : p.id === IGR_ID && izPokriva(TODAY) ? 'st-exc' : 'st-abs');
+const najavljeno = (p) => p.id === IGR_ID && state.rsvp === 'ne';
+const attSt = (p) => (att[p.id] ? (kasn[p.id] ? 'st-late' : 'st-ok') : p.id === IGR_ID && izPokriva(TODAY) ? 'st-exc' : najavljeno(p) ? 'st-ann' : 'st-abs');
 const attSeg = (p) => { const s = att[p.id] ? (kasn[p.id] ? 'kasni' : 'da') : 'ne';
   return `<div class="seg3" role="group" aria-label="Dolazak">${[['ne', '✕', 'Nije došla'], ['kasni', '!', 'Kasni'], ['da', '✓', 'Došla']].map(([k, g, l]) => `<button type="button" class="s3 s3-${k} ${s === k ? 'on' : ''}" data-st="${k}" data-id="${p.id}" aria-label="${l}">${g}</button>`).join('')}</div>`; };
 const prevAtt = {};
@@ -383,7 +384,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="att-legend"><span class="al-name">Igračica</span><span class="al-prof">Profil</span><span class="al-tog">Dolazak</span></div><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''} ${attSt(p)}${attSwipe(p)}">
-          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${p.id === IGR_ID && state.rsvp && !izPokriva(TODAY) && !kasn[p.id] ? `<span class="rsvp-chip ${state.rsvp}">${state.rsvp === 'da' ? 'najavila dolazak' : 'najavila nedolazak'}</span>` : ''}${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${p.id === IGR_ID && state.rsvp === 'da' && !izPokriva(TODAY) && !kasn[p.id] ? `<span class="rsvp-chip ${state.rsvp}">${state.rsvp === 'da' ? 'najavila dolazak' : 'najavila nedolazak'}</span>` : ''}${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : najavljeno(p) ? '<span class="abs-chip ann">Najavljeno</span>' : '<span class="abs-chip hard">Nenajavljeno</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
