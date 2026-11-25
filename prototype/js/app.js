@@ -164,7 +164,7 @@ function utakmicaKartica() {
 function mHeader(naslov, sub, foto = false, cog = true) {
   return `<div class="app-header ${foto ? 'hero' : ''}"><div class="row">${badge()}
     <div class="grow"><h1>${naslov}</h1><div class="sub">${sub}</div></div>
-    ${cog ? `<button class="cog qr" data-hdrqr aria-label="Skeniraj QR kod">${ic('qr', 22)}</button>` : ''}${cog ? bellBtn() : ''}${cog ? `<button class="cog" data-opt aria-label="Opcije">${ic('cog', 22)}</button>` : ''}</div>
+    ${cog && uloga() !== 'roditelj' ? `<button class="cog qr" data-hdrqr aria-label="Skeniraj QR kod">${ic('qr', 22)}</button>` : ''}${cog ? bellBtn() : ''}${cog ? `<button class="cog" data-opt aria-label="Opcije">${ic('cog', 22)}</button>` : ''}</div>
     ${foto ? `<img class="hero-photo" src="${FOTO}" alt="">` : ''}</div>`;
 }
 function tabbar(uloga, tabs, aktivan) {
@@ -772,7 +772,7 @@ document.addEventListener('click', (e) => {
   const go = e.target.closest('[data-go]'); if (go) { location.hash = go.dataset.go; return; }
   const dan = e.target.closest('[data-dan]'); if (dan) { state.dan = +dan.dataset.dan; render(); return; }
   if (e.target.closest('[data-scan]')) { scanSheet(); return; }
-  if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; else toastIn('Skeniranje QR koda za dolazak je za igračice'); return; }
+  if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; return; }
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
   const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }

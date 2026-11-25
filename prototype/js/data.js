@@ -82,7 +82,7 @@ const NOVOSTI = [
 // 1 Falcoin = 1 € (iznosi na dvije decimale). Vrijednosti su izmišljene.
 const FALCOIN_PRAVILA = [
   { k: 'trening', label: 'Dolazak na trening', iznos: 1.0 },
-  { k: 'utakmica', label: 'Dolazak na utakmicu', iznos: 2.5 },
+  { k: 'utakmica', label: 'Dolazak na utakmicu (gledanje)', iznos: 2.5 },
   { k: 'turnir', label: 'Dolazak na turnir', iznos: 4.0 },
   { k: 'niz', label: 'Niz od 5 treninga zaredom (bonus)', iznos: 2.0 },
   { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 1.5 },
