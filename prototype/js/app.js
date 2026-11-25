@@ -365,7 +365,7 @@ const SCREENS = {
       tabs: tabbar('trener', TRENER_TABS, 'dolasci'),
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
-        <div class="card"><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''}" data-att="${p.id}">
+        <div class="card"><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''} ${att[p.id] ? (kasn[p.id] ? 'st-late' : 'st-ok') : p.id === IGR_ID && izPokriva(TODAY) ? 'st-exc' : 'st-abs'}" data-att="${p.id}">
           ${av(p, 'sm')}<div class="grow"><h3 style="font-size:var(--fs-sm)">${p.ime}</h3>${att[p.id] ? '' : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div>${att[p.id] ? `<div class="late-step ${kasn[p.id] ? 'on' : ''}">${kasn[p.id] ? `<button data-late="${p.id}" data-d="-1" aria-label="Manje">−</button>` : ''}<span>${kasn[p.id] ? `${kasn[p.id]} min` : 'na vrijeme'}</span><button data-late="${p.id}" data-d="1" aria-label="Više">+</button></div>` : ''}<button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button><div class="toggle"></div></div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };

@@ -719,3 +719,10 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .abs-chip { display: inline-block; margin-top: 3px; border-radius: 999px; padding: 2px 9px; font-size: 10px; font-weight: 800; }
 .abs-chip.soft { background: #fbe3e3; color: #b85c5c; }
 .abs-chip.hard { background: #c0392b; color: #fff; }
+
+/* cijeli redak dolazaka u boji (gradijent) */
+.attend { border-radius: 12px; transition: background .25s; }
+.attend.st-ok   { background: linear-gradient(90deg, #fff 0%, #fff 30%, #c9ecd3 100%); }
+.attend.st-late { background: linear-gradient(90deg, #fbe29a 0%, #c9ecd3 100%); }
+.attend.st-exc  { background: linear-gradient(90deg, #fff 0%, #fff 30%, #f7d3d3 100%); }
+.attend.st-abs  { background: linear-gradient(90deg, #fff 0%, #fff 30%, #e07468 100%); }
