@@ -226,11 +226,11 @@ const UTAKMICE_IGR = [
 const utakmiceIgr = () => `<div class="card sched-matches"><h3>Utakmice</h3>${UTAKMICE_IGR.map((u) => `<div class="mt"><div class="mt-d"><b>${u.dat}</b><span>${u.vr || 'odigrano'}</span></div>
   <div class="mt-o"><b>${u.opis}</b>${u.nap ? `<small>${u.nap}</small>` : ''}</div>
   ${u.st === 'pozvana' ? chip('Pozvana', 'warn') : `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>`}</div>`).join('')}</div>`;
-function rasporedScreen(filterGrupe, tocke = false) {
+function rasporedScreen(filterGrupe, tocke = false, tockeGrupe = []) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
-      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${tocke && (i < TODAY || dolazak(i, t)) ? `<i class="${dotCls(i, t)}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
+      <div class="sd-list">${lista.length ? lista.map((t) => `<div class="sd-t"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${(tocke || tockeGrupe.includes(t.g)) && (i < TODAY || dolazak(i, t) || izPokriva(i)) ? `<i class="${dotCls(i, t)}"></i>` : ''}</div>`).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
   return `${RASPORED_NAPOMENA}<div class="card sched-week">${redovi}</div>${tocke ? izostanakKartica() + utakmiceIgr() : ''}`;
 }
@@ -452,7 +452,7 @@ const SCREENS = {
   'roditelj-raspored': () => ({
     header: mHeader('Raspored', 'Ana · U14, Lea · Škola košarke'),
     tabs: tabbar('roditelj', RODITELJ_TABS, 'raspored'),
-    body: rasporedScreen(['U14', 'Škola košarke']),
+    body: rasporedScreen(['U14', 'Škola košarke'], false, ['U14']),
   }),
   'roditelj-clanarina': () => ({
     header: mHeader('Članarina', 'Studeni 2026.'),
