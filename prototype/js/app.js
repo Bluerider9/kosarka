@@ -139,7 +139,7 @@ function tjedanKartica() {
     <div class="wk-detail"><div class="list">${tjedanStavke().map((s) => `<div class="row"><i class="${dotCls(s.i, s.t)} big"></i><div class="grow"><h3 style="font-size:var(--fs-sm)">${DANI_PUNO[s.i]} ${23 + s.i}.11. · ${s.t.v}–${s.t.do}</h3><div class="meta">${dolazakTekst(s.i, s.t)}</div></div></div>`).join('')}</div></div></div>`;
 }
 /* ---------- dulji izostanak (bolesna, izlet…) ---------- */
-const IZ_RAZLOZI = ['Bolesna sam', 'Školski izlet', 'Putovanje', 'Ozljeda', 'Drugo'];
+const IZ_RAZLOZI = ['Bolesna sam', 'Putovanje', 'Ozljeda', 'Loše ocjene', 'U kazni sam'];
 const IZ_TRAJANJA = [{ k: 2, l: '2 dana' }, { k: 3, l: '3 dana' }, { k: 7, l: 'Tjedan dana' }, { k: 0, l: 'Dok ne deaktiviram' }];
 const izPokriva = (i) => !!state.izostanak && i >= TODAY && (state.izostanak.do === null || i <= state.izostanak.do);
 const izDo = (iz) => (iz.do === null ? 'dok ne deaktiviraš' : `do ${23 + iz.do}.11.`);
