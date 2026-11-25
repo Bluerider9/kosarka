@@ -336,6 +336,7 @@ const attSeg = (p) => { const s = att[p.id] ? (kasn[p.id] ? 'kasni' : 'da') : 'n
 const prevAtt = {};
 const attSwipe = (p) => { const s = attSt(p), pr = prevAtt[p.id]; prevAtt[p.id] = s; return pr && pr !== s ? ` swipe" style="--prev: var(--g-${pr.slice(3)})` : ''; };
 const kasn = {};
+const attRuc = {}; let attRsvpApplied = null; // trener je ručno promijenio / najava već primijenjena
 /* što više minuta, to jača žuta (svijetla → zlatna → tamna jantarna) */
 const kasnBoja = (m) => { const t = Math.max(0, Math.min(1, ((+m || 0) - 1) / 14)); return `hsl(${Math.round(46 - 8 * t)} ${Math.round(90 + 5 * t)}% ${Math.round(88 - 38 * t)}%)`; };
 function kasnjenjeSheet(id) {
@@ -374,6 +375,7 @@ const SCREENS = {
   'trener-dolasci': () => {
     const lista = PLAYERS.slice(0, 8);
     if (izPokriva(TODAY)) { att[IGR_ID] = false; kasn[IGR_ID] = 0; }
+    else if ((state.rsvp === 'da' || state.rsvp === 'ne') && !attRuc[IGR_ID] && attRsvpApplied !== state.rsvp) { att[IGR_ID] = state.rsvp === 'da'; kasn[IGR_ID] = 0; attRsvpApplied = state.rsvp; }
     const n = lista.filter((p) => att[p.id]).length;
     return {
       header: mHeader('Dolasci', 'U14 · Uto 24.11. · 17:30'),
@@ -381,7 +383,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="att-legend"><span class="al-name">Igračica</span><span class="al-prof">Profil</span><span class="al-tog">Dolazak</span></div><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''} ${attSt(p)}${attSwipe(p)}">
-          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${p.id === IGR_ID && state.rsvp && !izPokriva(TODAY) && !kasn[p.id] ? `<span class="rsvp-chip ${state.rsvp}">${state.rsvp === 'da' ? 'najavila dolazak' : 'najavila nedolazak'}</span>` : ''}${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
@@ -872,9 +874,9 @@ document.addEventListener('click', (e) => {
   const sb = e.target.closest('[data-st]');
   if (sb) { const id = +sb.dataset.id, k = sb.dataset.st; if (id === IGR_ID && izPokriva(TODAY)) { toastIn('Ana ima javljen izostanak'); return; }
     if (k === 'kasni') { kasnjenjeSheet(id); return; }
-    att[id] = k !== 'ne'; kasn[id] = 0; render(); return; }
+    attRuc[id] = true; att[id] = k !== 'ne'; kasn[id] = 0; render(); return; }
   const km = e.target.closest('[data-kmin]'); if (km) { $('#kasnMin').value = km.dataset.kmin; $('#kasnMin').style.background = kasnBoja(km.dataset.kmin); return; }
-  const ks = e.target.closest('[data-ksave]'); if (ks) { const id = +ks.dataset.ksave, v = Math.max(1, Math.min(90, parseInt($('#kasnMin').value, 10) || 0)); att[id] = true; kasn[id] = v; closeOverlay(); render(); return; }
+  const ks = e.target.closest('[data-ksave]'); if (ks) { const id = +ks.dataset.ksave, v = Math.max(1, Math.min(90, parseInt($('#kasnMin').value, 10) || 0)); attRuc[id] = true; att[id] = true; kasn[id] = v; closeOverlay(); render(); return; }
   const tj = e.target.closest('[data-tjedan]'); if (tj) { tj.classList.toggle('open'); return; }
   const a = e.target.closest('[data-att]');
   if (a) {

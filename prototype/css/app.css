@@ -793,3 +793,5 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .kasn-chip { border-color: #e0a030 !important; color: #182454; }
 .late-chip { border: 1px solid rgba(224,160,48,.7); }
 .kasn-input { color: #182454 !important; -webkit-text-fill-color: #182454; }
+
+.rsvp-chip { display: inline-block; margin: 3px 4px 0 0; border-radius: 999px; padding: 2px 9px; font-size: 10px; font-weight: 800; background: rgba(24,36,84,.08); color: #182454; }
