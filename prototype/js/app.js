@@ -340,7 +340,7 @@ function ormarGrid() {
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const moja = mojaVel(a) && mojaVel(a).v === v.v && ima;
-    return `<div class="card item ${ima ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? '<span class="mine-badge">Tvoja veličina</span>' : ''}${itemTile(a, '', ima ? '' : 'Nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? '<span class="mine-badge">Tvoja veličina</span>' : ''}${itemTile(a, '', ima ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="tile-sizes">${a.velicine.map((x) => `<button type="button" class="tsz ${x.v === sv ? 'on' : ''} ${x.n === 0 ? 'out' : ''} ${x.n === null ? 'pre' : ''}" data-tsize="${x.v}" data-aid="${a.id}">${x.v}</button>`).join('')}</div>
       <div class="stock">${v.n === null ? 'nema na stanju · predbilježba' : v.n > 0 ? `na stanju ${v.n}` : 'nema na stanju · predbilježba'}</div>
       <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Predbilježi'}</button></div>`; }).join('')}</div>`;
