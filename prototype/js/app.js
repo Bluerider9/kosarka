@@ -170,13 +170,21 @@ function sutraRed() {
 }
 function treningKartica() {
   const iz = izPokriva(TODAY); const r = state.rsvp; const otv = rsvpOtvoren() && !iz;
-  const poruka = iz ? `<div class="rsvp-msg no">Izostanak javljen: ${state.izostanak.razlog} (${izDo(state.izostanak)})</div>` : r === 'da' ? `<div class="rsvp-msg ok">${ic('check', 16)} Javila si da dolaziš. Vidimo se!</div>`
-    : r === 'ne' ? `<div class="rsvp-msg no">Javila si da ne dolaziš.</div>`
+  const poruka = iz ? `<div class="rsvp-msg no">Izostanak javljen: ${state.izostanak.razlog} (${izDo(state.izostanak)})</div>` : r === 'da' ? `<div class="rsvp-msg ok">${ic('check', 16)} ${state.rsvpTko === 'roditelj' ? 'Roditelj je javio da dolaziš.' : 'Javila si da dolaziš.'} Vidimo se!</div>`
+    : r === 'ne' ? `<div class="rsvp-msg no">${state.rsvpTko === 'roditelj' ? 'Roditelj je javio da ne dolaziš.' : 'Javila si da ne dolaziš.'}</div>`
     : otv ? `<div class="rsvp-msg warn">Molim te budi odgovorna i javi na vrijeme.</div>`
     : `<div class="rsvp-msg warn">Prijave su zatvorene — nisi se javila.</div>`;
   return `<div class="card stack tight"><div class="row"><div class="time-block gold sm"><b>${DANAS_TRENING.vrijeme}</b><span>Danas</span></div><div class="grow"><div class="meta">Današnji trening</div><h3>${grupaLabel(DANAS_TRENING.grupa)} · ${DANAS_TRENING.dan}</h3><div class="meta">${DANAS_TRENING.dvorana}${iz ? '' : otv ? ` · javi se do ${rsvpRok()}` : ` · prijave zatvorene u ${rsvpRok()}`}</div></div></div>
     <div class="rsvp"><button class="${r === 'da' ? 'on yes' : ''}" data-rsvp="da" ${otv ? '' : 'disabled'}>${ic('check', 18)} Dolazim</button><button class="${r === 'ne' ? 'on no' : ''}" data-rsvp="ne" ${otv ? '' : 'disabled'}>${ic('x', 18)} Ne dolazim</button></div>
     ${poruka}${sutraRed()}</div>`;
+}
+function roditeljTrening(p) {
+  const iz = izPokriva(TODAY); const r = state.rsvp; const otv = rsvpOtvoren() && !iz; const ime = p.ime.split(' ')[0];
+  const poruka = iz ? `<div class="rsvp-msg no">Izostanak javljen: ${state.izostanak.razlog} (${izDo(state.izostanak)})</div>`
+    : r ? `<div class="rsvp-msg ${r === 'da' ? 'ok' : 'no'}">${state.rsvpTko === 'roditelj' ? `Javio si da ${ime} ${r === 'da' ? 'dolazi' : 'ne dolazi'}.` : `${ime} je javila da ${r === 'da' ? 'dolazi' : 'ne dolazi'}.`}</div>`
+    : otv ? `<div class="rsvp-msg warn">${ime} se još nije javila. Možeš javiti ti.</div>` : `<div class="rsvp-msg warn">Prijave su zatvorene.</div>`;
+  return `<div class="par-train"><div class="meta">Današnji trening · ${DANAS_TRENING.vrijeme} · ${DANAS_TRENING.dvorana}${iz ? '' : otv ? ` · javi do ${rsvpRok()}` : ''}</div>
+    <div class="rsvp"><button class="${r === 'da' ? 'on yes' : ''}" data-rsvpr="da" ${otv ? '' : 'disabled'}>${ic('check', 18)} Dolazi</button><button class="${r === 'ne' ? 'on no' : ''}" data-rsvpr="ne" ${otv ? '' : 'disabled'}>${ic('x', 18)} Ne dolazi</button></div>${poruka}</div>`;
 }
 function utakmicaKartica() {
   const u = UTAKMICA;
@@ -402,7 +410,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="att-legend"><span class="al-name">Igračica</span><span class="al-prof">Profil</span><span class="al-tog">Dolazak</span></div><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''} ${attSt(p)}${attSwipe(p)}">
-          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${p.id === IGR_ID && state.rsvp === 'da' && !izPokriva(TODAY) && !kasn[p.id] ? `<span class="rsvp-chip ${state.rsvp}">${state.rsvp === 'da' ? 'najavila dolazak' : 'najavila nedolazak'}</span>` : ''}${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : najavljeno(p) ? '<span class="abs-chip ann">Najavljeno</span>' : '<span class="abs-chip hard">Nenajavljeno</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${p.id === IGR_ID && state.rsvp === 'da' && !izPokriva(TODAY) && !kasn[p.id] ? `<span class="rsvp-chip ${state.rsvp}">${state.rsvp === 'da' ? (state.rsvpTko === 'roditelj' ? 'roditelj najavio dolazak' : 'najavila dolazak') : (state.rsvpTko === 'roditelj' ? 'roditelj najavio nedolazak' : 'najavila nedolazak')}</span>` : ''}${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : najavljeno(p) ? `<span class="abs-chip ann">${state.rsvpTko === 'roditelj' ? 'Roditelj javio' : 'Najavljeno'}</span>` : '<span class="abs-chip hard">Nenajavljeno</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
@@ -429,6 +437,7 @@ const SCREENS = {
         <div class="row" style="background:var(--silver-100);border-radius:var(--r-md);padding:12px">
           <div class="time-block gold"><b>${p.god === 2012 ? '17:30' : '15:00'}</b><span>${p.god === 2012 ? 'Čet' : 'Sri'}</span></div>
           <div class="grow"><div class="meta">Sljedeći trening</div><h3>${p.grupe[0]}</h3></div></div>
+        ${p.id === IGR_ID ? roditeljTrening(p) : ''}
         <button class="btn ghost block" data-profil="${p.id}">Profil ${ic('chev', 16)}</button></div>`).join('') +
       `<div class="card row"><div class="grow"><h3>Dospjelo za platiti</h3><div class="meta">Lea · studeni 2026.</div></div><b style="font-size:var(--fs-lg);font-weight:900">30 €</b></div>
        <div class="card news-teaser" data-go="roditelj-novosti"><div class="row spread"><div class="row" style="gap:8px"><span class="pin">${ic('bell', 14)}</span><h3>Novosti</h3></div>${neprocitano() ? chip(neprocitano() + ' novo', 'warn') : ''}</div>
@@ -888,7 +897,12 @@ document.addEventListener('click', (e) => {
     toastIn(dano || vraceno ? `Spremljeno · dodijeljeno ${fmt(dano * n)} Falcoina za ${dano} ${dano === 1 ? 'igračicu' : 'igračica'}${vraceno ? `, vraćeno ${vraceno}` : ''}` : 'Dolasci spremljeni — nema promjena'); return;
   }
   const rs = e.target.closest('[data-rsvp]');
-  if (rs && !rs.disabled) { state.rsvp = rs.dataset.rsvp; render(); toastIn(state.rsvp === 'da' ? 'Javljeno: dolaziš na trening' : 'Javljeno: ne dolaziš na trening'); return; }
+  const rr = e.target.closest('[data-rsvpr]');
+  if (rr && !rr.disabled) { state.rsvp = rr.dataset.rsvpr; state.rsvpTko = 'roditelj'; const d = state.rsvp === 'da';
+    notify('igracica', d ? 'Roditelj je javio dolazak' : 'Roditelj je javio nedolazak', `Roditelj je javio da ${d ? 'dolaziš' : 'ne dolaziš'} na današnji trening (${DANAS_TRENING.vrijeme}).`);
+    notify('trener', d ? 'Najava dolaska' : 'Najava nedolaska', `Ana Horvat: roditelj je javio da ${d ? 'dolazi' : 'ne dolazi'} na trening ${DANAS_TRENING.vrijeme}.`);
+    render(); toastIn(d ? 'Javljeno: Ana dolazi na trening' : 'Javljeno: Ana ne dolazi na trening'); return; }
+  if (rs && !rs.disabled) { state.rsvp = rs.dataset.rsvp; state.rsvpTko = 'igracica'; notify('roditelj', state.rsvp === 'da' ? 'Ana dolazi na trening' : 'Ana ne dolazi na trening', `Ana je javila da ${state.rsvp === 'da' ? 'dolazi' : 'ne dolazi'} na današnji trening (${DANAS_TRENING.vrijeme}).`); render(); toastIn(state.rsvp === 'da' ? 'Javljeno: dolaziš na trening' : 'Javljeno: ne dolaziš na trening'); return; }
   if (e.target.closest('[data-izopen]')) { izostanakSheet(); return; }
   const ir = e.target.closest('[data-izrazlog]'); if (ir) { state.izForm.razlog = ir.dataset.izrazlog; document.querySelectorAll('[data-izrazlog]').forEach((b) => b.classList.toggle('on', b === ir)); return; }
   const idn = e.target.closest('[data-izdana]'); if (idn) { state.izForm.dana = +idn.dataset.izdana; document.querySelectorAll('[data-izdana]').forEach((b) => b.classList.toggle('on', b === idn)); $('#izNote').textContent = izNote(); return; }
