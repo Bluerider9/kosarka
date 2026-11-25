@@ -254,7 +254,7 @@ function profilBody(p, uloga) {
   const velicine = (roditelj || uloga === 'igracica') ? `<div class="card pf-sec vel-card ${nedostaje ? 'missing' : ''}"><button class="vel-edit" data-velopen="${p.id}" aria-label="Uredi veličine">${ic('edit', 18)}</button><h4>Moje veličine</h4>
     <div class="vel-line"><span>Veličina majice</span><b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></div>
     <div class="vel-line"><span>Veličina noge</span><b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></div>
-    <div class="vel-help"><b>Odjevni predmeti</b><div>116–128 = Kids XS · 140 = Kids M · 152 = Kids L · 164 = Kids XL</div><div>XS, S, M, L, XL = odrasle veličine</div><b>Čarape</b><div>veličina noge 37–41 ili 42–46</div></div></div>` : '';
+    <div class="vel-help"><b>Veličine odjevnih predmeta iz Ormara</b><div>Majice: 116–128 = Kids XS · 140 = Kids M · 152 = Kids L · 164 = Kids XL · XS–XL = odrasle</div><div>Čarape: 37–41 ili 42–46 (prema veličini noge)</div></div>` : '';
   const treninzi = `<div class="card pf-sec"><h4>Grupe i treninzi</h4>${p.grupe.map((g) => { const gr = GROUPS.find((x) => x.ime === g); return kv(g, gr ? gr.raspored : ''); }).join('')}
     ${kv('Trener', GROUPS.find((x) => x.ime === p.grupe[0]).trener)}</div>`;
   const clanarina = (admin || roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Članarina</h4>${kv('Status', clan(p.clanarina))}${kv('Zadnja uplata', d.zadnjaUplata)}
@@ -838,7 +838,7 @@ document.addEventListener('click', (e) => {
   const sz = e.target.closest('[data-size]');
   if (sz && state.redeem) { state.redeem.size = sz.dataset.size; document.querySelectorAll('.sizes .size').forEach((b) => b.classList.toggle('on', b === sz)); const a = ORMAR.find((x) => x.id === state.redeem.id); $('#rdNote').innerHTML = rdNote(a, state.redeem.f); return; }
   const vo = e.target.closest('[data-velopen]'); if (vo) { const p = PLAYERS.find((x) => x.id === +vo.dataset.velopen), vl = velOd(p);
-    overlay(`<h2>Moje veličine</h2><div class="meta" style="margin-top:-4px">Za majice i čarape iz Ormara. Možeš ih promijeniti kad god želiš.</div>
+    overlay(`<h2>Moje veličine</h2><div class="meta" style="margin-top:-4px">Za odjevne predmete iz Ormara. Možeš ih promijeniti kad god želiš.</div>
       <label class="vel-row"><span>Veličina majice</span><select id="velMajica"><option value="">Odaberi</option>${MAJICE.map((m) => `<option ${m === vl.majica ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
       <label class="vel-row"><span>Veličina noge</span><select id="velNoga"><option value="">Odaberi</option>${NOGE.map((m) => `<option ${m === vl.noga ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
       <button class="btn red block" data-velsave="${p.id}">Spremi</button><button class="btn ghost block" data-fxclose>Odustani</button>`); return; }
