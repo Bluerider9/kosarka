@@ -59,7 +59,7 @@ function oibOk(v) {
   const k = 11 - a === 10 ? 0 : 11 - a;
   return k === +v[10];
 }
-const MAJICE = ['116', '128', '140', '152', '164', 'XS', 'S', 'M', 'L'];
+const MAJICE = ['116', '128', '140', '152', '164', 'XS', 'S', 'M', 'L', 'XL'];
 const SAMPLE = { ime: 'Mila', prezime: 'Pavić', rod: '2014-05-20', adresa: 'Ulica primjera 5', pbr: '10000', mjesto: 'Zagreb', oib: '12345678903', mob: '091 000 1111', email: 'roditelj@example.com', grupa: 'Selekcija', majica: '152' };
 
 function field(name, label, o = {}) {
@@ -238,7 +238,7 @@ function detalji(p) {
 }
 const kv = (k, v) => `<div class="pf-kv"><span>${k}</span><b>${v}</b></div>`;
 const NOGE = Array.from({ length: 20 }, (_, k) => String(28 + k)); // 28–47
-const velOd = (p) => { state.vel = state.vel || {}; return state.vel[p.id] || (state.vel[p.id] = { majica: detalji(p).majica, noga: String(30 + (p.id * 3) % 14) }); };
+const velOd = (p) => { state.vel = state.vel || {}; return state.vel[p.id] || (state.vel[p.id] = { majica: detalji(p).majica, noga: String(36 + (p.id * 3) % 8) }); };
 function profilBody(p, uloga) {
   const d = detalji(p); const vl = velOd(p); const admin = uloga === 'admin', trener = uloga === 'trener', roditelj = uloga === 'roditelj';
   const natrag = { admin: ['admin-clanovi', 'Članovi'], trener: ['trener-dolasci', 'Dolasci'], roditelj: ['roditelj-pocetna', 'Početna'] }[uloga];
@@ -309,7 +309,7 @@ function redeemSheet(id) {
   const prva = a.velicine.find((v) => v.v === velOdabrana(a)) || a.velicine[0];
   state.redeem = { id, f: max, size: prva.v };
   overlay(`${itemTile(a, 'big')}<h2>${a.ime}</h2>${a.opis ? `<div class="meta" style="margin-top:-4px">${a.opis}</div>` : ''}
-    <div class="sizes">${a.velicine.map((v) => `<button type="button" class="size ${v.v === prva.v ? 'on' : ''} ${v.n === null ? 'pre' : ''}" data-size="${v.v}">${v.v}<small>${v.n === null ? 'predbilježba' : `${v.n} kom`}</small></button>`).join('')}</div>
+    <div class="sizes">${a.velicine.map((v) => `<button type="button" class="size ${v.v === prva.v ? 'on' : ''} ${!(v.n > 0) ? 'pre' : ''}" data-size="${v.v}">${v.v}<small>${!(v.n > 0) ? 'predbilježba' : `${v.n} kom`}</small></button>`).join('')}</div>
     <div class="meta">Cijena <b>${fmt(a.cijena)}</b> (1 Falcoin = 1 €)</div>
     <div class="split"><div class="split-row"><span>Plaćam Falcoinima</span><b id="rdF">${fmt(max)}</b></div>
       <input type="range" class="slider" min="0" max="${max}" step="0.01" value="${max}" data-fcslider ${max === 0 ? 'disabled' : ''}>
@@ -317,7 +317,7 @@ function redeemSheet(id) {
     <p id="rdNote">${rdNote(a, max)}</p>
     <button class="btn red block" data-redeemok="${id}">Naruči</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
 }
-const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)}</b><br>${v.n === null ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
+const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)}</b><br>${!(v.n > 0) ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
 function falcoiniHistory() {
   return `<div class="card"><div class="list">${FALCOIN_POVIJEST.map((t) => `<div class="row"><div class="grow"><h3 style="font-size:var(--fs-sm)">${t.opis}</h3><div class="meta">${t.dat}</div></div>${plus(t.iznos)}</div>`).join('')}</div></div>`;
 }
@@ -325,16 +325,21 @@ const zaliha = (a) => a.velicine.reduce((s, v) => s + (v.n || 0), 0);
 const imaPre = (a) => a.velicine.some((v) => v.n === null);
 const itemTile = (a, cls = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img src="${a.slika}" alt="" loading="lazy" onerror="this.remove()"></div>`;
 const cijenaHtml = (a, s = 16) => `<span class="price">${a.staraCijena ? `<s>${fmt(a.staraCijena)}</s>` : ''}${fc(a.cijena, s)}</span>`;
-const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (a.velicine.find((v) => v.n !== 0) || a.velicine[0]).v;
+/* moja veličina iz profila → veličina u Ormaru (dječje brojeve mapiramo na Kids veličine) */
+const KIDS = { '116': 'Kids XS', '128': 'Kids XS', '140': 'Kids M', '152': 'Kids L', '164': 'Kids XL' };
+const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
+  return a.velicine.find((v) => { const r = v.v.match(/^(\d+)[–-](\d+)$/); if (r) return noga >= +r[1] && noga <= +r[2]; if (v.v === 'Jedna veličina') return true; return v.v === (KIDS[vl.majica] || vl.majica); }); };
+const mojaNaStanju = (a) => { const v = mojaVel(a); return !!v && v.n > 0; };
+const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
 function ormarGrid() {
   const kat = state.ormarKat || 'Sve';
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
-  return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
-    const v = a.velicine.find((x) => x.v === sv) || a.velicine[0];
-    return `<div class="card item">${itemTile(a)}<h3>${a.ime}</h3>${cijenaHtml(a)}
+  return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
+    const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const moja = mojaVel(a) && mojaVel(a).v === v.v && ima;
+    return `<div class="card item ${ima ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? '<span class="mine-badge">Tvoja veličina</span>' : ''}${itemTile(a)}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="tile-sizes">${a.velicine.map((x) => `<button type="button" class="tsz ${x.v === sv ? 'on' : ''} ${x.n === 0 ? 'out' : ''} ${x.n === null ? 'pre' : ''}" data-tsize="${x.v}" data-aid="${a.id}">${x.v}</button>`).join('')}</div>
-      <div class="stock">${v.n === null ? 'predbilježba' : v.n > 0 ? `na stanju ${v.n}` : 'nema na stanju'}</div>
-      <button class="btn ${puno ? 'red' : 'navy'} sm block" data-redeem="${a.id}" ${v.n === 0 ? 'disabled' : ''}>${puno ? 'Zamijeni' : 'Zamijeni + doplati'}</button></div>`; }).join('')}</div>`;
+      <div class="stock">${v.n === null ? 'nema na stanju · predbilježba' : v.n > 0 ? `na stanju ${v.n}` : 'nema na stanju · predbilježba'}</div>
+      <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Prednaruči'}</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
@@ -834,7 +839,7 @@ document.addEventListener('click', (e) => {
   const ok = e.target.closest('[data-okat]'); if (ok) { state.ormarKat = ok.dataset.okat; render(); return; }
   const rk = e.target.closest('[data-redeemok]');
   if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const f = r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f);
-    if (v.n !== 0) { FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (v.n !== null) v.n--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre: v.n === null, cijena: a.cijena, f, gotovina: cash, dat: '24.11.2026.', st: 'čeka' });
+    { const pre = !(v.n > 0); FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (!pre) v.n--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre, cijena: a.cijena, f, gotovina: cash, dat: '24.11.2026.', st: 'čeka' });
       if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f }); }
     notify('admin', 'Nova narudžba u Ormaru', `Ana Horvat: ${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · naplatiti ${fmt(cash)} €` : ''}`); closeOverlay(); render(); toastIn(cash > 0 ? `Narudžba poslana — doplati ${fmt(cash)} € pri preuzimanju` : 'Narudžba poslana — preuzmi na treningu'); return; }
   const qt = e.target.closest('[data-qrtip]'); if (qt) { state.qrTip = qt.dataset.qrtip; render(); return; }

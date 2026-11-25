@@ -819,3 +819,9 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .vel-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(24,36,84,.08); }
 .vel-row span { font-weight: 700; font-size: var(--fs-sm); }
 .vel-row select { min-width: 96px; padding: 8px 12px; border-radius: 12px; border: 2px solid rgba(24,36,84,.18); background: #fff; color: #182454; font: 800 14px inherit; font-family: inherit; }
+
+/* Ormar: tvoja veličina na stanju ide prvo; ostalo je sivo uz "Prednaruči" */
+.card.item { position: relative; }
+.card.item.dim { filter: grayscale(1); opacity: .62; }
+.card.item.mine { box-shadow: 0 0 0 2px var(--gold, #F0B64E), var(--shadow-1); }
+.mine-badge { position: absolute; top: 8px; left: 8px; z-index: 2; background: #F0B64E; color: #182454; font-size: 9.5px; font-weight: 900; border-radius: 999px; padding: 3px 8px; }
