@@ -340,7 +340,7 @@ function kasnjenjeSheet(id) {
   const p = PLAYERS.find((x) => x.id === id);
   overlay(`<h2>Kasni</h2><div class="meta" style="margin-top:-4px">${p.ime} · koliko minuta kasni?</div>
     <input id="kasnMin" class="kasn-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="${kasn[id] || 5}" aria-label="Minute kašnjenja">
-    <div class="sizes">${[5, 10, 15, 20].map((m) => `<button type="button" class="size" data-kmin="${m}">${m} min</button>`).join('')}</div>
+    <div class="sizes">${[3, 6, 9, 10].map((m) => `<button type="button" class="size" data-kmin="${m}">${m} min</button>`).join('')}</div>
     <button class="btn navy block" data-ksave="${id}">Spremi</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
   setTimeout(() => { const i = $('#kasnMin'); if (i) { i.focus(); i.select(); } }, 50);
 }
