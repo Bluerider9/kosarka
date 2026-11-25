@@ -85,6 +85,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 
 ## Novosti za roditelje
 
+- **Novosti vide svi:** roditelj, igračica i trener imaju tab **Novosti** (isti popis; igračica i trener vide objave za "Svi" i za svoje grupe), crvena točka na tabu = nepročitano; pročitano se pamti po ulozi. Trener ima i karticu Novosti na početnoj (Danas). Objave piše samo admin.
 - Roditelj ima tab **Novosti** (popis objava, prikvačene na vrhu, crvena točka = nepročitano, tap otvara cijeli tekst) i karticu s posljednjom novošću na početnoj.
 - Admin ima stranicu **Novosti**: popis objava s oznakom, publikom (svi ili jedna grupa) i brojem pročitanih, te "Nova objava" (naslov, tekst, za koga, oznaka, prikvači).
 - Roditelj vidi objave za "Svi" i za grupe svojih djevojčica. Push obavijesti i e-mail za nove objave dolaze kasnije (nisu u prototipu).

@@ -241,7 +241,7 @@ function mHeader(naslov, sub, foto = false, cog = true) {
 }
 function tabbar(uloga, tabs, aktivan) {
   return `<nav class="tabbar">${tabs.map(([id, label, icon]) =>
-    `<button class="${id === aktivan ? 'on' : ''}" data-go="${uloga}-${id}"><span class="ico">${ic(icon, 22)}</span>${label}</button>`).join('')}</nav>`;
+    `<button class="${id === aktivan ? 'on' : ''}" data-go="${uloga}-${id}"><span class="ico">${ic(icon, 22)}${id === 'novosti' && neprocitano(uloga) ? '<i class="tab-dot"></i>' : ''}</span>${label}</button>`).join('')}</nav>`;
 }
 function trenRow(t, extra = '') {
   return `<div class="row"><div class="time-block"><b>${t.v}</b><span>do ${t.do}</span></div>
@@ -320,9 +320,18 @@ const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0]
 const OZNAKE = { 'Važno': 'danger', 'Klub': 'navy', 'Trening': 'ok', 'Članarina': 'warn', 'Škola košarke': 'navy' };
 const novostiRoditelj = () => NOVOSTI.filter((n) => n.grupa === 'Svi' || ['U14', 'Škola košarke'].includes(n.grupa))
   .sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
-const neprocitano = () => novostiRoditelj().filter((n) => !state.citano.has(n.id)).length;
+// Novosti vide svi: roditelj, igračica (grupa U14 + Svi) i trener (njegove grupe + Svi); pročitano se pamti po ulozi
+const novostiZa = () => novostiRoditelj();
+const citanoSet = (ul = uloga()) => (state.citanoPo[ul] = state.citanoPo[ul] || new Set([3, 4]));
+const neprocitano = (ul = uloga()) => novostiZa().filter((n) => !citanoSet(ul).has(n.id)).length;
+const novostiTeaser = (ul) => `<div class="card news-teaser" data-go="${ul}-novosti"><div class="row spread"><div class="row" style="gap:8px"><span class="pin">${ic('bell', 14)}</span><h3>Novosti</h3></div>${neprocitano() ? chip(neprocitano() + ' novo', 'warn') : ''}</div>
+  <div class="meta" style="margin-top:6px">${novostiZa()[0].naslov}</div></div>`;
+const novostiScreen = (ul, tabs) => ({
+  header: mHeader('Novosti', neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'),
+  tabs, body: novostiZa().map(novostCard).join(''),
+});
 function novostCard(n) {
-  const nova = !state.citano.has(n.id);
+  const nova = !citanoSet().has(n.id);
   return `<div class="card news ${nova ? 'unread' : ''}" data-news="${n.id}">
     <div class="row spread"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(n.grupa) : ''}</div>
       <span class="meta">${n.dat}</span></div>
@@ -395,7 +404,7 @@ function ormarGrid() {
       <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Predbilježi'}</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
-const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
+const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['profil', 'Profil', 'user']];
 const najavljeno = (p) => p.id === IGR_ID && state.rsvp === 'ne';
 const attSt = (p) => (att[p.id] ? (kasn[p.id] ? 'st-late' : 'st-ok') : p.id === IGR_ID && izPokriva(TODAY) ? 'st-exc' : najavljeno(p) ? 'st-ann' : 'st-abs');
 const attSeg = (p) => { const s = att[p.id] ? (kasn[p.id] ? 'kasni' : 'da') : 'ne';
@@ -422,11 +431,13 @@ const SCREENS = {
     body: `<div class="section-title">Danas</div>` +
       (TRENINZI[TODAY].filter((t) => t.g !== 'SEN').map((t) => `<div class="card stack">${trenRow(t, chip('8 igračica', 'navy'))}
         <div class="row" style="gap:10px"><button class="btn grow" data-go="trener-dolasci">${ic('check', 18)} Dolasci</button><button class="btn red grow" data-go="trener-qr">${ic('qr', 18)} QR za dolazak</button></div></div>`).join('')) +
-      `<div class="section-title">Utakmica</div>` + utkTrenerKartica() +
+      `<div class="section-title">Utakmica</div>` + utkTrenerKartica() + novostiTeaser('trener') +
       `<div class="section-title">Ovaj tjedan</div>
        <div class="card"><div class="row spread"><div><h3>Dolaznost</h3><div class="meta">Prosjek tvojih grupa</div></div><b style="font-size:var(--fs-xl);font-weight:900">84%</b></div>
        <div class="progress" style="margin-top:12px"><i style="width:84%"></i></div></div>`,
   }),
+  'trener-novosti': () => novostiScreen('trener', tabbar('trener', TRENER_TABS, 'novosti')),
+  'igracica-novosti': () => novostiScreen('igracica', tabbar('igracica', IGRACICA_TABS, 'novosti')),
   'trener-qr': () => {
     const tipovi = [['trening', 'Trening'], ['utakmica', 'Utakmica'], ['turnir', 'Turnir']];
     return {
@@ -481,15 +492,10 @@ const SCREENS = {
         ${p.id === IGR_ID ? roditeljTrening(p) + roditeljUtakmica(p) : ''}
         <button class="btn ghost block" data-profil="${p.id}">Profil ${ic('chev', 16)}</button></div>`).join('') +
       `<div class="card row"><div class="grow"><h3>Dospjelo za platiti</h3><div class="meta">Lea · studeni 2026.</div></div><b style="font-size:var(--fs-lg);font-weight:900">30 €</b></div>
-       <div class="card news-teaser" data-go="roditelj-novosti"><div class="row spread"><div class="row" style="gap:8px"><span class="pin">${ic('bell', 14)}</span><h3>Novosti</h3></div>${neprocitano() ? chip(neprocitano() + ' novo', 'warn') : ''}</div>
-         <div class="meta" style="margin-top:6px">${novostiRoditelj()[0].naslov}</div></div>
+       ${novostiTeaser('roditelj')}
        <button class="btn red block" data-go="roditelj-clanarina">${ic('wallet', 18)} Podaci za uplatu</button>`,
   }),
-  'roditelj-novosti': () => ({
-    header: mHeader('Novosti', neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'),
-    tabs: tabbar('roditelj', RODITELJ_TABS, 'novosti'),
-    body: novostiRoditelj().map(novostCard).join(''),
-  }),
+  'roditelj-novosti': () => novostiScreen('roditelj', tabbar('roditelj', RODITELJ_TABS, 'novosti')),
   'roditelj-raspored': () => ({
     header: mHeader('Raspored', 'Ana · U14, Lea · Škola košarke'),
     tabs: tabbar('roditelj', RODITELJ_TABS, 'raspored'),
@@ -633,7 +639,7 @@ const SCREENS = {
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
-const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
+const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
@@ -698,7 +704,7 @@ const ADMIN = {
     <h2 style="font-size:var(--fs-lg);margin:28px 0 10px">Artikli</h2>
     <table><thead><tr><th>Artikl</th><th>Kategorija</th><th>Cijena (F = €)</th><th>Zaliha</th></tr></thead><tbody>${ORMAR.map((a) => `<tr><td><div class="who">${itemTile(a, 'sm')}<span>${a.ime}</span></div></td><td>${chip(a.kat, 'navy')}</td><td>${cijenaHtml(a)}</td>
       <td>${zaliha(a) ? `${zaliha(a)} kom` : '—'}${imaPre(a) ? ` ${chip('predbilježba', 'warn')}` : ''}</td></tr>`).join('')}</tbody></table>`,
-  novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje</div></div><div class="grow"></div>
+  novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje, igračice i trenere</div></div><div class="grow"></div>
       <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
     <table><thead><tr><th>Objava</th><th>Za</th><th>Datum</th><th>Pročitalo</th></tr></thead><tbody>${NOVOSTI.map((n) => `<tr><td><b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div></td>
       <td>${chip(n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa, 'navy')}</td><td>${n.dat}</td><td>${n.citalo ? `${n.citalo} / ${n.od}` : '—'}</td></tr>`).join('')}</tbody></table>`,
@@ -723,7 +729,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citano: new Set([3, 4]), skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -926,7 +932,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';
-    if (state.citano.add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
+    if (citanoSet().add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
   const pr = e.target.closest('[data-profil]');
   if (pr) { state.profil = +pr.dataset.profil; const u = location.hash.slice(1).split('-')[0]; location.hash = u === 'admin' ? 'admin-profil' : `${u}-igracica`; return; }
   if (e.target.closest('[data-bell]')) { overlay(`<div class="row spread" style="margin-bottom:6px"><h2>Obavijesti</h2><button class="btn ghost sm" data-fxclose>Zatvori</button></div>${bellList()}`); markRead(); return; }

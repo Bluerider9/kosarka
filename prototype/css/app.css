@@ -874,3 +874,6 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 .utk-skip { background: #f5f6fb; border-radius: 14px; padding: 10px 12px; }
 .utk-skip > b { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: #5b6482; }
+
+.tabbar .ico { position: relative; }
+.tab-dot { position: absolute; top: 2px; right: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--red); border: 2px solid #fff; }
