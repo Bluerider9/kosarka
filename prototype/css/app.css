@@ -746,3 +746,34 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .row.attend { gap: 8px; }
 .attend .grow h3 { overflow-wrap: anywhere; line-height: 1.2; }
 .attend .late-step, .attend .late-slot { width: 102px; } .attend .late-step { padding: 0 4px 0 8px; gap: 4px; }
+
+/* dolasci: uži stupac kašnjenja, ime u jednom redu, zaglavlje stupaca */
+.attend .late-step, .attend .late-slot { width: 78px; }
+.attend .late-step { padding: 0 3px; gap: 2px; justify-content: space-between; }
+.attend .late-step button { width: 22px; height: 22px; flex: none; }
+.attend .late-step span { font-size: 11px; flex: 1; text-align: center; }
+.row.attend { gap: 6px; }
+.attend .grow { flex: 1; min-width: 0; }
+.attend .att-name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
+.att-legend { display: flex; align-items: center; gap: 6px; padding: 0 14px 6px 8px; font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted, #7a859e); border-bottom: 1px solid rgba(24,36,84,.08); margin-bottom: 4px; }
+.att-legend .al-name { flex: 1; padding-left: 44px; }
+.att-legend .al-late { width: 78px; text-align: center; flex: none; }
+.att-legend .al-prof { width: 34px; text-align: center; flex: none; }
+.att-legend .al-tog { width: 52px; text-align: center; flex: none; margin-left: 4px; }
+.attend .late-step, .attend .late-slot, .att-legend .al-late { width: 68px; }
+.attend .late-step button { width: 20px; height: 20px; }
+.attend .late-step span { font-size: 10.5px; }
+.attend .pf-open { width: 28px; height: 28px; }
+.att-legend .al-prof { width: 28px; }
+.attend .toggle { margin-left: 0; }
+.att-legend .al-tog { margin-left: 0; font-size: 9px; }
+.row.attend { gap: 5px; padding-left: 6px; padding-right: 10px; }
+.attend .att-name { font-size: 12.5px; }
+.att-legend { padding: 0 10px 6px 6px; gap: 5px; }
+.att-legend .al-name { padding-left: 41px; }
+.att-legend .al-tog { width: 46px; letter-spacing: 0; font-size: 8.5px; white-space: nowrap; }
+.att-legend .al-prof { letter-spacing: 0; font-size: 8.5px; }
+.att-legend .al-late { letter-spacing: .02em; font-size: 9px; }
+.att-legend { text-transform: none; letter-spacing: 0; font-size: 10px; }
+.att-legend .al-late, .att-legend .al-prof, .att-legend .al-tog { font-size: 10px; letter-spacing: 0; }
+.att-legend .al-prof { width: 30px; overflow: visible; }
