@@ -301,7 +301,7 @@ function scanResult() {
 }
 function redeemSheet(id) {
   const a = ORMAR.find((x) => x.id === id); const max = r2(Math.min(a.cijena, saldo()));
-  const prva = a.velicine.find((v) => v.n) || a.velicine[0];
+  const prva = a.velicine.find((v) => v.v === velOdabrana(a)) || a.velicine[0];
   state.redeem = { id, f: max, size: prva.v };
   overlay(`${itemTile(a, 'big')}<h2>${a.ime}</h2>${a.opis ? `<div class="meta" style="margin-top:-4px">${a.opis}</div>` : ''}
     <div class="sizes">${a.velicine.map((v) => `<button type="button" class="size ${v.v === prva.v ? 'on' : ''} ${v.n === null ? 'pre' : ''}" data-size="${v.v}">${v.v}<small>${v.n === null ? 'predbilježba' : `${v.n} kom`}</small></button>`).join('')}</div>
@@ -320,13 +320,16 @@ const zaliha = (a) => a.velicine.reduce((s, v) => s + (v.n || 0), 0);
 const imaPre = (a) => a.velicine.some((v) => v.n === null);
 const itemTile = (a, cls = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img src="${a.slika}" alt="" loading="lazy" onerror="this.remove()"></div>`;
 const cijenaHtml = (a, s = 16) => `<span class="price">${a.staraCijena ? `<s>${fmt(a.staraCijena)}</s>` : ''}${fc(a.cijena, s)}</span>`;
+const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (a.velicine.find((v) => v.n !== 0) || a.velicine[0]).v;
 function ormarGrid() {
   const kat = state.ormarKat || 'Sve';
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
-  return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a) => { const puno = saldo() >= a.cijena;
+  return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
+    const v = a.velicine.find((x) => x.v === sv) || a.velicine[0];
     return `<div class="card item">${itemTile(a)}<h3>${a.ime}</h3>${cijenaHtml(a)}
-      <div class="stock">${zaliha(a) ? `na stanju ${zaliha(a)}` : ''}${zaliha(a) && imaPre(a) ? ' · ' : ''}${imaPre(a) ? 'predbilježba' : ''}</div>
-      <button class="btn ${puno ? 'red' : 'navy'} sm block" data-redeem="${a.id}">${puno ? 'Zamijeni' : 'Zamijeni + doplati'}</button></div>`; }).join('')}</div>`;
+      <div class="tile-sizes">${a.velicine.map((x) => `<button type="button" class="tsz ${x.v === sv ? 'on' : ''} ${x.n === 0 ? 'out' : ''} ${x.n === null ? 'pre' : ''}" data-tsize="${x.v}" data-aid="${a.id}">${x.v}</button>`).join('')}</div>
+      <div class="stock">${v.n === null ? 'predbilježba' : v.n > 0 ? `na stanju ${v.n}` : 'nema na stanju'}</div>
+      <button class="btn ${puno ? 'red' : 'navy'} sm block" data-redeem="${a.id}" ${v.n === 0 ? 'disabled' : ''}>${puno ? 'Zamijeni' : 'Zamijeni + doplati'}</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
@@ -821,6 +824,7 @@ document.addEventListener('click', (e) => {
   const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }
   const sz = e.target.closest('[data-size]');
   if (sz && state.redeem) { state.redeem.size = sz.dataset.size; document.querySelectorAll('.sizes .size').forEach((b) => b.classList.toggle('on', b === sz)); const a = ORMAR.find((x) => x.id === state.redeem.id); $('#rdNote').innerHTML = rdNote(a, state.redeem.f); return; }
+  const ts = e.target.closest('[data-tsize]'); if (ts) { (state.ormarVel = state.ormarVel || {})[+ts.dataset.aid] = ts.dataset.tsize; render(); return; }
   const ok = e.target.closest('[data-okat]'); if (ok) { state.ormarKat = ok.dataset.okat; render(); return; }
   const rk = e.target.closest('[data-redeemok]');
   if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const f = r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f);

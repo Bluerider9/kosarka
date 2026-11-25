@@ -807,3 +807,10 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 /* Ormar: kategorije uvijek vidljive (nisu se smjele stisnuti) */
 .cats { flex: none; min-height: 44px; align-items: center; padding: 4px 2px 8px; }
 .cats button { flex: none; min-height: 36px; line-height: 1.2; white-space: nowrap; }
+
+/* Ormar: izbor veličine direktno na artiklu */
+.tile-sizes { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 6px 0 2px; }
+.tsz { min-width: 30px; padding: 4px 7px; border-radius: 999px; border: 1.5px solid rgba(24,36,84,.2); background: #fff; color: #182454; font: 700 11px/1.2 inherit; font-family: inherit; cursor: pointer; }
+.tsz.on { background: #182454; color: #fff; border-color: #182454; }
+.tsz.out { opacity: .4; text-decoration: line-through; }
+.tsz.pre:not(.on) { border-style: dashed; }
