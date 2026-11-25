@@ -706,3 +706,11 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .app-header .row > .cog + .cog { margin-left: -4px; }
 .app-header .row .grow h1 { white-space: nowrap; }
 .h1-sm { font-size: .6em !important; }
+
+/* dulji izostanak */
+.dot-exc { background: #6f8fe8; }
+.card.izostanak { padding: 12px 14px; gap: 10px; display: flex; flex-direction: column; margin-top: 4px; }
+.card.izostanak h3 { font-size: var(--fs-sm); }
+.card.izostanak.active { border: 2px solid #6f8fe8; background: #eef2ff; }
+.card.izostanak .row > div, .card.izostanak .meta, .card.izostanak h3 { text-align: left; }
+.exc-chip { background: #e6ecff; color: #3552b8; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 800; vertical-align: middle; }
