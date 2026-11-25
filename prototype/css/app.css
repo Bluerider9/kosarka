@@ -777,3 +777,11 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .att-legend { text-transform: none; letter-spacing: 0; font-size: 10px; }
 .att-legend .al-late, .att-legend .al-prof, .att-legend .al-tog { font-size: 10px; letter-spacing: 0; }
 .att-legend .al-prof { width: 30px; overflow: visible; }
+
+/* dolasci: troznačni gumb (nije · kasni · došla) */
+.seg3 { display: flex; gap: 5px; flex: none; }
+.s3 { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(24,36,84,.18); background: rgba(255,255,255,.85); color: rgba(24,36,84,.4); font: 900 14px/1 var(--font, inherit); padding: 0; cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .15s; }
+.s3.on { color: #fff; border-color: transparent; transform: scale(1.1); }
+.s3-ne.on { background: #d4493f; } .s3-kasni.on { background: #f0b64e; color: #182454; } .s3-da.on { background: #2f9e5a; }
+.att-legend .al-tog { width: 100px; margin-left: 0; }
+.attend .late-slot, .attend .late-step { display: none; }
