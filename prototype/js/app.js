@@ -327,7 +327,7 @@ function falcoiniHistory() {
 }
 const zaliha = (a) => a.velicine.reduce((s, v) => s + (v.n || 0), 0);
 const imaPre = (a) => a.velicine.some((v) => v.n === null);
-const itemTile = (a, cls = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img src="${a.slika}" alt="" loading="lazy" onerror="this.remove()"></div>`;
+const itemTile = (a, cls = '', nota = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img src="${a.slika}" alt="" loading="lazy" onerror="this.remove()">${nota ? `<span class="tile-note">${nota}</span>` : ''}</div>`;
 const cijenaHtml = (a, s = 16) => `<span class="price">${a.staraCijena ? `<s>${fmt(a.staraCijena)}</s>` : ''}${fc(a.cijena, s)}</span>`;
 /* moja veličina iz profila → veličina u Ormaru (dječje brojeve mapiramo na Kids veličine) */
 const KIDS = { '116': 'Kids XS', '128': 'Kids XS', '140': 'Kids M', '152': 'Kids L', '164': 'Kids XL' };
@@ -340,10 +340,10 @@ function ormarGrid() {
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const moja = mojaVel(a) && mojaVel(a).v === v.v && ima;
-    return `<div class="card item ${ima ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? '<span class="mine-badge">Tvoja veličina</span>' : ''}${itemTile(a)}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? '<span class="mine-badge">Tvoja veličina</span>' : ''}${itemTile(a, '', ima ? '' : 'Nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="tile-sizes">${a.velicine.map((x) => `<button type="button" class="tsz ${x.v === sv ? 'on' : ''} ${x.n === 0 ? 'out' : ''} ${x.n === null ? 'pre' : ''}" data-tsize="${x.v}" data-aid="${a.id}">${x.v}</button>`).join('')}</div>
       <div class="stock">${v.n === null ? 'nema na stanju · predbilježba' : v.n > 0 ? `na stanju ${v.n}` : 'nema na stanju · predbilježba'}</div>
-      <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Prednaruči'}</button></div>`; }).join('')}</div>`;
+      <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Predbilježi'}</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['profil', 'Profil', 'user']];
