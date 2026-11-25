@@ -856,3 +856,14 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 /* roditelj: najava dolaska/nedolaska na današnji trening */
 .par-train { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+
+/* utakmica: potvrda dolaska i pregled za trenera */
+.utk-count { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.utk-count > div { border-radius: 14px; padding: 10px 6px; text-align: center; background: #eef0f7; }
+.utk-count b { display: block; font-size: 26px; font-weight: 900; line-height: 1.1; }
+.utk-count span { font-size: 11px; font-weight: 700; }
+.utk-count .ok { background: #d8f0e0; color: #1f7a44; } .utk-count .no { background: #fbe0de; color: #b3342b; } .utk-count .wait { background: #fdf0c8; color: #8a6410; }
+.utk-list { display: flex; flex-direction: column; margin-top: 4px; }
+.utk-p { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-top: 1px solid rgba(24,36,84,.08); font-size: var(--fs-sm); font-weight: 700; }
+.utk-s { font-style: normal; font-size: 10.5px; font-weight: 800; border-radius: 999px; padding: 3px 10px; }
+.utk-s.ok { background: #d8f0e0; color: #1f7a44; } .utk-s.no { background: #fbe0de; color: #b3342b; } .utk-s.wait { background: #fdf0c8; color: #8a6410; }
