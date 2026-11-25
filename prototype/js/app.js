@@ -237,16 +237,21 @@ function detalji(p) {
     dolaznost: i === 1 ? 91 : 70 + (i * 7) % 28, treninga: 36 + (i * 5) % 20, od: i % 3 === 0 ? '2024.' : '2023.', zadnjaUplata: '24.11.2026.' };
 }
 const kv = (k, v) => `<div class="pf-kv"><span>${k}</span><b>${v}</b></div>`;
+const NOGE = Array.from({ length: 20 }, (_, k) => String(28 + k)); // 28–47
+const velOd = (p) => { state.vel = state.vel || {}; return state.vel[p.id] || (state.vel[p.id] = { majica: detalji(p).majica, noga: String(30 + (p.id * 3) % 14) }); };
 function profilBody(p, uloga) {
-  const d = detalji(p); const admin = uloga === 'admin', trener = uloga === 'trener', roditelj = uloga === 'roditelj';
+  const d = detalji(p); const vl = velOd(p); const admin = uloga === 'admin', trener = uloga === 'trener', roditelj = uloga === 'roditelj';
   const natrag = { admin: ['admin-clanovi', 'Članovi'], trener: ['trener-dolasci', 'Dolasci'], roditelj: ['roditelj-pocetna', 'Početna'] }[uloga];
   const hero = `${natrag ? `<a class="link back pf-back" data-go="${natrag[0]}">← ${natrag[1]}</a>` : ''}
     <div class="card pf-hero">${av(p, 'xl')}<h2>${p.ime}</h2>
       <div class="row" style="justify-content:center;flex-wrap:wrap;gap:6px">${p.grupe.map((x) => chip(x, 'navy')).join('')}</div>
       <div class="meta">Članica od ${d.od} · kategorija ${kategorija(p)}</div></div>
     <div class="pf-stats"><div class="card"><b>${d.dolaznost}%</b><span>Dolaznost</span></div><div class="card"><b>${d.treninga}</b><span>Treninga</span></div><div class="card">${clan(p.clanarina)}<span>Članarina</span></div></div>`;
-  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}${kv('Veličina majice', d.majica)}
+  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}${kv('Veličina majice', vl.majica)}${kv('Veličina noge', vl.noga)}
     ${(admin || roditelj) ? kv('Adresa', d.adresa) : ''}${admin ? kv('OIB', d.oib) : ''}</div>`;
+  const velicine = (roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Moje veličine</h4><div class="meta" style="margin:-2px 0 8px">Za majice i čarape iz Ormara. Možeš ih promijeniti kad god želiš.</div>
+    <label class="vel-row"><span>Veličina majice</span><select data-vel="majica" data-pid="${p.id}">${MAJICE.map((m) => `<option ${m === vl.majica ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
+    <label class="vel-row"><span>Veličina noge</span><select data-vel="noga" data-pid="${p.id}">${NOGE.map((m) => `<option ${m === vl.noga ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>` : '';
   const treninzi = `<div class="card pf-sec"><h4>Grupe i treninzi</h4>${p.grupe.map((g) => { const gr = GROUPS.find((x) => x.ime === g); return kv(g, gr ? gr.raspored : ''); }).join('')}
     ${kv('Trener', GROUPS.find((x) => x.ime === p.grupe[0]).trener)}</div>`;
   const clanarina = (admin || roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Članarina</h4>${kv('Status', clan(p.clanarina))}${kv('Zadnja uplata', d.zadnjaUplata)}
@@ -256,7 +261,7 @@ function profilBody(p, uloga) {
   const potvrde = (admin || roditelj) ? `<div class="card pf-sec"><h4>Potvrde i privole</h4>${kv('Potvrda 2026/27', `kategorija ${kategorija(p)}`)}${kv('Pravila privatnosti', 'prihvaćeno 2023.')}${kv('Fotografija', p.foto ? 'dopuštena' : 'dopuštena, fotografija još nije dodana')}
     ${admin ? `<button class="btn ghost block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF potvrde">Preuzmi potvrdu (PDF)</button>` : ''}</div>` : '';
   const akcije = admin ? `<div class="pf-actions"><button class="btn" data-toast="Uređivanje profila — sljedeći korak">Uredi podatke</button><button class="btn ghost" data-toast="Učitavanje fotografije — sljedeći korak">${ic('upload', 18)} Fotografija</button><button class="btn ghost" data-toast="Promjena grupe — sljedeći korak">Promijeni grupu</button></div>` : '';
-  return hero + `<div class="pf-grid">${osobno}${treninzi}${falco}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
+  return hero + `<div class="pf-grid">${velicine}${osobno}${treninzi}${falco}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
 }
 const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
 /* ---------- NOVOSTI ---------- */
@@ -769,6 +774,7 @@ document.addEventListener('submit', (e) => {
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
+document.addEventListener('change', (e) => { const s = e.target.closest && e.target.closest('[data-vel]'); if (!s) return; const p = PLAYERS.find((x) => x.id === +s.dataset.pid); velOd(p)[s.dataset.vel] = s.value; render(); toastIn(`Spremljeno: ${s.dataset.vel === 'majica' ? 'veličina majice' : 'veličina noge'} ${s.value}`); });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
 document.addEventListener('click', (e) => {
   const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }

@@ -814,3 +814,8 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .tsz.on { background: #182454; color: #fff; border-color: #182454; }
 .tsz.out { opacity: .4; text-decoration: line-through; }
 .tsz.pre:not(.on) { border-style: dashed; }
+
+/* profil: moje veličine */
+.vel-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(24,36,84,.08); }
+.vel-row span { font-weight: 700; font-size: var(--fs-sm); }
+.vel-row select { min-width: 96px; padding: 8px 12px; border-radius: 12px; border: 2px solid rgba(24,36,84,.18); background: #fff; color: #182454; font: 800 14px inherit; font-family: inherit; }
