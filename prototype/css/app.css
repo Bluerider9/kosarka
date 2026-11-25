@@ -803,3 +803,7 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .abs-chip.hard { background: #b3261b; color: #fff; }
 .attend.st-ann { background: var(--cur); }
 .abs-chip { white-space: nowrap; }
+
+/* Ormar: kategorije uvijek vidljive (nisu se smjele stisnuti) */
+.cats { flex: none; min-height: 44px; align-items: center; padding: 4px 2px 8px; }
+.cats button { flex: none; min-height: 36px; line-height: 1.2; white-space: nowrap; }
