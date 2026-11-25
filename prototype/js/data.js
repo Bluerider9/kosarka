@@ -43,6 +43,7 @@ const TRENINZI = {
   ],
   2: [
     { v: '15:00', do: '16:30', g: 'Škola košarke', d: 'Dvorana B' },
+    { v: '17:30', do: '19:00', g: 'U14', d: 'OŠ Ante Kovačića' },
     { v: '19:00', do: '20:30', g: 'U16', d: 'OŠ Ante Kovačića' },
   ],
   3: [
