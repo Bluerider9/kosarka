@@ -871,3 +871,6 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .match-flags .okf { background: #d8f0e0; color: #1f7a44; }
 .adm-utk-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(24,36,84,.08); }
 .adm-utk-row > div:first-child { flex: 1; }
+
+.utk-skip { background: #f5f6fb; border-radius: 14px; padding: 10px 12px; }
+.utk-skip > b { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: #5b6482; }
