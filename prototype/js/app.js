@@ -358,6 +358,7 @@ const SCREENS = {
   },
   'trener-dolasci': () => {
     const lista = PLAYERS.slice(0, 8);
+    if (izPokriva(TODAY)) { att[IGR_ID] = false; kasn[IGR_ID] = 0; }
     const n = lista.filter((p) => att[p.id]).length;
     return {
       header: mHeader('Dolasci', 'U14 · Uto 24.11. · 17:30'),
@@ -856,7 +857,7 @@ document.addEventListener('click', (e) => {
   const tj = e.target.closest('[data-tjedan]'); if (tj) { tj.classList.toggle('open'); return; }
   const a = e.target.closest('[data-att]');
   if (a) {
-    const id = +a.dataset.att; att[id] = !att[id]; if (!att[id]) kasn[id] = 0; render(); return;
+    const id = +a.dataset.att; if (id === IGR_ID && izPokriva(TODAY)) { toastIn('Ana ima javljen izostanak'); return; } att[id] = !att[id]; if (!att[id]) kasn[id] = 0; render(); return;
   }
   const t = e.target.closest('[data-toast]'); if (t) { const inner = $('#toastIn'); if (inner) { inner.textContent = t.dataset.toast; inner.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => inner.classList.remove('show'), 1800); } else { const g = $('#toast'); g.textContent = t.dataset.toast; g.classList.add('show', 'fixed'); clearTimeout(toastT); toastT = setTimeout(() => g.classList.remove('show'), 1800); } return; }
   const f = e.target.closest('[data-f]');
