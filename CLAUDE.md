@@ -80,7 +80,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Svaka igračica ima **profil** (fotografija, grupe, kategorija po godištu, dolaznost, članarina, osobni podaci, roditelj/kontakt, potvrde i privole).
 - Vidljivost po ulozi: **admin** sve (uključujući OIB, e-mail, povijest uplata, uređivanje, fotografija, promjena grupe); **roditelj** njezin profil bez kontakta
   (adresa, članarina, potvrde, privole); **trener** grupe, osnovne podatke i kontakt roditelja, bez OIB-a i financija; **igračica** vlastiti profil (tab "Profil").
-- **Veličine (majica i noga):** kartica **"Moje veličine"** na profilu — **roditelj i igračica** mogu upisati/promijeniti veličinu majice i veličinu noge (padajući izbor, sprema se odmah, dijele isti podatak); admin i trener ih samo vide u "Osobni podaci". Služe za Ormar (majice, čarape).
+- **Veličine (majica i noga):** kartica **"Moje veličine"** na profilu (roditelj i igračica, dijele isti podatak). Dok nisu upisane, vrijednosti pišu **"??"**, a kartica ima **crveni obrub**; **olovka (uredi) gore desno** otvara poseban prozor s padajućim izborima i "Spremi". Admin i trener ih samo vide u "Osobni podaci" (— ako nisu upisane). Služe za Ormar (majice, čarape).
 - Ulazi: admin → Članovi → red; roditelj → gumb "Profil" na kartici; trener → Dolasci → strelica uz ime; igračica → tab Profil.
 
 ## Novosti za roditelje

@@ -4,6 +4,7 @@ const ini = (ime) => ime.split(' ').map((p) => p[0]).slice(0, 2).join('');
 const TODAY = 1; // utorak (indeks u DANI)
 
 const ICON = {
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
   home: '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
   x: '<path d="M18 6L6 18M6 6l12 12"/>',
   pin: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
@@ -238,7 +239,7 @@ function detalji(p) {
 }
 const kv = (k, v) => `<div class="pf-kv"><span>${k}</span><b>${v}</b></div>`;
 const NOGE = Array.from({ length: 20 }, (_, k) => String(28 + k)); // 28–47
-const velOd = (p) => { state.vel = state.vel || {}; return state.vel[p.id] || (state.vel[p.id] = { majica: detalji(p).majica, noga: String(36 + (p.id * 3) % 8) }); };
+const velOd = (p) => { state.vel = state.vel || {}; return state.vel[p.id] || (state.vel[p.id] = { majica: null, noga: null }); };
 function profilBody(p, uloga) {
   const d = detalji(p); const vl = velOd(p); const admin = uloga === 'admin', trener = uloga === 'trener', roditelj = uloga === 'roditelj';
   const natrag = { admin: ['admin-clanovi', 'Članovi'], trener: ['trener-dolasci', 'Dolasci'], roditelj: ['roditelj-pocetna', 'Početna'] }[uloga];
@@ -247,11 +248,13 @@ function profilBody(p, uloga) {
       <div class="row" style="justify-content:center;flex-wrap:wrap;gap:6px">${p.grupe.map((x) => chip(x, 'navy')).join('')}</div>
       <div class="meta">Članica od ${d.od} · kategorija ${kategorija(p)}</div></div>
     <div class="pf-stats"><div class="card"><b>${d.dolaznost}%</b><span>Dolaznost</span></div><div class="card"><b>${d.treninga}</b><span>Treninga</span></div><div class="card">${clan(p.clanarina)}<span>Članarina</span></div></div>`;
-  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}${kv('Veličina majice', vl.majica)}${kv('Veličina noge', vl.noga)}
+  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}${kv('Veličina majice', vl.majica || '—')}${kv('Veličina noge', vl.noga || '—')}
     ${(admin || roditelj) ? kv('Adresa', d.adresa) : ''}${admin ? kv('OIB', d.oib) : ''}</div>`;
-  const velicine = (roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Moje veličine</h4><div class="meta" style="margin:-2px 0 8px">Za majice i čarape iz Ormara. Možeš ih promijeniti kad god želiš.</div>
-    <label class="vel-row"><span>Veličina majice</span><select data-vel="majica" data-pid="${p.id}">${MAJICE.map((m) => `<option ${m === vl.majica ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
-    <label class="vel-row"><span>Veličina noge</span><select data-vel="noga" data-pid="${p.id}">${NOGE.map((m) => `<option ${m === vl.noga ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>` : '';
+  const nedostaje = !vl.majica || !vl.noga;
+  const velicine = (roditelj || uloga === 'igracica') ? `<div class="card pf-sec vel-card ${nedostaje ? 'missing' : ''}"><button class="vel-edit" data-velopen="${p.id}" aria-label="Uredi veličine">${ic('edit', 18)}</button><h4>Moje veličine</h4>
+    <div class="meta" style="margin:-2px 0 8px">Za majice i čarape iz Ormara.${nedostaje ? ' <b class="vel-warn">Još nisu upisane</b> — pritisni olovku.' : ''}</div>
+    <div class="vel-line"><span>Veličina majice</span><b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></div>
+    <div class="vel-line"><span>Veličina noge</span><b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></div></div>` : '';
   const treninzi = `<div class="card pf-sec"><h4>Grupe i treninzi</h4>${p.grupe.map((g) => { const gr = GROUPS.find((x) => x.ime === g); return kv(g, gr ? gr.raspored : ''); }).join('')}
     ${kv('Trener', GROUPS.find((x) => x.ime === p.grupe[0]).trener)}</div>`;
   const clanarina = (admin || roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Članarina</h4>${kv('Status', clan(p.clanarina))}${kv('Zadnja uplata', d.zadnjaUplata)}
@@ -779,7 +782,6 @@ document.addEventListener('submit', (e) => {
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
-document.addEventListener('change', (e) => { const s = e.target.closest && e.target.closest('[data-vel]'); if (!s) return; const p = PLAYERS.find((x) => x.id === +s.dataset.pid); velOd(p)[s.dataset.vel] = s.value; render(); toastIn(`Spremljeno: ${s.dataset.vel === 'majica' ? 'veličina majice' : 'veličina noge'} ${s.value}`); });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
 document.addEventListener('click', (e) => {
   const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
@@ -835,6 +837,12 @@ document.addEventListener('click', (e) => {
   const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }
   const sz = e.target.closest('[data-size]');
   if (sz && state.redeem) { state.redeem.size = sz.dataset.size; document.querySelectorAll('.sizes .size').forEach((b) => b.classList.toggle('on', b === sz)); const a = ORMAR.find((x) => x.id === state.redeem.id); $('#rdNote').innerHTML = rdNote(a, state.redeem.f); return; }
+  const vo = e.target.closest('[data-velopen]'); if (vo) { const p = PLAYERS.find((x) => x.id === +vo.dataset.velopen), vl = velOd(p);
+    overlay(`<h2>Moje veličine</h2><div class="meta" style="margin-top:-4px">Za majice i čarape iz Ormara. Možeš ih promijeniti kad god želiš.</div>
+      <label class="vel-row"><span>Veličina majice</span><select id="velMajica"><option value="">Odaberi</option>${MAJICE.map((m) => `<option ${m === vl.majica ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
+      <label class="vel-row"><span>Veličina noge</span><select id="velNoga"><option value="">Odaberi</option>${NOGE.map((m) => `<option ${m === vl.noga ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
+      <button class="btn red block" data-velsave="${p.id}">Spremi</button><button class="btn ghost block" data-fxclose>Odustani</button>`); return; }
+  const vs = e.target.closest('[data-velsave]'); if (vs) { const p = PLAYERS.find((x) => x.id === +vs.dataset.velsave), vl = velOd(p); vl.majica = $('#velMajica').value || null; vl.noga = $('#velNoga').value || null; closeOverlay(); render(); toastIn('Veličine su spremljene'); return; }
   const ts = e.target.closest('[data-tsize]'); if (ts) { (state.ormarVel = state.ormarVel || {})[+ts.dataset.aid] = ts.dataset.tsize; render(); return; }
   const ok = e.target.closest('[data-okat]'); if (ok) { state.ormarKat = ok.dataset.okat; render(); return; }
   const rk = e.target.closest('[data-redeemok]');
