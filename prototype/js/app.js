@@ -248,13 +248,14 @@ function profilBody(p, uloga) {
       <div class="row" style="justify-content:center;flex-wrap:wrap;gap:6px">${p.grupe.map((x) => chip(x, 'navy')).join('')}</div>
       <div class="meta">Članica od ${d.od} · kategorija ${kategorija(p)}</div></div>
     <div class="pf-stats"><div class="card"><b>${d.dolaznost}%</b><span>Dolaznost</span></div><div class="card"><b>${d.treninga}</b><span>Treninga</span></div><div class="card">${clan(p.clanarina)}<span>Članarina</span></div></div>`;
-  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}${kv('Veličina majice', vl.majica || '—')}${kv('Veličina noge', vl.noga || '—')}
+  const osobno = `<div class="card pf-sec"><h4>Osobni podaci</h4>${kv('Datum rođenja', d.rod)}
     ${(admin || roditelj) ? kv('Adresa', d.adresa) : ''}${admin ? kv('OIB', d.oib) : ''}</div>`;
   const nedostaje = !vl.majica || !vl.noga;
   const velicine = (roditelj || uloga === 'igracica') ? `<div class="card pf-sec vel-card ${nedostaje ? 'missing' : ''}"><button class="vel-edit" data-velopen="${p.id}" aria-label="Uredi veličine">${ic('edit', 18)}</button><h4>Moje veličine</h4>
     <div class="vel-line"><span>Veličina majice</span><b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></div>
     <div class="vel-line"><span>Veličina noge</span><b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></div>
-    <div class="vel-help"><b>Veličine odjevnih predmeta iz Ormara</b><div>Majice: 116–128 = Kids XS · 140 = Kids M · 152 = Kids L · 164 = Kids XL · XS–XL = odrasle</div><div>Čarape: 37–41 ili 42–46 (prema veličini noge)</div></div>` : '';
+    <div class="vel-help"><b>Veličine odjevnih predmeta iz Ormara</b><div>Majice: 116–128 = Kids XS · 140 = Kids M · 152 = Kids L · 164 = Kids XL · XS–XL = odrasle</div><div>Čarape: 37–41 ili 42–46 (prema veličini noge)</div></div></div>` : '';
+  const velRO = (admin || trener) ? `<div class="card pf-sec"><h4>Veličine (Ormar)</h4>${kv('Veličina majice', vl.majica || '—')}${kv('Veličina noge', vl.noga || '—')}</div>` : '';
   const treninzi = `<div class="card pf-sec"><h4>Grupe i treninzi</h4>${p.grupe.map((g) => { const gr = GROUPS.find((x) => x.ime === g); return kv(g, gr ? gr.raspored : ''); }).join('')}
     ${kv('Trener', GROUPS.find((x) => x.ime === p.grupe[0]).trener)}</div>`;
   const clanarina = (admin || roditelj || uloga === 'igracica') ? `<div class="card pf-sec"><h4>Članarina</h4>${kv('Status', clan(p.clanarina))}${kv('Zadnja uplata', d.zadnjaUplata)}
@@ -264,7 +265,7 @@ function profilBody(p, uloga) {
   const potvrde = (admin || roditelj) ? `<div class="card pf-sec"><h4>Potvrde i privole</h4>${kv('Potvrda 2026/27', `kategorija ${kategorija(p)}`)}${kv('Pravila privatnosti', 'prihvaćeno 2023.')}${kv('Fotografija', p.foto ? 'dopuštena' : 'dopuštena, fotografija još nije dodana')}
     ${admin ? `<button class="btn ghost block" data-toast="U pravoj aplikaciji se ovdje preuzima PDF potvrde">Preuzmi potvrdu (PDF)</button>` : ''}</div>` : '';
   const akcije = admin ? `<div class="pf-actions"><button class="btn" data-toast="Uređivanje profila — sljedeći korak">Uredi podatke</button><button class="btn ghost" data-toast="Učitavanje fotografije — sljedeći korak">${ic('upload', 18)} Fotografija</button><button class="btn ghost" data-toast="Promjena grupe — sljedeći korak">Promijeni grupu</button></div>` : '';
-  return hero + `<div class="pf-grid">${velicine}${osobno}${treninzi}${falco}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
+  return hero + `<div class="pf-grid">${osobno}${velicine}${velRO}${treninzi}${falco}${clanarina}${kontakt}${potvrde}</div>${akcije}`;
 }
 const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
 /* ---------- NOVOSTI ---------- */
