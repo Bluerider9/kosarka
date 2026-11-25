@@ -333,16 +333,17 @@ const cijenaHtml = (a, s = 16) => `<span class="price">${a.staraCijena ? `<s>${f
 const KIDS = { '116': 'Kids XS', '128': 'Kids XS', '140': 'Kids M', '152': 'Kids L', '164': 'Kids XL' };
 const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
   return a.velicine.find((v) => { const r = v.v.match(/^(\d+)[–-](\d+)$/); if (r) return noga >= +r[1] && noga <= +r[2]; if (v.v === 'Jedna veličina') return true; return v.v === (KIDS[vl.majica] || vl.majica); }); };
-const mojaNaStanju = (a) => { const v = mojaVel(a); return !!v && v.n > 0; };
+const jednaVel = (a) => a.velicine.length === 1 && a.velicine[0].v === 'Jedna veličina';
+const mojaNaStanju = (a) => jednaVel(a) || (() => { const v = mojaVel(a); return !!v && v.n > 0; })();
 const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
 function ormarGrid() {
   const kat = state.ormarKat || 'Sve';
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
-    const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const moja = mojaVel(a) && mojaVel(a).v === v.v && ima;
-    return `<div class="card item ${ima ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? '<span class="mine-badge">Tvoja veličina</span>' : ''}${itemTile(a, '', ima ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
+    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="tile-sizes">${a.velicine.map((x) => `<button type="button" class="tsz ${x.v === sv ? 'on' : ''} ${x.n === 0 ? 'out' : ''} ${x.n === null ? 'pre' : ''}" data-tsize="${x.v}" data-aid="${a.id}">${x.v}</button>`).join('')}</div>
-      <div class="stock">${v.n === null ? 'nema na stanju · predbilježba' : v.n > 0 ? `na stanju ${v.n}` : 'nema na stanju · predbilježba'}</div>
+      <div class="stock">${v.n === null ? (jedna ? 'predbilježba' : 'nema na stanju · predbilježba') : v.n > 0 ? `na stanju ${v.n}` : (jedna ? 'predbilježba' : 'nema na stanju · predbilježba')}</div>
       <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Predbilježi'}</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
