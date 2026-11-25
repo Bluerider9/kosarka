@@ -734,3 +734,15 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .attend.st-ok, .attend.st-late, .attend.st-exc, .attend.st-abs { background: var(--cur); }
 .attend.swipe { background: var(--cur) no-repeat 0 0 / 100% 100%, var(--prev); animation: swipeBg .6s ease-out; }
 @keyframes swipeBg { from { background-size: 0% 100%, 100% 100%; } to { background-size: 100% 100%, 100% 100%; } }
+
+/* dolasci: stupci kontrola poravnati u svim stanjima, razmak od desnog ruba */
+.row.attend { align-items: center; padding-right: 14px; padding-left: 8px; }
+.attend .late-step, .attend .late-slot { width: 108px; flex: none; justify-content: center; }
+.attend .late-slot { display: block; height: 1px; }
+.attend .pf-open, .attend .toggle { flex: none; }
+.attend .toggle { margin-left: 4px; }
+.attend .late-step, .attend .late-slot { width: 94px; }
+.attend .late-step span { font-size: 11px; white-space: nowrap; }
+.row.attend { gap: 8px; }
+.attend .grow h3 { overflow-wrap: anywhere; line-height: 1.2; }
+.attend .late-step, .attend .late-slot { width: 102px; } .attend .late-step { padding: 0 4px 0 8px; gap: 4px; }
