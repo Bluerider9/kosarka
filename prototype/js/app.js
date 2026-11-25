@@ -336,11 +336,13 @@ const attSeg = (p) => { const s = att[p.id] ? (kasn[p.id] ? 'kasni' : 'da') : 'n
 const prevAtt = {};
 const attSwipe = (p) => { const s = attSt(p), pr = prevAtt[p.id]; prevAtt[p.id] = s; return pr && pr !== s ? ` swipe" style="--prev: var(--g-${pr.slice(3)})` : ''; };
 const kasn = {};
+/* što više minuta, to jača žuta (svijetla → zlatna → tamna jantarna) */
+const kasnBoja = (m) => { const t = Math.max(0, Math.min(1, ((+m || 0) - 1) / 14)); return `hsl(${Math.round(46 - 8 * t)} ${Math.round(90 + 5 * t)}% ${Math.round(88 - 38 * t)}%)`; };
 function kasnjenjeSheet(id) {
   const p = PLAYERS.find((x) => x.id === id);
   overlay(`<h2>Kasni</h2><div class="meta" style="margin-top:-4px">${p.ime} · koliko minuta kasni?</div>
-    <input id="kasnMin" class="kasn-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="${kasn[id] || 5}" aria-label="Minute kašnjenja">
-    <div class="sizes">${[3, 6, 9, 10].map((m) => `<button type="button" class="size" data-kmin="${m}">${m} min</button>`).join('')}</div>
+    <input id="kasnMin" class="kasn-input" style="background:${kasnBoja(kasn[id] || 5)}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="${kasn[id] || 5}" aria-label="Minute kašnjenja">
+    <div class="sizes">${[3, 6, 9, 10].map((m) => `<button type="button" class="size kasn-chip" style="background:${kasnBoja(m)}" data-kmin="${m}">${m} min</button>`).join('')}</div>
     <button class="btn navy block" data-ksave="${id}">Spremi</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
   setTimeout(() => { const i = $('#kasnMin'); if (i) { i.focus(); i.select(); } }, 50);
 }
@@ -379,7 +381,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="att-legend"><span class="al-name">Igračica</span><span class="al-prof">Profil</span><span class="al-tog">Dolazak</span></div><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''} ${attSt(p)}${attSwipe(p)}">
-          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${att[p.id] ? (kasn[p.id] ? `<span class="late-chip">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${att[p.id] ? (kasn[p.id] ? `<span class="late-chip" style="background:${kasnBoja(kasn[p.id])}">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
@@ -761,6 +763,7 @@ document.addEventListener('submit', (e) => {
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
+document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
 document.addEventListener('click', (e) => {
   const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
   const pv = e.target.closest('[data-prev]'); if (pv) { goStep(pv.closest('form'), 1); return; }
@@ -870,7 +873,7 @@ document.addEventListener('click', (e) => {
   if (sb) { const id = +sb.dataset.id, k = sb.dataset.st; if (id === IGR_ID && izPokriva(TODAY)) { toastIn('Ana ima javljen izostanak'); return; }
     if (k === 'kasni') { kasnjenjeSheet(id); return; }
     att[id] = k !== 'ne'; kasn[id] = 0; render(); return; }
-  const km = e.target.closest('[data-kmin]'); if (km) { $('#kasnMin').value = km.dataset.kmin; return; }
+  const km = e.target.closest('[data-kmin]'); if (km) { $('#kasnMin').value = km.dataset.kmin; $('#kasnMin').style.background = kasnBoja(km.dataset.kmin); return; }
   const ks = e.target.closest('[data-ksave]'); if (ks) { const id = +ks.dataset.ksave, v = Math.max(1, Math.min(90, parseInt($('#kasnMin').value, 10) || 0)); att[id] = true; kasn[id] = v; closeOverlay(); render(); return; }
   const tj = e.target.closest('[data-tjedan]'); if (tj) { tj.classList.toggle('open'); return; }
   const a = e.target.closest('[data-att]');

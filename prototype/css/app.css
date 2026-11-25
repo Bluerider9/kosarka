@@ -788,3 +788,8 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 .kasn-input { width: 100%; text-align: center; font: 900 32px/1.2 inherit; font-family: inherit; border: 2px solid var(--line, #d7dcea); border-radius: 14px; padding: 8px; margin: 6px 0; color: var(--navy, #182454); }
 .late-chip { display: inline-block; margin-top: 3px; border-radius: 999px; padding: 2px 9px; font-size: 10px; font-weight: 800; background: #f0b64e; color: #182454; }
+
+.kasn-input { border-color: #e0a030; transition: background .2s; }
+.kasn-chip { border-color: #e0a030 !important; color: #182454; }
+.late-chip { border: 1px solid rgba(224,160,48,.7); }
+.kasn-input { color: #182454 !important; -webkit-text-fill-color: #182454; }
