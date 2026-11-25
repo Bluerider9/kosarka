@@ -836,3 +836,7 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .vel-line b { font-size: 16px; font-weight: 900; color: #182454; }
 .vel-line b.vel-empty { color: #C04848; letter-spacing: .1em; }
 .vel-warn { color: #C04848; }
+
+.vel-help { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(24,36,84,.18); font-size: 11.5px; line-height: 1.5; color: #5b6482; }
+.vel-help b { display: block; color: #182454; font-size: 11px; font-weight: 800; margin-top: 4px; }
+.vel-card h4 { padding-right: 44px; }
