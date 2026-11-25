@@ -207,7 +207,7 @@ const dolazak = (i, t) => DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`];
 const dolazakStatus = (i, t) => { const v = dolazak(i, t); return v === undefined ? (i < TODAY ? 'ne' : 'cekaj') : v === 'da' ? 'da' : v === 'ne' ? 'ne' : 'kasni'; };
 const dotCls = (i, t) => (dolazakStatus(i, t) === 'cekaj' && izPokriva(i) ? 'dot-exc' : ({ da: 'dot-yes', kasni: 'dot-late', ne: 'dot-no', cekaj: 'dot-wait' })[dolazakStatus(i, t)]);
 const minute = (n) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'minutu' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'minute' : 'minuta'}`;
-const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t); if (s === 'cekaj' && izPokriva(i)) return `Opravdani izostanak: ${state.izostanak.razlog}`; return { da: 'Bila si i odradila', kasni: typeof v === 'number' ? `Kasnila ${minute(v)}` : 'Kasnila na trening', ne: 'Nisi bila', cekaj: 'Još nije bio trening' }[s]; };
+const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t); if (s === 'cekaj' && izPokriva(i)) return `Opravdani izostanak: ${state.izostanak.razlog}`; return { da: 'Bila si i odradila', kasni: `Kasnila ${minute(v)}`, ne: 'Nisi bila', cekaj: 'Još nije bio trening' }[s]; };
 // utakmice igračice: 'igrala' (odigrane) i 'pozvana' (na popisu za iduću) — izmišljeni podaci
 const UTAKMICE_IGR = [
   { dat: 'Sub 28.11.', vr: '11:00', opis: 'Prvenstvo U14', st: 'pozvana', nap: 'termin nije potvrđen' },
@@ -336,6 +336,14 @@ const attSeg = (p) => { const s = att[p.id] ? (kasn[p.id] ? 'kasni' : 'da') : 'n
 const prevAtt = {};
 const attSwipe = (p) => { const s = attSt(p), pr = prevAtt[p.id]; prevAtt[p.id] = s; return pr && pr !== s ? ` swipe" style="--prev: var(--g-${pr.slice(3)})` : ''; };
 const kasn = {};
+function kasnjenjeSheet(id) {
+  const p = PLAYERS.find((x) => x.id === id);
+  overlay(`<h2>Kasni</h2><div class="meta" style="margin-top:-4px">${p.ime} · koliko minuta kasni?</div>
+    <input id="kasnMin" class="kasn-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" value="${kasn[id] || 5}" aria-label="Minute kašnjenja">
+    <div class="sizes">${[5, 10, 15, 20].map((m) => `<button type="button" class="size" data-kmin="${m}">${m} min</button>`).join('')}</div>
+    <button class="btn navy block" data-ksave="${id}">Spremi</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
+  setTimeout(() => { const i = $('#kasnMin'); if (i) { i.focus(); i.select(); } }, 50);
+}
 const att = {}; PLAYERS.slice(0, 8).forEach((p, i) => (att[p.id] = i !== 4 && i !== 7));
 const SCREENS = {
   'trener-danas': () => ({
@@ -371,7 +379,7 @@ const SCREENS = {
       body: `<div class="card"><div class="row spread"><h3>Prisutno</h3><b id="attN" style="font-weight:900">${n} / ${lista.length}</b></div>
         <div class="progress" style="margin-top:10px"><i id="attBar" style="width:${(n / lista.length) * 100}%"></i></div></div>
         <div class="card"><div class="att-legend"><span class="al-name">Igračica</span><span class="al-prof">Profil</span><span class="al-tog">Dolazak</span></div><div class="list">${lista.map((p) => `<div class="row attend ${att[p.id] ? 'on' : ''} ${attSt(p)}${attSwipe(p)}">
-          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${att[p.id] ? '' : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
+          ${av(p, 'sm')}<div class="grow"><h3 class="att-name">${p.ime}</h3>${att[p.id] ? (kasn[p.id] ? `<span class="late-chip">kasni ${kasn[p.id]} min</span>` : '') : p.id === IGR_ID && izPokriva(TODAY) ? `<span class="abs-chip soft">Opravdani izostanak</span>` : '<span class="abs-chip hard">Izostanak</span>'}</div><button class="pf-open" data-profil="${p.id}" aria-label="Profil">${ic('chev', 18)}</button>${attSeg(p)}</div>`).join('')}</div></div>
         <button class="btn red block" data-attsave>Spremi dolaske</button>`,
     };
   },
@@ -839,13 +847,13 @@ document.addEventListener('click', (e) => {
     lista.forEach((p) => {
       if (att[p.id] && !awarded[p.id]) { awarded[p.id] = true; FALCOINI[p.id] = r2((FALCOINI[p.id] || 0) + n); dano++;
         if (p.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
-          notify('igracica', 'Falcoini za dolazak', `Dobila si +${fmt(n)} Falcoin za dolazak na trening U14 (24.11.)${kasn[IGR_ID] ? ' — kašnjenje se računa kao dolazak' : ''}. Novo stanje: ${fmt(saldo())}.`);
+          notify('igracica', 'Falcoini za dolazak', `Dobila si +${fmt(n)} Falcoin za dolazak na trening U14 (24.11.)${kasn[IGR_ID] ? ` — kašnjenje od ${kasn[IGR_ID]} min računa se kao dolazak` : ''}. Novo stanje: ${fmt(saldo())}.`);
           notify('roditelj', 'Falcoini za dolazak', `${p.ime} je dobila +${fmt(n)} Falcoin za dolazak na trening U14 (24.11.).`); } }
       else if (!att[p.id] && awarded[p.id]) { awarded[p.id] = false; FALCOINI[p.id] = r2(Math.max(0, FALCOINI[p.id] - n)); vraceno++;
         if (p.id === IGR_ID) { state.skenirano = false; FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Ispravak dolaska · Trening U14', iznos: -n });
           notify('igracica', 'Ispravak dolaska', `Dolazak na trening U14 (24.11.) je ispravljen, ${fmt(n)} Falcoin je oduzet.`); } }
     });
-    DOLAZAK_TJEDAN['1-U14-17:30'] = att[IGR_ID] ? (kasn[IGR_ID] ? 'kasni' : 'da') : 'ne';
+    DOLAZAK_TJEDAN['1-U14-17:30'] = att[IGR_ID] ? (kasn[IGR_ID] || 'da') : 'ne';
     toastIn(dano || vraceno ? `Spremljeno · dodijeljeno ${fmt(dano * n)} Falcoina za ${dano} ${dano === 1 ? 'igračicu' : 'igračica'}${vraceno ? `, vraćeno ${vraceno}` : ''}` : 'Dolasci spremljeni — nema promjena'); return;
   }
   const rs = e.target.closest('[data-rsvp]');
@@ -860,7 +868,10 @@ document.addEventListener('click', (e) => {
   const lt = e.target.closest('[data-late]');
   const sb = e.target.closest('[data-st]');
   if (sb) { const id = +sb.dataset.id, k = sb.dataset.st; if (id === IGR_ID && izPokriva(TODAY)) { toastIn('Ana ima javljen izostanak'); return; }
-    att[id] = k !== 'ne'; kasn[id] = k === 'kasni' ? 1 : 0; render(); return; }
+    if (k === 'kasni') { kasnjenjeSheet(id); return; }
+    att[id] = k !== 'ne'; kasn[id] = 0; render(); return; }
+  const km = e.target.closest('[data-kmin]'); if (km) { $('#kasnMin').value = km.dataset.kmin; return; }
+  const ks = e.target.closest('[data-ksave]'); if (ks) { const id = +ks.dataset.ksave, v = Math.max(1, Math.min(90, parseInt($('#kasnMin').value, 10) || 0)); att[id] = true; kasn[id] = v; closeOverlay(); render(); return; }
   const tj = e.target.closest('[data-tjedan]'); if (tj) { tj.classList.toggle('open'); return; }
   const a = e.target.closest('[data-att]');
   if (a) {
