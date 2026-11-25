@@ -113,7 +113,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 
 - **Dolaznost** (postotak + traka) stoji u zaglavlju ispod "Bok, Ana"; Falcoini nisu na početnoj (samo tab Falcoini). Cijela početna stane na jedan zaslon bez skrolanja.
 - **Prvi red: "Treninzi ovaj tjedan"** — jedan tanki red s kružićem po treningu grupe: zeleni (bila i odradila), **žuti (kasnila)**, crveni (nije bila), sivi (još nije bio); strelica na kraju otvara detalje (dan, vrijeme, dvorana, status).
-- **Kašnjenje:** trener u Dolascima uz prisutnu igračicu upisuje točan broj minuta kašnjenja (gumbi − / +, polazno "na vrijeme"); igračici se prikazuje "Kasnila 7 minuta". Kašnjenje se **računa kao dolazak** (Falcoini, dolaznost); samo se bilježi i prikazuje žutim kružićem.
+- **Kašnjenje:** trener u Dolascima uz prisutnu igračicu upisuje točan broj minuta kašnjenja (gumbi − / +, polazno 0 min); igračici se prikazuje "Kasnila 7 minuta". Kašnjenje se **računa kao dolazak** (Falcoini, dolaznost); samo se bilježi i prikazuje žutim kružićem.
 - **Današnji trening:** vrijeme, dvorana, gumbi **Dolazim / Ne dolazim** (otvoreni do 3 sata prije početka, do tada se odgovor može mijenjati); bez odgovora piše "Molim te budi odgovorna i javi na vrijeme."; nakon roka gumbi se zaključavaju. Odgovore vidi trener u Dolascima (još nije u prototipu).
 - Ispod današnjeg treninga stoji red **"Sutra"** (što se sutra očekuje: trening grupe ili "nema treninga" + prvi sljedeći).
 - **Iduća utakmica** za njezinu grupu: datum i vrijeme, uz oznake "Datum i vrijeme još nisu potvrđeni" i "Dvorana još nije potvrđena" dok admin ne potvrdi.
