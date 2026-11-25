@@ -726,3 +726,16 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .attend.st-late { background: linear-gradient(90deg, #fbe29a 0%, #c9ecd3 100%); }
 .attend.st-exc  { background: linear-gradient(90deg, #fff 0%, #fff 30%, #f7d3d3 100%); }
 .attend.st-abs  { background: linear-gradient(90deg, #fff 0%, #fff 30%, #e07468 100%); }
+
+/* dolasci: pune boje, boja fonta prema pozadini */
+.attend.st-ok   { background: linear-gradient(90deg, #2f9e5a 0%, #23814a 100%); }
+.attend.st-late { background: linear-gradient(90deg, #f0b64e 0%, #f0b64e 35%, #2f9e5a 100%); }
+.attend.st-exc  { background: linear-gradient(90deg, #f4b0b0 0%, #e88a8a 100%); }
+.attend.st-abs  { background: linear-gradient(90deg, #d4493f 0%, #b3342b 100%); }
+.attend.st-ok h3, .attend.st-abs h3 { color: #fff; }
+.attend.st-late h3, .attend.st-exc h3 { color: var(--navy, #182454); }
+.attend.st-abs .abs-chip.hard { background: #fff; color: #b3342b; }
+.attend.st-exc .abs-chip.soft { background: rgba(255,255,255,.75); color: #a03a3a; }
+.attend.st-ok .late-step, .attend.st-late .late-step { background: rgba(255,255,255,.92); }
+.attend.st-ok .toggle, .attend.st-late .toggle { box-shadow: 0 0 0 2px rgba(255,255,255,.85); }
+.attend.st-ok .pf-open, .attend.st-late .pf-open, .attend.st-exc .pf-open, .attend.st-abs .pf-open { background: rgba(255,255,255,.9); }
