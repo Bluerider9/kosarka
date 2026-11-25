@@ -867,3 +867,7 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .utk-p { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-top: 1px solid rgba(24,36,84,.08); font-size: var(--fs-sm); font-weight: 700; }
 .utk-s { font-style: normal; font-size: 10.5px; font-weight: 800; border-radius: 999px; padding: 3px 10px; }
 .utk-s.ok { background: #d8f0e0; color: #1f7a44; } .utk-s.no { background: #fbe0de; color: #b3342b; } .utk-s.wait { background: #fdf0c8; color: #8a6410; }
+
+.match-flags .okf { background: #d8f0e0; color: #1f7a44; }
+.adm-utk-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid rgba(24,36,84,.08); }
+.adm-utk-row > div:first-child { flex: 1; }
