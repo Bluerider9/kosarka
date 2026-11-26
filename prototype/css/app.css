@@ -1029,3 +1029,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .izsame input { margin-top: 3px; }
 .wish-item { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--silver-100); }
 .card.wish .row.spread + .wish-item { margin-top: 10px; }
+.card.rad-pregled { display: flex; align-items: center; gap: 12px; background: #eef2f7; box-shadow: none; }
