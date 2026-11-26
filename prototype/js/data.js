@@ -96,13 +96,13 @@ const FALCOIN_POVIJEST = [
   { dat: '20.11.', opis: 'Trening U14', iznos: 1.0 },
   { dat: '18.11.', opis: 'Trening U14', iznos: 1.0 },
   { dat: '17.11.', opis: 'Nagrada: tjedni zadatak', iznos: 3.0 },
-  { dat: '14.11.', opis: 'Zamjena: Čarape "FLCN" BIJELE', iznos: -10.0 },
+  { dat: '14.11.', opis: 'Zamjena: Čarape "FLCN" bijele', iznos: -10.0 },
   { dat: '13.11.', opis: 'Trening U14', iznos: 1.0 },
 ];
 // f = plaćeno Falcoinima (rezervirano pri narudžbi), gotovina = ostatak za naplatiti pri preuzimanju
 const NARUDZBE = [
-  { igr: 'Mia Kovač', artikl: 'T-shirt "Logo one color" CRVENA', velicina: 'Kids L', pre: false, cijena: 12.0, f: 8.0, gotovina: 4.0, dat: '23.11.2026.', st: 'čeka' },
-  { igr: 'Petra Marić', artikl: 'Čarape "FLCN" - PLAVE', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '22.11.2026.', st: 'čeka' },
-  { igr: 'Lana Babić', artikl: 'T-shirt "Logo" CRVENA', velicina: 'M', pre: true, cijena: 17.0, f: 9.5, gotovina: 7.5, dat: '21.11.2026.', st: 'čeka' },
-  { igr: 'Ana Horvat', artikl: 'Čarape "FLCN" BIJELE', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '14.11.2026.', st: 'izdano' },
+  { igr: 'Mia Kovač', artikl: 'T-shirt "Logo one color" crvena', velicina: 'Kids L', pre: false, cijena: 12.0, f: 8.0, gotovina: 4.0, dat: '23.11.2026.', st: 'čeka' },
+  { igr: 'Petra Marić', artikl: 'Čarape "FLCN" plave', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '22.11.2026.', st: 'čeka' },
+  { igr: 'Lana Babić', artikl: 'T-shirt "Logo" crvena', velicina: 'M', pre: true, cijena: 17.0, f: 9.5, gotovina: 7.5, dat: '21.11.2026.', st: 'čeka' },
+  { igr: 'Ana Horvat', artikl: 'Čarape "FLCN" bijele', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '14.11.2026.', st: 'izdano' },
 ];
