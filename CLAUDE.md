@@ -164,6 +164,10 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - **Raspored (admin, desktop) je mjesečni kalendar po danima** (pon–ned, strelice ‹ › za mjesec, "Danas"): u svakom danu su sitni redovi **treninzi** (plavo), **utakmice** (crveno) i **tjedni zadatak** (zlatno: u ponedjeljak naslov, u nedjelju "Rok izazova"); prošli dani blijede, današnji ima zlatni obrub. Klik na dan otvara desno **detalj dana** (treninzi s dvoranom, utakmice sa statusom/rezultatom, izazov s "Uredi"); za dan utakmice ondje su i potvrde termina i dvorane. Treninzi se u prototipu ponavljaju po tjednom obrascu; "Novi termin" još nije u prototipu.
 - Admin: Moj profil, Postavke kluba (grupe, popis škola, sezone), Korisnici i uloge, Predlošci e-mailova, Odjava.
 
+## Prototipna traka
+
+- Redoslijed tabova: **Početna, Javna prijava**, Trener, Roditelj, Igračica, Admin. **Gotovi ekrani (Početna, Javna prijava) su privremeno zeleni** (`GOTOVO` u `app.js`, klasa `.gotovo`); kasnije se vraćaju na boje kluba.
+
 ## Struktura
 
 - `prototype/` — klikabilni HTML prototip (mobitel + admin desktop), izmišljeni podaci

@@ -1062,7 +1062,8 @@ const ADMIN = {
 };
 
 /* ---------- usmjeravanje i prikaz ---------- */
-const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
+const ROLES = [['start', 'Početna'], ['prijava', 'Javna prijava'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['admin', 'Admin (desktop)']];
+const GOTOVO = ['start', 'prijava']; // gotovi ekrani: zeleni tabovi u prototipnoj traci (privremeno)
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
 const state = { dan: TODAY, bio: false, citanoPo: {}, zelje: [(ORMAR.find((a) => a.ime.startsWith('Ruksak')) || {}).id].filter(Boolean), izPrikl: false, izPriklIduci: false, zadFaza: 'aktivan', izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
 let toastT;
@@ -1076,7 +1077,7 @@ function render() {
   const hash = location.hash.slice(1) || 'start-login';
   const [uloga, ...r] = hash.split('-'); const ekran = r.join('-');
   const app = $('#app'); const stage = $('#stage');
-  $('#roleSeg').innerHTML = ROLES.map(([id, l]) => `<button class="${id === uloga ? 'on' : ''}" data-go="${id}-${DEFAULT_SCREEN[id]}">${l}</button>`).join('');
+  $('#roleSeg').innerHTML = ROLES.map(([id, l]) => `<button class="${id === uloga ? 'on' : ''} ${GOTOVO.includes(id) ? 'gotovo' : ''}" data-go="${id}-${DEFAULT_SCREEN[id]}">${l}</button>`).join('');
   if (uloga === 'admin') {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
