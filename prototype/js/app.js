@@ -1095,7 +1095,7 @@ document.addEventListener('click', (e) => {
   const ib = e.target.closest('[data-izbrisi]'); if (ib) { IZ_PLAN[+ib.dataset.izbrisi] = null; state.izTjedan = null; render(); return; }
   if (e.target.closest('[data-zhelp]')) { overlay(`<h2>Što je tjedni zadatak?</h2>
     <p>Svaki tjedan, od <b>ponedjeljka u 00:01 do nedjelje u 12:00</b>, klub igračicama zadaje jedan izazov: dolasci na treninge, video ili fotografija.</p>
-    <p><b>Zadatak je tajna</b> dok se ne priključiš: da bi ga vidjela, moraš se priključiti; priključenima se zadatak otkriva od ponedjeljka u 00:01, a napredak se računa od priključivanja. Priključiti se možeš već u nedjelju od 12:01 za idući tjedan.</p>
+    <p><b>Zadatak je tajna.</b> Naziv, opis i nagrada vide se tek kad se priključiš. Priključiti se možeš od nedjelje u 12:01 za idući tjedan, a zadatak se priključenima otkriva u ponedjeljak u 00:01. Napredak se računa od trenutka priključivanja.</p>
     <p>Za ispunjen zadatak dobivaš <b>bonus u FLC</b> (iznos piše na kartici i svaki je zadatak drukčiji). Sat otvara povijest tvojih zadataka.</p>
     <button class="btn block" data-fxclose>Razumijem</button>`); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
