@@ -475,7 +475,10 @@ function izazovKartica() {
       ${proto('aktivan', 'vrati na utorak')}</div>`;
   }
   const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:6px">${z.naslov}</h3><div class="meta" style="margin-top:4px">${z.opis}</div>`;
-  const kraj = proto('cekanje', 'pogledaj nedjelju 12:01');
+  const pc = (g, v, t, on) => `<button type="button" class="pp-chip${on ? ' on' : ''}" data-zproto="${g}:${v}">${t}</button>`;
+  const stV = state.video ? state.video.st : 'nista';
+  const prek = state.izPrikl ? `<div class="proto-sw"><div><span>Prototip · vrsta</span>${pc('vrsta', 'dolasci', 'Dolasci', z.vrsta === 'dolasci')}${pc('vrsta', 'video', 'Video', z.vrsta === 'video')}${pc('vrsta', 'foto', 'Foto', z.vrsta === 'foto')}</div>${z.vrsta !== 'dolasci' ? `<div><span>Prototip · ishod</span>${pc('ishod', 'nista', 'Nije poslano', stV === 'nista')}${pc('ishod', 'čeka', 'Čeka', stV === 'čeka')}${pc('ishod', 'odobreno', 'Odobreno', stV === 'odobreno')}${pc('ishod', 'odbijeno', 'Odbijeno', stV === 'odbijeno')}</div>` : ''}</div>` : '';
+  const kraj = prek + proto('cekanje', 'pogledaj nedjelju 12:01');
   if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery">${zq}<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div><span style="margin-right:34px">${sat}</span></div>
     <button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${kraj}</div>`;
   if (jeRad(z)) {
@@ -1067,6 +1070,13 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
   if (e.target.closest('[data-izprikl]')) { state.izPrikl = true; IZAZOV.odradeno = 0; render(); toastIn('Priključila si se zadatku'); notify('trener', 'Tjedni zadatak', 'Ana Horvat se priključila zadatku: ' + IZAZOV.naslov); return; }
   if (e.target.closest('[data-zhist]')) { zadatakPovijestSheet(); return; }
+  const zp = e.target.closest('[data-zproto]'); if (zp) {
+    const [g, v] = zp.dataset.zproto.split(':');
+    if (g === 'vrsta') {
+      const def = { dolasci: ['Tjedan bez izostanka', 'Dođi na sva 3 treninga ovaj tjedan.'], video: ['Snimi kako zabijaš tricu', 'Snimi 3 pokušaja trice i pošalji najbolji.'], foto: ['Fotografiraj svoj Falcons dres', 'Pošalji fotografiju sebe u dresu ispred koša.'] }[v];
+      IZAZOV.vrsta = v; IZAZOV.naslov = def[0]; IZAZOV.opis = def[1]; state.video = null;
+    } else state.video = v === 'nista' ? null : { igr: 'Ana', datoteka: IZAZOV.vrsta === 'foto' ? 'dres.jpg' : 'trica.mp4', st: v, tip: IZAZOV.vrsta };
+    render(); return; }
   const zf = e.target.closest('[data-zfaza]'); if (zf) { state.zadFaza = zf.dataset.zfaza; render(); return; }
   if (e.target.closest('[data-izprikl2]')) { state.izPriklIduci = true; render(); toastIn('Priključena si idućem zadatku'); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
