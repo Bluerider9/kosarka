@@ -1097,6 +1097,7 @@ document.addEventListener('click', (e) => {
     <p>Svaki tjedan, od <b>ponedjeljka u 00:01 do nedjelje u 12:00</b>, klub igračicama zadaje jedan izazov.</p>
     <p>Priključiti se možeš od nedjelje u 12:01 za idući tjedan, a zadatak se priključenima otkriva u ponedjeljak u 00:01. <b>Zadatak je tajna.</b> Naziv, opis i nagrada vide se tek kad se priključiš. Napredak se računa od trenutka priključivanja.</p>
     <p>Za ispunjen zadatak dobivaš <b>dodatne Falcoine</b>, a iznos ovisi o težini zadatka.</p>
+    <p>Ako je zadatak video ili fotografija, nakon uploada treba ga odobriti tvoj trener ili trenerica kako bi zadatak bio u potpunosti izvršen.</p>
     <button class="btn block" data-fxclose>Razumijem</button>`); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
     <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
