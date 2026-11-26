@@ -112,7 +112,7 @@ const FALCOIN_POVIJEST = [
   { dat: '21.11.', opis: 'Utakmica U14 — gostovanje', iznos: 2.5 },
   { dat: '20.11.', opis: 'Trening U14', iznos: 1.0 },
   { dat: '18.11.', opis: 'Trening U14', iznos: 1.0 },
-  { dat: '17.11.', opis: 'Bonus: tjedni zadatak', iznos: 3.0 },
+  { dat: '17.11.', opis: 'Nagrada: tjedni zadatak', iznos: 3.0 },
   { dat: '14.11.', opis: 'Zamjena: Čarape "FLCN" bijele', iznos: -10.0 },
   { dat: '13.11.', opis: 'Trening U14', iznos: 1.0 },
 ];

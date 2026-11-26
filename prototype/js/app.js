@@ -485,14 +485,14 @@ function izazovKartica() {
     const v = state.video; const foto = z.vrsta === 'foto';
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic(foto ? 'image' : 'upload', 18)} ${foto ? 'Slikaj ili dodaj fotografiju' : 'Snimi ili dodaj video'}</button>`
       : v.st === 'čeka' ? `<div class="vid-state wait"><span class="vs-t">${ic('check', 16)} ${foto ? 'Fotografija poslana' : 'Video poslan'}: ${v.datoteka}</span><small>Čeka odobrenje trenera. Zadatak je ispunjen tek kad ga trener potvrdi.</small></div>`
-      : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Bonus ${fmt(z.nagrada)} ${FLC} je tvoj.</div>`
+      : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Nagrada ${fmt(z.nagrada)} ${FLC} je tvoja.</div>`
       : `<div class="vid-state no"><span class="vs-t">${ic('lock', 16)} Zadatak je zaključan</span><small>Trener ${foto ? 'fotografiju' : 'video'} nije odobrio, pa se zadatak ovaj tjedan više ne može ispuniti. Novi zadatak stiže u ponedjeljak u 00:01.</small></div>`;
     return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${kraj}</div>`;
   }
   const gotovo = z.odradeno >= z.cilj;
   return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>
     <div class="streak-dots">${Array.from({ length: z.cilj }, (_, i) => `<span class="${i < z.odradeno ? 'on' : ''}">${i < z.odradeno ? '✓' : i + 1}</span>`).join('')}</div>
-    <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Zadatak ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div>${kraj}</div>`;
+    <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Zadatak ispunjen — nagrada je tvoja!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do nagrade`}</div>${kraj}</div>`;
 }
 const izazovPodsjetnik = () => IZ_PLAN[1] ? '' : `<div class="admin-alert">${ic('bell', 20)}<div class="grow"><b>Tjedni zadatak za idući tjedan (30.11.–6.12.) još nije planiran</b><div>Planiraj ga najkasnije u <b>nedjelju 29.11. do 12:00</b> (za 5 dana), kad se objavljuje i raspored.</div></div><button class="btn sm" data-izuredi="1">Planiraj zadatak</button></div>`;
 function videoSheet() {
@@ -500,7 +500,7 @@ function videoSheet() {
   overlay(`<div style="display:flex;justify-content:center">${coinSvg(48)}</div><h2>${IZAZOV.naslov}</h2><p>${IZAZOV.opis}</p>
     <label class="btn ghost block vid-pick">${ic(foto ? 'image' : 'upload', 18)} <span id="vidName">${foto ? 'Odaberi ili slikaj fotografiju' : 'Odaberi ili snimi video'}</span><input type="file" id="vidFile" accept="${foto ? 'image/*' : 'video/*'}" capture="environment" hidden></label>
     <button class="btn red block" data-vidsend>${foto ? 'Pošalji fotografiju' : 'Pošalji video'}</button><button class="btn ghost block" data-fxclose>Odustani</button>
-    <small>${foto ? 'Fotografiju' : 'Video'} vidi samo trener. Nakon slanja čeka se odobrenje trenera: kad ${foto ? 'je' : 'ga'} potvrdi, zadatak je ispunjen i dobivaš bonus; ako ${foto ? 'je' : 'ga'} odbije, zadatak se zaključava. (Prototip: datoteka se ne učitava stvarno.)</small>`);
+    <small>${foto ? 'Fotografiju' : 'Video'} vidi samo trener. Nakon slanja čeka se odobrenje trenera: kad ${foto ? 'je' : 'ga'} potvrdi, zadatak je ispunjen i dobivaš nagradu; ako ${foto ? 'je' : 'ga'} odbije, zadatak se zaključava. (Prototip: datoteka se ne učitava stvarno.)</small>`);
 }
 function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
   return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
