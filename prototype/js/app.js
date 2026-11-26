@@ -127,10 +127,10 @@ const OBAVIJESTI = {
   admin: [{ naslov: 'Tjedni zadatak', tekst: 'Planiraj tjedni zadatak za idući tjedan najkasnije do nedjelje u 12:00.', vr: 'Danas 08:00', nova: true }, { naslov: 'Nove prijave', tekst: '2 nove prijave čekaju potvrdu.', vr: '23.11. 18:40', nova: true }],
 };
 const uloga = () => location.hash.slice(1).split('-')[0];
-const notify = (za, naslov, tekst) => OBAVIJESTI[za].unshift({ naslov, tekst, vr: 'Upravo sada', nova: true });
+const notify = (za, naslov, tekst, narudzba) => OBAVIJESTI[za].unshift({ naslov, tekst, vr: 'Upravo sada', nova: true, narudzba });
 const novihObavijesti = (u = uloga()) => (OBAVIJESTI[u] || []).filter((n) => n.nova).length;
 const bellBtn = (cls = '', attr = 'data-bell') => `<button class="cog bell ${cls}" ${attr} aria-label="Obavijesti">${ic('bell', 22)}${novihObavijesti() ? `<span class="nb">${novihObavijesti()}</span>` : ''}</button>`;
-const bellList = () => { const l = OBAVIJESTI[uloga()] || []; return l.length ? `<div class="list">${l.map((n) => `<div class="row notif ${n.nova ? 'new' : ''}"><span class="n-ico">${ic('bell', 16)}</span><div class="grow"><h3 style="font-size:var(--fs-sm)">${n.naslov}</h3><div class="meta" style="color:var(--text)">${n.tekst}</div><div class="meta">${n.vr}</div></div></div>`).join('')}</div>` : '<p class="meta" style="text-align:center;padding:12px 0">Nema obavijesti.</p>'; };
+const bellList = () => { const l = OBAVIJESTI[uloga()] || []; return l.length ? `<div class="list">${l.map((n) => `<div class="row notif ${n.nova ? 'new' : ''}"><span class="n-ico">${ic('bell', 16)}</span><div class="grow"><h3 style="font-size:var(--fs-sm)">${n.naslov}</h3><div class="meta" style="color:var(--text)">${n.tekst}</div><div class="meta">${n.vr}</div>${n.narudzba ? `<button class="btn sm" style="margin-top:8px" data-notord="${l.indexOf(n)}">Pogledaj</button>` : ''}</div></div>`).join('')}</div>` : '<p class="meta" style="text-align:center;padding:12px 0">Nema obavijesti.</p>'; };
 const markRead = () => { (OBAVIJESTI[uloga()] || []).forEach((n) => (n.nova = false)); document.querySelectorAll('.bell .nb').forEach((x) => x.remove()); };
 const awarded = {};
 
@@ -1190,17 +1190,20 @@ document.addEventListener('click', (e) => {
   if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const rod = uloga() === 'roditelj';
     const f = rod ? 0 : r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f); const pre = !(v.n > 0);
     if (!rod) FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (!pre) v.n--;
-    NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre, cijena: a.cijena, f, gotovina: cash, dat: '26.11.2026.', st: rod ? 'čeka' : 'čeka roditelja', izvor: rod ? 'roditelj' : 'igracica' });
+    const nov = { igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre, cijena: a.cijena, f, gotovina: cash, dat: '26.11.2026.', st: rod ? 'čeka' : 'čeka roditelja', izvor: rod ? 'roditelj' : 'igracica' }; NARUDZBE.unshift(nov);
     if (rod) { notify('admin', 'Nova narudžba u Ormaru (roditelj)', `Ana Horvat: ${a.ime} (${v.v}) · iznenađenje, ne najavljivati igračici · naplatiti ${fmt(cash)} €`); closeOverlay(); render(); toastIn('Narudžba poslana — Ana ne zna'); return; }
     if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f });
-    notify('roditelj', 'Ana je izabrala artikl u Ormaru', `${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · doplata ${fmt(cash)} €` : ''}. Pogledaj i odobri u Ormaru.`);
+    notify('roditelj', 'Ana je izabrala artikl u Ormaru', `${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · doplata ${fmt(cash)} €` : ''}. Pogledaj i odobri.`, nov);
     closeOverlay(); render(); toastIn('Poslano roditelju na odobrenje'); return; }
+  const no = e.target.closest('[data-notord]');
+  if (no) { const nt = (OBAVIJESTI[uloga()] || [])[+no.dataset.notord]; const o = nt && nt.narudzba; const i = NARUDZBE.indexOf(o);
+    overlay(`<h2>Narudžba iz Ormara</h2>${o.st === 'čeka roditelja' ? narudzbaKartica({ n: o, i }, true) : `${narudzbaKartica({ n: o, i }, false).replace(/<div class="vid-state[\s\S]*$/, '')}<div class="vid-state ${o.st === 'odbijeno' ? 'no' : 'ok'}"><span class="vs-t">${o.st === 'odbijeno' ? 'Odbijeno' : 'Već odobreno'}</span></div></div>`}<button class="btn ghost block" data-fxclose>Zatvori</button>`); return; }
   const ro = e.target.closest('[data-rodok],[data-rodno]');
   if (ro) { const ok = ro.dataset.rodok !== undefined; const n = NARUDZBE[+(ok ? ro.dataset.rodok : ro.dataset.rodno)];
     if (ok) { n.st = 'čeka'; notify('admin', 'Nova narudžba u Ormaru', `Ana Horvat: ${n.artikl} (${n.velicina}), ${fmt(n.cijena)}${n.gotovina > 0 ? ` · naplatiti ${fmt(n.gotovina)} €` : ''} · odobrio roditelj`); notify('igracica', 'Roditelj je odobrio narudžbu', `${n.artikl} (${n.velicina}) — preuzmi na treningu kod trenera.`); toastIn('Odobreno — narudžba ide klubu'); }
     else { n.st = 'odbijeno'; const a = ORMAR.find((x) => x.ime === n.artikl); const vv = a && a.velicine.find((x) => x.v === n.velicina); if (vv && vv.n !== null && !n.pre) vv.n++;
       FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n.f); if (n.f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Povrat: ${n.artikl} (roditelj nije odobrio)`, iznos: n.f }); notify('igracica', 'Roditelj nije odobrio narudžbu', `${n.artikl} (${n.velicina}) — Falcoini su vraćeni na stanje.`); toastIn('Odbijeno — Falcoini vraćeni Ani'); }
-    render(); return; }
+    closeOverlay(); render(); return; }
   const qt = e.target.closest('[data-qrtip]'); if (qt) { state.qrTip = qt.dataset.qrtip; render(); return; }
   const iz = e.target.closest('[data-izdano]'); if (iz) { NARUDZBE[+iz.dataset.izdano].st = 'izdano'; render(); return; }
   const ot = e.target.closest('[data-otkazi]');
