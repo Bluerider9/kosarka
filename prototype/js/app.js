@@ -477,7 +477,7 @@ function izazovKartica() {
   const prosliRed = `<div class="prosli ${ZADACI_POVIJEST[0].st}">${prosliTekst(ZADACI_POVIJEST[0].st, ZADACI_POVIJEST[0].nagrada)}</div>`;
   const kraj = proto('cekanje', 'pogledaj nedjelju 12:01');
   if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery">${zq}<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div>
-    <div class="join-note">Zadatak je tajna. Priključi se i otkrij što te ovaj tjedan čeka. Napredak se računa od trenutka priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${prosliRed}${kraj}</div>`;
+    <div class="join-note">Zadatak je tajna. Da bi ga vidjela, moraš se priključiti; priključenima se zadatak otkriva od ponedjeljka u 00:01. Napredak se računa od priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${prosliRed}${kraj}</div>`;
   if (jeRad(z)) {
     const v = state.video; const foto = z.vrsta === 'foto';
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic(foto ? 'image' : 'upload', 18)} ${foto ? 'Slikaj ili dodaj fotografiju' : 'Snimi ili dodaj video'}</button>`
@@ -1096,7 +1096,7 @@ document.addEventListener('click', (e) => {
   const ib = e.target.closest('[data-izbrisi]'); if (ib) { IZ_PLAN[+ib.dataset.izbrisi] = null; state.izTjedan = null; render(); return; }
   if (e.target.closest('[data-zhelp]')) { overlay(`<h2>Što je tjedni zadatak?</h2>
     <p>Svaki tjedan, od <b>ponedjeljka u 00:01 do nedjelje u 12:00</b>, klub igračicama zadaje jedan izazov: dolasci na treninge, video ili fotografija.</p>
-    <p><b>Zadatak je tajna</b> dok se ne priključiš: kad se priključiš, otkriva se što treba napraviti, a napredak se računa od tog trenutka. Priključiti se možeš već u nedjelju od 12:01 za idući tjedan.</p>
+    <p><b>Zadatak je tajna</b> dok se ne priključiš: da bi ga vidjela, moraš se priključiti; priključenima se zadatak otkriva od ponedjeljka u 00:01, a napredak se računa od priključivanja. Priključiti se možeš već u nedjelju od 12:01 za idući tjedan.</p>
     <p>Za ispunjen zadatak dobivaš <b>bonus u FLC</b> (iznos piše na kartici i svaki je zadatak drukčiji). Sat otvara povijest tvojih zadataka.</p>
     <button class="btn block" data-fxclose>Razumijem</button>`); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
