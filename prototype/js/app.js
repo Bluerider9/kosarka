@@ -340,7 +340,7 @@ function novostCard(n) {
 }
 /* ---------- FALCOINI I ORMAR ---------- */
 const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;
-const FLC = 'FLC'; // kratica valute Falcoin
+const FLC = 'FC'; // kratica valute Falcoin
 const r2 = (n) => Math.round(n * 100) / 100;
 const fmt = (n) => r2(n).toFixed(2).replace('.', ',');
 const fc = (n, s = 16) => `<span class="fc">${coinSvg(s)}<b>${typeof n === 'number' ? fmt(n) : n}</b><small class="flc">${FLC}</small></span>`;
@@ -608,7 +608,7 @@ const SCREENS = {
   'igracica-falcoini': () => ({
     header: mHeader(SEKCIJA_FALCOIN, 'Skupljaj Falcoine i mijenjaj ih u Ormaru'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
-    body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-side"><span>${FLC}</span><small>= ${fmt(saldo())} € u Ormaru</small></div></div>
+    body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
       <div class="section-title small">Kako zarađuješ</div>

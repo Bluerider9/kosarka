@@ -92,7 +92,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 
 ## Falcoini i Ormar
 
-- **Naziv sekcije/taba je "MyFalko"** (konstanta `SEKCIJA_FALCOIN` u `app.js`, privremeno ime, mijenja se na jednom mjestu); **"Falcoin" ostaje samo naziv valute, a kratica je "FLC"** (konstanta `FLC`; iznosi se pišu "12,50 FLC", 1 FLC = 1 €) (iznosi, pravila, povijest). Vrijedi za tab igračice, naslov stranice, gumb natrag iz Ormara i admin stranicu.
+- **Naziv sekcije/taba je "MyFalko"** (konstanta `SEKCIJA_FALCOIN` u `app.js`, privremeno ime, mijenja se na jednom mjestu); **"Falcoin" ostaje samo naziv valute, a kratica je "FC"** (konstanta `FLC` u app.js; iznosi se pišu "12,50 FC", 1 FC = 1 €; na stanju igračice veliki iznos + FC, ispod sitno "= 18,50 € u Ormaru") (iznosi, pravila, povijest). Vrijedi za tab igračice, naslov stranice, gumb natrag iz Ormara i admin stranicu.
 
 - **Falcoin** je klupska virtualna valuta; igračice ih skupljaju dolascima (trening, utakmica, turnir, bonusi) i mijenjaju za artikle u klupskom webshopu **Ormar**.
 - **Bilježenje dolaska QR kodom:** trener u svojoj aplikaciji otvori QR za termin (bira vrstu: trening / utakmica / turnir), igračica ga skenira u svojoj aplikaciji → dolazak se sprema i dobiva Falcoine.
