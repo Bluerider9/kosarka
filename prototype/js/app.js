@@ -695,9 +695,51 @@ const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
     <td>${p.grupe.map((x) => chip(x, 'navy')).join(' ')}</td><td>${p.roditelj}</td><td>${clan(p.clanarina)}</td></tr>`).join('');
 
+
+/* ---------- ADMIN KALENDAR (treninzi, utakmice, izazovi) ---------- */
+const MJESECI = ['Siječanj', 'Veljača', 'Ožujak', 'Travanj', 'Svibanj', 'Lipanj', 'Srpanj', 'Kolovoz', 'Rujan', 'Listopad', 'Studeni', 'Prosinac'];
+const MJ_GEN = ['siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnja', 'srpnja', 'kolovoza', 'rujna', 'listopada', 'studenoga', 'prosinca'];
+const pad2 = (n) => String(n).padStart(2, '0');
+const dKey = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
+const ADM_UTAKMICE = [
+  { d: '2026-11-15', vr: '11:00', opis: 'Prvenstvo U14 · ŽKK Primjer 1', rez: '41 : 47' },
+  { d: '2026-11-22', vr: '11:00', opis: 'Prvenstvo U14 · ŽKK Primjer 2', rez: '54 : 48' },
+  { d: '2026-11-28', vr: '11:00', opis: 'Prvenstvo U14', glavna: true },
+  { d: '2026-12-05', vr: '10:00', opis: 'Prvenstvo U16 · ŽKK Primjer 3', nepotvrdeno: true },
+  { d: '2026-12-12', vr: '12:00', opis: 'Prvenstvo U14 · ŽKK Primjer 4', nepotvrdeno: true },
+];
+const danStavke = (y, m, d) => {
+  const dt = new Date(y, m, d); const wd = (dt.getDay() + 6) % 7; const key = dKey(y, m, d); const st = [];
+  (TRENINZI[wd] || []).forEach((t) => st.push({ t: 'tr', vr: t.v, label: grupaLabel(t.g), det: `${t.v}–${t.do} · ${t.d}` }));
+  ADM_UTAKMICE.filter((u) => u.d === key).forEach((u) => st.push({ t: 'ut', vr: u.vr, label: 'Utakmica', det: `${u.vr} · ${u.opis}`, u }));
+  const wk = Math.floor((dt - new Date(2026, 10, 23)) / 604800000);
+  if (wk >= 0 && wk < IZ_PLAN.length && IZ_PLAN[wk]) { if (wd === 0) st.push({ t: 'iz', vr: '', label: IZ_PLAN[wk].naslov, det: `Izazov tjedna · ${IZ_PLAN[wk].vrsta === 'video' ? 'video zadatak' : 'dolasci'}`, wk }); if (wd === 6) st.push({ t: 'iz', vr: '', label: 'Rok izazova', det: `Rok: ${IZ_PLAN[wk].naslov}`, wk, rok: true }); }
+  return st;
+};
+function adminKalendar() {
+  const { y, m } = state.admMj; const sel = state.admDan; const prvi = new Date(y, m, 1); const off = (prvi.getDay() + 6) % 7; const dani = new Date(y, m + 1, 0).getDate(); const danas = dKey(2026, 10, 24);
+  const cells = []; for (let i = 0; i < off; i++) cells.push(null); for (let d = 1; d <= dani; d++) cells.push(d); while (cells.length % 7) cells.push(null);
+  const grid = cells.map((d) => { if (!d) return '<div class="cal-cell empty"></div>'; const key = dKey(y, m, d); const st = danStavke(y, m, d); const wd = (new Date(y, m, d).getDay() + 6) % 7;
+    return `<div class="cal-cell ${key === danas ? 'today' : ''} ${key === sel ? 'sel' : ''} ${key < danas ? 'past' : ''} ${wd > 4 ? 'we' : ''}" data-admdan="${key}"><div class="cal-d">${d}</div>
+      ${st.slice(0, 4).map((x) => `<div class="cal-it ${x.t}">${x.vr ? `<b>${x.vr}</b> ` : ''}${x.label}</div>`).join('')}${st.length > 4 ? `<div class="cal-more">+${st.length - 4}</div>` : ''}</div>`; }).join('');
+  const [sy, sm, sd] = sel.split('-').map(Number); const sst = danStavke(sy, sm - 1, sd); const sdt = new Date(sy, sm - 1, sd);
+  const detalj = `<div class="cal-detail card"><h3>${DANI_PUNO[(sdt.getDay() + 6) % 7]}, ${sd}. ${MJ_GEN[sm - 1]}</h3>
+    ${['tr', 'ut', 'iz'].map((tip) => { const l = sst.filter((x) => x.t === tip); if (!l.length) return ''; const nas = { tr: 'Treninzi', ut: 'Utakmice', iz: 'Izazov tjedna' }[tip];
+      return `<div class="section-title small">${nas}</div>${l.map((x) => `<div class="cal-row ${x.t}"><b>${x.t === 'iz' ? x.label : x.det.split(' · ')[0]}</b><span>${x.t === 'tr' ? `${x.label} · ${x.det.split(' · ')[1]}` : x.t === 'ut' ? x.u.opis : x.det}</span>
+        ${x.t === 'ut' ? (x.u.rez ? chip('Rezultat ' + x.u.rez, 'navy') : x.u.glavna ? (UTAKMICA.termin && UTAKMICA.dvorana ? chip('Potvrđeno', 'ok') : chip('Čeka potvrdu', 'warn')) : chip('Nije potvrđeno', 'warn')) : ''}
+        ${x.t === 'iz' ? `<button class="btn ghost sm" data-izuredi="${x.wk}">Uredi</button>` : ''}</div>`).join('')}`; }).join('') || '<div class="meta">Nema termina ovaj dan.</div>'}
+    ${sel === '2026-11-28' ? adminUtakmica() : ''}</div>`;
+  return `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Treninzi, utakmice i izazovi tjedna</div></div><div class="grow"></div>
+      <button class="btn" data-toast="Novi termin — sljedeći korak">${ic('plus', 18)} Novi termin</button></div>
+    ${RASPORED_NAPOMENA}
+    <div class="cal-bar"><button class="btn ghost sm" data-admmj="-1" aria-label="Prethodni mjesec">‹</button><h2>${MJESECI[m]} ${y}.</h2><button class="btn ghost sm" data-admmj="1" aria-label="Sljedeći mjesec">›</button>
+      <button class="btn ghost sm" data-admmj="0">Danas</button><div class="grow"></div>
+      <span class="cal-leg"><i class="tr"></i>Trening</span><span class="cal-leg"><i class="ut"></i>Utakmica</span><span class="cal-leg"><i class="iz"></i>Izazov</span></div>
+    <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div></div>${detalj}</div>`;
+}
 function adminUtakmica() {
   const u = UTAKMICA;
-  return `<div class="card adm-utk" style="margin-top:24px"><h3>Utakmica · ${u.natjecanje}</h3><div class="meta">${u.datum} · ${u.vrijeme} · kandidata ${UTK_KANDIDATI.length} igračica</div>
+  return `<div class="card adm-utk" style="margin-top:12px;box-shadow:none;border:1px solid var(--silver-100)"><h3>Utakmica · ${u.natjecanje}</h3><div class="meta">${u.datum} · ${u.vrijeme} · kandidata ${UTK_KANDIDATI.length} igračica</div>
     <div class="adm-utk-row"><div><b>Datum i vrijeme</b><div class="meta">${u.datum} u ${u.vrijeme}</div></div>${u.termin ? chip('Potvrđeno', 'ok') + '<button class="btn ghost sm" data-admutk="termin-off">Poništi</button>' : '<button class="btn sm" data-admutk="termin">Potvrdi</button>'}</div>
     <div class="adm-utk-row"><div><b>Dvorana</b><div class="meta">${u.dvorana || 'Dvorana A (predloženo)'}</div></div>${u.dvorana ? chip('Potvrđeno', 'ok') + '<button class="btn ghost sm" data-admutk="dvorana-off">Poništi</button>' : '<button class="btn sm" data-admutk="dvorana">Potvrdi</button>'}</div>
     <div class="meta" style="margin-top:10px">Igračice i roditelji potvrđuju dolazak kad trener objavi popis (ne čeka se potvrda termina).</div></div>`;
@@ -773,11 +815,7 @@ const ADMIN = {
       <button class="btn" data-toast="Nova grupa — sljedeći korak">${ic('plus', 18)} Nova grupa</button></div>
     <div class="grid-3">${GROUPS.map((g) => `<div class="card stack"><div class="row spread"><h2 style="font-size:var(--fs-xl)">${g.ime}</h2>${chip(g.cl + ' članica', 'navy')}</div>
       <div class="meta">Trener: <b style="color:var(--text)">${g.trener}</b></div><div class="meta">${g.raspored}</div></div>`).join('')}</div>`,
-  raspored: () => `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Tjedan 23. – 29. 11.</div></div><div class="grow"></div>
-      <button class="btn" data-toast="Novi termin — sljedeći korak">${ic('plus', 18)} Novi termin</button></div>
-    ${RASPORED_NAPOMENA}<table><thead><tr><th>Dan</th><th>Vrijeme</th><th>Grupa</th><th>Dvorana</th></tr></thead><tbody>${DANI.flatMap((d, i) =>
-      (TRENINZI[i] || []).map((t, j) => `<tr><td>${j ? '' : '<b>' + d + '</b>'}</td><td>${t.v} – ${t.do}</td><td>${chip(grupaLabel(t.g), 'navy')}</td><td>${t.d}</td></tr>`)).join('')}</tbody></table>
-    ${adminUtakmica()}`,
+  raspored: () => adminKalendar(),
   clanarine: () => `<div class="page-head"><div><h1>Članarine</h1><div class="sub">Uplate i uvoz bankovnog izvoda</div></div></div>
     <div class="dropzone" style="margin-bottom:24px"><div style="color:var(--navy);margin-bottom:8px;display:flex;justify-content:center">${ic('upload', 28)}</div>
       <b style="color:var(--text)">Povuci Erste izvod (WRI) ovdje</b><div style="margin:4px 0 14px">ili</div>
@@ -790,7 +828,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izTjedan: null, skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izTjedan: null, admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -973,6 +1011,9 @@ document.addEventListener('click', (e) => {
     if (ok && pl) { const n = pravilo('izazov'); FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Izazov tjedna: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Izazov odobren', `Dobila si +${fmt(n)} ${FLC} za izazov tjedna.`); notify('roditelj', 'Izazov odobren', `Ana je ispunila izazov tjedna (+${fmt(n)} ${FLC}).`); } }
     else if (v.ana) notify('igracica', 'Video nije prihvaćen', 'Probaj snimiti ponovno.');
     render(); return; }
+  const am = e.target.closest('[data-admmj]');
+  if (am) { const v = +am.dataset.admmj; if (v === 0) { state.admMj = { y: 2026, m: 10 }; state.admDan = '2026-11-24'; } else { let { y, m } = state.admMj; m += v; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } state.admMj = { y, m }; } render(); return; }
+  const ad = e.target.closest('[data-admdan]'); if (ad) { state.admDan = ad.dataset.admdan; render(); return; }
   const iu = e.target.closest('[data-izuredi]');
   if (iu) { state.izTjedan = +iu.dataset.izuredi; if (!location.hash.includes('admin-falcoini')) { location.hash = 'admin-falcoini'; } else render(); return; }
   const isp = e.target.closest('[data-izspremi]');

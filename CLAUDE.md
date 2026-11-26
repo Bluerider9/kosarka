@@ -146,6 +146,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Zupčanik gore desno na svim ekranima za prijavljene (mobitel: u zaglavlju; admin: u kutu glavnog dijela).
 - Mobitel: u zaglavlju stoje **tri ikone: QR (skeniranje), zvono, zupčanik**. QR otvara skener za dolazak (igračica) odnosno QR za termin (trener); **roditelj nema QR ikonu** (samo zvono i zupčanik).
 - Mobitel: Moj profil, Brza prijava (prekidač za otisak prsta / Face ID), Upute za instalaciju, Pravila privatnosti, Odjava.
+- **Raspored (admin, desktop) je mjesečni kalendar po danima** (pon–ned, strelice ‹ › za mjesec, "Danas"): u svakom danu su sitni redovi **treninzi** (plavo), **utakmice** (crveno) i **izazov tjedna** (zlatno: u ponedjeljak naslov, u nedjelju "Rok izazova"); prošli dani blijede, današnji ima zlatni obrub. Klik na dan otvara desno **detalj dana** (treninzi s dvoranom, utakmice sa statusom/rezultatom, izazov s "Uredi"); za dan utakmice ondje su i potvrde termina i dvorane. Treninzi se u prototipu ponavljaju po tjednom obrascu; "Novi termin" još nije u prototipu.
 - Admin: Moj profil, Postavke kluba (grupe, popis škola, sezone), Korisnici i uloge, Predlošci e-mailova, Odjava.
 
 ## Struktura
