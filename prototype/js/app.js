@@ -474,22 +474,21 @@ function izazovKartica() {
       ${proto('aktivan', 'vrati na utorak')}</div>`;
   }
   const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:6px">${z.naslov}</h3><div class="meta" style="margin-top:4px">${z.opis}</div>`;
-  const prosliRed = `<div class="prosli ${ZADACI_POVIJEST[0].st}">${prosliTekst(ZADACI_POVIJEST[0].st, ZADACI_POVIJEST[0].nagrada)}</div>`;
   const kraj = proto('cekanje', 'pogledaj nedjelju 12:01');
   if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery">${zq}<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div>
-    <div class="join-note">Zadatak je tajna. Da bi ga vidjela, moraš se priključiti; priključenima se zadatak otkriva od ponedjeljka u 00:01. Napredak se računa od priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${prosliRed}${kraj}</div>`;
+    <div class="join-note">Zadatak je tajna. Da bi ga vidjela, moraš se priključiti; priključenima se zadatak otkriva od ponedjeljka u 00:01. Napredak se računa od priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${kraj}</div>`;
   if (jeRad(z)) {
     const v = state.video; const foto = z.vrsta === 'foto';
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic(foto ? 'image' : 'upload', 18)} ${foto ? 'Slikaj ili dodaj fotografiju' : 'Snimi ili dodaj video'}</button>`
       : v.st === 'čeka' ? `<div class="vid-state wait">${ic('check', 16)} ${foto ? 'Fotografija poslana' : 'Video poslan'}: ${v.datoteka}<small>Čeka odobrenje trenera</small></div>`
       : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Bonus ${fmt(z.nagrada)} ${FLC} je tvoj.</div>`
       : `<div class="vid-state no">${foto ? 'Fotografija' : 'Video'} nije prihvaćen${foto ? 'a' : ''}. Probaj ponovno.</div><button class="btn red block" style="margin-top:8px" data-vidopen>${foto ? 'Pošalji novu fotografiju' : 'Pošalji novi video'}</button>`;
-    return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${prosliRed}${kraj}</div>`;
+    return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${kraj}</div>`;
   }
   const gotovo = z.odradeno >= z.cilj;
   return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>
     <div class="streak-dots">${Array.from({ length: z.cilj }, (_, i) => `<span class="${i < z.odradeno ? 'on' : ''}">${i < z.odradeno ? '✓' : i + 1}</span>`).join('')}</div>
-    <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Zadatak ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div>${prosliRed}${kraj}</div>`;
+    <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Zadatak ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div>${kraj}</div>`;
 }
 const izazovPodsjetnik = () => IZ_PLAN[1] ? '' : `<div class="admin-alert">${ic('bell', 20)}<div class="grow"><b>Tjedni zadatak za idući tjedan (30.11.–6.12.) još nije planiran</b><div>Planiraj ga najkasnije u <b>nedjelju 29.11. do 12:00</b> (za 5 dana), kad se objavljuje i raspored.</div></div><button class="btn sm" data-izuredi="1">Planiraj zadatak</button></div>`;
 function videoSheet() {
