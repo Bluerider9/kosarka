@@ -928,19 +928,19 @@ const invUk = (r) => Object.values(r.kol).reduce((a, b) => a + (+b || 0), 0);
 const STANJE_INV = { dobro: ['dobro', 'ok'], istrošeno: ['istrošeno', 'warn'], 'za zamjenu': ['za zamjenu', 'danger'] };
 function treningTablica() {
   const redovi = DANI.flatMap((d, i) => (TRENINZI[i] || []).map((t) => ({ dan: d, i, vr: t.v + '–' + t.do, g: t.g, dv: t.d, tr: (GROUPS.find((x) => x.ime === t.g) || {}).trener || '—' })));
-  return pogled('klub-treninzi', { lnaslov: 'Treninzi', title: 'dan', empty: 'Nema termina.', rows: redovi, lsub: (r) => r.vr + ' · ' + r.g, lchip: (r) => chip(r.dv, ''),
+  return pogled('klub-treninzi', { lepeza: false, lnaslov: 'Treninzi', title: 'dan', empty: 'Nema termina.', rows: redovi, lsub: (r) => r.vr + ' · ' + r.g, lchip: (r) => chip(r.dv, ''),
     cols: [{ id: 'dan', label: 'Dan', val: (r) => r.dan, html: (r) => `<b>${r.dan}</b>` }, { id: 'vr', label: 'Vrijeme', val: (r) => r.vr }, { id: 'g', label: 'Grupa', val: (r) => r.g, html: (r) => chip(r.g, 'navy') },
       { id: 'dv', label: 'Dvorana', val: (r) => r.dv }, { id: 'tr', label: 'Trener', val: (r) => r.tr }] });
 }
 function klubScreen() {
   const t = state.klubTab || 'grupe', nov = { grupe: 'Nova grupa', treninzi: 'Novi termin treninga', dvorane: 'Nova dvorana', osoblje: 'Nova osoba', inventar: 'Nova stavka' }[t];
-  const tijelo = t === 'grupe' ? ADMIN.__grupeTijelo() : t === 'treninzi' ? treningTablica() : t === 'dvorane' ? pogled('klub-dvorane', { lnaslov: 'Dvorane', title: 'naziv', empty: 'Nema dvorana.', lsub: (r) => r.vrsta, rows: DVORANE_KLUB.map((n) => ({ naziv: n, vrsta: /^OŠ/.test(n) ? 'Školska dvorana' : 'Klupska dvorana', adresa: '—', cijena: '—', kontakt: '—' })),
+  const tijelo = t === 'grupe' ? ADMIN.__grupeTijelo() : t === 'treninzi' ? treningTablica() : t === 'dvorane' ? pogled('klub-dvorane', { lepeza: false, lnaslov: 'Dvorane', title: 'naziv', empty: 'Nema dvorana.', lsub: (r) => r.vrsta, rows: DVORANE_KLUB.map((n) => ({ naziv: n, vrsta: /^OŠ/.test(n) ? 'Školska dvorana' : 'Klupska dvorana', adresa: '—', cijena: '—', kontakt: '—' })),
       cols: [{ id: 'naziv', label: 'Dvorana', val: (r) => r.naziv, html: (r) => `<b>${r.naziv}</b>` }, { id: 'vrsta', label: 'Vrsta', val: (r) => r.vrsta, html: (r) => chip(r.vrsta, 'navy') }, { id: 'adresa', label: 'Adresa', val: (r) => r.adresa },
         { id: 'cijena', label: 'Cijena najma / sat', val: (r) => r.cijena }, { id: 'kontakt', label: 'Kontakt dvorane', val: (r) => r.kontakt }] })
-    : t === 'osoblje' ? pogled('klub-osoblje', { lnaslov: 'Osoblje', title: 'ime', empty: 'Nema osoblja.', lav: (r) => `<span class="lep-ini">${ini(r.ime)}</span>`, lsub: (r) => r.uloga, lchip: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn'), rows: KLUB_OSOBLJE,
+    : t === 'osoblje' ? pogled('klub-osoblje', { lepeza: false, lnaslov: 'Osoblje', title: 'ime', empty: 'Nema osoblja.', lav: (r) => `<span class="lep-ini">${ini(r.ime)}</span>`, lsub: (r) => r.uloga, lchip: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn'), rows: KLUB_OSOBLJE,
       cols: [{ id: 'ime', label: 'Ime', val: (r) => r.ime, html: (r) => `<div class="who"><span class="lep-ini sm">${ini(r.ime)}</span><b>${r.ime}</b></div>` }, { id: 'uloga', label: 'Uloga', val: (r) => r.uloga }, { id: 'grupe', label: 'Grupe', val: (r) => r.grupe.join(', ') || '—', html: (r) => r.grupe.map((x) => chip(x, 'navy')).join(' ') || '—' },
         { id: 'kontakt', label: 'Kontakt', val: (r) => r.kontakt }, { id: 'status', label: 'Status', val: (r) => r.status, html: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn') }] })
-    : pogled('klub-inventar', { lnaslov: 'Inventar', title: 'naziv', empty: 'Nema stavki.', rows: KLUB_INVENTAR, lsub: (r) => invUk(r) + ' kom ukupno', lchip: (r) => chip(...STANJE_INV[r.stanje]),
+    : pogled('klub-inventar', { lepeza: false, lnaslov: 'Inventar', title: 'naziv', empty: 'Nema stavki.', rows: KLUB_INVENTAR, lsub: (r) => invUk(r) + ' kom ukupno', lchip: (r) => chip(...STANJE_INV[r.stanje]),
       cols: [{ id: 'naziv', label: 'Stavka', val: (r) => r.naziv, html: (r) => `<b>${r.naziv}</b>` }, { id: 'kat', label: 'Kategorija', val: (r) => r.kat, html: (r) => chip(r.kat, 'navy') },
         { id: 'uk', label: 'Ukupno u klubu', val: (r) => invUk(r), html: (r) => `<b class="inv-uk" data-invtot="${KLUB_INVENTAR.indexOf(r)}">${invUk(r)}</b> kom` },
         { id: 'stanje', label: 'Stanje', val: (r) => r.stanje, html: (r) => chip(...STANJE_INV[r.stanje]) },
@@ -1088,10 +1088,10 @@ const ADMIN = {
       cols: [{ id: 'naslov', label: 'Objava', val: (n) => n.naslov, html: (n) => `<b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div>` }, { id: 'za', label: 'Za', val: (n) => (n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa), html: (n) => chip(n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa, 'navy') },
         { id: 'dat', label: 'Datum', val: (n) => n.dat }, { id: 'cit', label: 'Pročitalo', val: (n) => n.citalo, html: (n) => (n.citalo ? `${n.citalo} / ${n.od}` : '—') }] })}`,
   grupe: () => { state.klubTab = 'grupe'; return klubScreen(); },
-  __grupeTijelo: () => `${pogled('grupe', { lnaslov: 'Grupe', title: 'ime', empty: 'Nema grupa.', rows: GROUPS, lsub: (g) => g.trener + ' · ' + g.cl + ' članica', lchip: (g) => chip(g.raspored, ''),
+  __grupeTijelo: () => `${pogled('grupe', { lepeza: false, lnaslov: 'Grupe', title: 'ime', empty: 'Nema grupa.', rows: GROUPS, lsub: (g) => g.trener + ' · ' + g.cl + ' članica', lchip: (g) => chip(g.raspored, ''),
       cols: [{ id: 'ime', label: 'Grupa', val: (g) => g.ime, html: (g) => `<b>${g.ime}</b>` }, { id: 'trener', label: 'Trener', val: (g) => g.trener }, { id: 'cl', label: 'Članica', val: (g) => g.cl, html: (g) => chip(g.cl + ' članica', 'navy') }, { id: 'rasp', label: 'Raspored', val: (g) => g.raspored }] })}
     <h2 style="font-size:var(--fs-lg);margin:28px 0 10px">Treneri</h2>
-    ${pogled('treneri', { lnaslov: 'Treneri', title: 'ime', empty: 'Nema trenera.', rows: [...new Set(GROUPS.map((g) => g.trener))].map((t) => ({ ime: t, grupe: GROUPS.filter((g) => g.trener === t).map((g) => g.ime), cl: GROUPS.filter((g) => g.trener === t).reduce((a, g) => a + g.cl, 0) })),
+    ${pogled('treneri', { lepeza: false, lnaslov: 'Treneri', title: 'ime', empty: 'Nema trenera.', rows: [...new Set(GROUPS.map((g) => g.trener))].map((t) => ({ ime: t, grupe: GROUPS.filter((g) => g.trener === t).map((g) => g.ime), cl: GROUPS.filter((g) => g.trener === t).reduce((a, g) => a + g.cl, 0) })),
       lav: (t) => `<span class="lep-ini">${ini(t.ime)}</span>`, lsub: (t) => t.grupe.join(' · '),
       cols: [{ id: 'ime', label: 'Trener', val: (t) => t.ime, html: (t) => `<div class="who"><span class="lep-ini sm">${ini(t.ime)}</span><b>${t.ime}</b></div>` }, { id: 'grupe', label: 'Grupe', val: (t) => t.grupe.join(', '), html: (t) => t.grupe.map((x) => chip(x, 'navy')).join(' ') }, { id: 'cl', label: 'Članica ukupno', val: (t) => t.cl }] })}`,
   raspored: () => adminKalendar(),

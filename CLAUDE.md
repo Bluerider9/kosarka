@@ -204,6 +204,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 ## Klub (admin)
 
 - Admin izbornik ima kategoriju **Klub** s pet tabova (isti obrazac: tablica + lepeza + "Novi …"): **Grupe** (prije samostalna stavka izbornika; uključuje i popis Trenera; `#admin-grupe` otvara taj tab), **Raspored treninga** (tjedni obrazac: dan, vrijeme, grupa, dvorana, trener; `treningTablica()`), **Dvorane kluba** (6 klupskih dvorana iz Trackera: naziv, vrsta, adresa, cijena najma/sat, kontakt dvorane; adresa/cijena/kontakt još prazni "—" jer ih dump nema), **Osoblje kluba** (ime, uloga, grupe, kontakt, status; izmišljeni podaci, trener-grupe usklađene s Grupama) i **Inventar kluba** (stavka, kategorija, stanje dobro/istrošeno/za zamjenu; **količina se upisuje po prostoru**: stupac po svakoj dvorani + "Skladište" (`KLUB_PROSTORI`), a **ukupno u klubu se računa samo** i osvježava dok upisuješ; "Nova stavka" otvara prozor s početnom količinom u jednom prostoru; izmišljeni podaci). Podaci u `KLUB_OSOBLJE`/`KLUB_INVENTAR` (`data.js`), dvorane iz `DVORANE_KLUB`. Ekran `klubScreen()`.
+- **Klub nema lepezu** (ni tabovi Grupe/Treneri): samo tablica; **podkategorije (tabovi) su zaobljeni gumbi**, ne bookmarkeri (`.baza-tabs`, isto i u Ligama i Bazi).
 - **Članovi** (admin) ostaju kao baza kojom se bavimo tek kasnije: za sada se ne mijenjaju.
 
 ## Migracija iz Falcons Trackera

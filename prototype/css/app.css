@@ -1176,3 +1176,9 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .rez-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--silver-100); display: flex; flex-direction: column; gap: 8px; }
 .rez-h { font-size: var(--fs-xs); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .str-row { display: flex; gap: 6px; align-items: center; } .str-row select { flex: 1; min-width: 0; } .str-k { width: 64px; text-align: center; font-weight: 800; }
+
+/* podkategorije kao gumbi (ne kao bookmarkeri) */
+.baza-tabs { gap: 8px; margin-bottom: 16px; }
+.baza-tabs button { border-radius: 999px; padding: 9px 16px; border: 1px solid var(--silver-100); background: #fff; box-shadow: 0 1px 2px rgba(24,36,84,.06); transition: background .15s, color .15s; }
+.baza-tabs button:hover { background: var(--navy-100); }
+.baza-tabs button.on:hover { background: var(--navy); }
