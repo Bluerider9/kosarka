@@ -21,6 +21,7 @@ const ICON = {
   play: '<path d="M8 5l11 7-11 7z"/>',
   image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -847,8 +848,8 @@ const ADMIN = {
         <div class="field"><label>Nagrada za ovaj zadatak (FLC)</label><input class="input" id="izNagrada" type="number" min="0" step="0.01" inputmode="decimal" value="${(z.nagrada ?? 3).toFixed(2)}"></div>
         <div class="meta">Nagrada se upisuje za svaki zadatak posebno. Zadatak se otkriva priključenim igračicama u <b>ponedjeljak u 00:01</b> i traje do <b>nedjelje u 12:00</b>. Priključivanje se otvara u nedjelju u 12:01 (prije otkrivanja novog zadatka).</div>
         <div class="row" style="gap:10px"><button class="btn grow" data-izspremi="${i}">Spremi zadatak</button>${IZ_PLAN[i] && i > 0 ? `<button class="btn ghost" data-izbrisi="${i}">Obriši</button>` : ''}</div></div>`; })()}</div>
-      <div class="card pf-sec"><h4>Predani radovi (video i fotografije)</h4>${VIDEA.length ? VIDEA.map((v, i) => `<div class="pf-kv vid-row"><span class="row" style="gap:10px">${ic(v.tip === 'foto' ? 'image' : 'play', 18)}<span><b>${v.igr}</b><div class="meta">${v.datoteka}</div></span></span>
-        ${v.st === 'čeka' ? `<span class="row" style="gap:6px"><button class="btn sm" data-vidok="${i}">Odobri</button><button class="btn ghost sm" data-vidno="${i}">Odbij</button></span>` : chip(v.st, v.st === 'odobreno' ? 'ok' : 'danger')}</div>`).join('') : '<div class="meta">Još nema predanih videa.</div>'}</div>
+      <div class="card pf-sec"><h4>Predani radovi (video i fotografije)</h4><div class="vid-folder">${ic('upload', 16)}<div class="grow"><b>Mapa: Tjedni - ${IZ_RASPON[0].replace(/\.( |$)/g, '$1')}</b><div class="meta">Radovi se automatski brišu nakon 14 dana ili ih admin briše ručno.</div></div></div>${VIDEA.length ? VIDEA.map((v, i) => `<div class="pf-kv vid-row"><span class="row" style="gap:10px">${ic(v.tip === 'foto' ? 'image' : 'play', 18)}<span><b>${v.igr}</b><div class="meta">${v.datoteka} · briše se za ${14 - (v.dani || 2)} dana</div></span></span>
+        <span class="row" style="gap:6px">${v.st === 'čeka' ? `<button class="btn sm" data-vidok="${i}">Odobri</button><button class="btn ghost sm" data-vidno="${i}">Odbij</button>` : chip(v.st, v.st === 'odobreno' ? 'ok' : 'danger')}<button class="btn ghost sm" data-vidbrisi="${i}" aria-label="Obriši rad">${ic('trash', 16)}</button></span></div>`).join('') : '<div class="meta">Još nema predanih videa.</div>'}</div>
     </div>`,
   falcoini: () => `<div class="page-head"><div><h1>${SEKCIJA_FALCOIN}</h1><div class="sub">Pravila bodovanja i ljestvica</div></div></div>
     <div class="pf-grid">
@@ -1087,6 +1088,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : (IZAZOV.vrsta === 'foto' ? 'dres_ana.jpg' : 'trica_ana.mp4'), st: 'čeka', ana: true, tip: IZAZOV.vrsta };
     if (state.video) VIDEA.splice(VIDEA.indexOf(state.video), 1); VIDEA.unshift(v); state.video = v; closeOverlay(); render(); toastIn(IZAZOV.vrsta === 'foto' ? 'Fotografija poslana treneru' : 'Video poslan treneru');
     notify('admin', 'Novi rad za zadatak', `Ana Horvat: ${v.datoteka}`); notify('trener', 'Novi rad za zadatak', `Ana Horvat je poslala ${IZAZOV.vrsta === 'foto' ? 'fotografiju' : 'video'}: ${IZAZOV.naslov}`); return; }
+  const vb = e.target.closest('[data-vidbrisi]'); if (vb) { VIDEA.splice(+vb.dataset.vidbrisi, 1); toastIn('Rad je obrisan iz mape'); render(); return; }
   const vk = e.target.closest('[data-vidok],[data-vidno]');
   if (vk) { const ok = vk.dataset.vidok !== undefined; const v = VIDEA[+(ok ? vk.dataset.vidok : vk.dataset.vidno)]; v.st = ok ? 'odobreno' : 'odbijeno';
     const pl = PLAYERS.find((p) => p.ime === v.igr);

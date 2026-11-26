@@ -159,3 +159,9 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 
 - `prototype/` — klikabilni HTML prototip (mobitel + admin desktop), izmišljeni podaci
 - `assets/` — logo i ostali resursi (dodati)
+
+## Pohrana predanih radova (tjedni zadaci)
+
+- Uploadi (video/fotografije) tjednih zadataka spremaju se u **mapu kojoj admin može pristupiti**, organiziranu po tjednu: **"Tjedni - dd.mm - dd.mm"** (npr. "Tjedni - 23.11 - 29.11").
+- **Brisanje:** radovi se iz baze/mape **automatski brišu nakon 14 dana**, ili **ručno** kad admin sam odabere brisanje (u prototipu: kanta uz svaki rad u rubrici Tjedni zadatak → Predani radovi; uz svaki rad piše "briše se za N dana").
+- Pravna provjera: privola za snimke maloljetnica, rok čuvanja, veličina i format datoteka.
