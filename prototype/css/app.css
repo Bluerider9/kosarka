@@ -1171,3 +1171,8 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .app-header .row .grow { min-width: 0; }
 .app-header h1 { min-width: 0; }
 @media (max-width: 400px) { .app-header .row { gap: 8px; } .app-header h1 { font-size: 18px; } .app-header .cog { width: 40px; height: 40px; flex: none; } }
+
+.mt-o small.mt-k { color: var(--muted); font-weight: 600; } .mt-o small.mt-k b { color: var(--navy); font-weight: 900; }
+.rez-box { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--silver-100); display: flex; flex-direction: column; gap: 8px; }
+.rez-h { font-size: var(--fs-xs); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.str-row { display: flex; gap: 6px; align-items: center; } .str-row select { flex: 1; min-width: 0; } .str-k { width: 64px; text-align: center; font-weight: 800; }

@@ -276,19 +276,23 @@ const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t
 // utakmice igračice: 'igrala' (odigrane) i 'pozvana' (na popisu za iduću) — izmišljeni podaci
 const UTAKMICE_IGR = [
   { dat: 'Sub 28.11.', vr: '11:00', opis: 'Pretkadetska liga · Medveščak', st: 'pozvana', nap: 'termin nije potvrđen' },
-  { dat: 'Sub 14.11.', vr: '', opis: 'Pretkadetska liga · Trešnjevka 2009', st: 'igrala', rez: '' },
-  { dat: 'Sub 17.10.', vr: '', opis: 'Pretkadetska liga · Studio Zagreb', st: 'igrala', rez: '' },
+  { dat: 'Sub 14.11.', vr: '', opis: 'Pretkadetska liga · Trešnjevka 2009', st: 'igrala', kolo: 'l4-3' },
+  { dat: 'Sub 17.10.', vr: '', opis: 'Pretkadetska liga · Studio Zagreb', st: 'igrala', kolo: 'l4-2' },
 ];
+const ANA_ID = 1; // igračica u prototipu
+const utkIshod = (u) => { const k = u.kolo ? keloKolo(u.kolo).k : null; if (!k || k.rez === undefined) return { rez: '', linija: 'Rezultat još nije upisan' };
+  const mine = (k.strijelci || []).find((x) => x.id === ANA_ID), ime = PLAYERS.find((p) => p.id === ANA_ID).ime.split(' ')[0], rod = uloga() === 'roditelj';
+  const kos = mine && mine.k ? `${rod ? ime + ' je zabila' : 'Zabila si'} <b>${mine.k}</b> ${mine.k === 1 ? 'koš' : 'koševa'}` : `${rod ? ime + ' nije zabila koš' : 'Nisi zabila koš'}`; return { rez: k.rez, linija: kos }; };
 const utakmiceIgr = () => `<div class="card sched-matches"><h3>Utakmice</h3>${UTAKMICE_IGR.map((u) => `<div class="mt"><div class="mt-d"><b>${u.st === 'pozvana' && UTAKMICA.potvrdeno ? UTAKMICA.datum.split(' ')[0].slice(0, 3) + ' ' + UTAKMICA.dat.slice(0, 6) : u.dat}</b><span>${u.st === 'pozvana' && UTAKMICA.potvrdeno ? UTAKMICA.vrijeme : (u.vr || 'odigrano')}</span></div>
-  <div class="mt-o"><b>${protLogo((u.opis.split(' · ')[1]) || UTAKMICA.protivnik, 'sm')} ${u.opis}</b>${u.st === 'pozvana' ? (UTAKMICA.potvrdeno ? `<small>${UTAKMICA.dvorana}</small>` : `<small>${u.nap}</small>`) : ''}</div>
-  ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Nije u sastavu', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : (u.rez ? `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>` : '<span class="mt-r">odigrano</span>')}</div>`).join('')}</div>`;
+  <div class="mt-o"><b>${protLogo((u.opis.split(' · ')[1]) || UTAKMICA.protivnik, 'sm')} ${u.opis}</b>${u.st === 'pozvana' ? (UTAKMICA.potvrdeno ? `<small>${UTAKMICA.dvorana}</small>` : `<small>${u.nap}</small>`) : `<small class="mt-k">${utkIshod(u).linija}</small>`}</div>
+  ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Nije u sastavu', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : (utkIshod(u).rez ? `<span class="mt-r ${+utkIshod(u).rez.split(' : ')[0] > +utkIshod(u).rez.split(' : ')[1] ? 'w' : 'l'}">${utkIshod(u).rez}</span>` : '<span class="mt-r">odigrano</span>')}</div>`).join('')}</div>`;
 function rasporedScreen(filterGrupe, tocke = false, tockeGrupe = []) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
     return `<div class="sd ${i === TODAY ? 'today' : ''} ${i < TODAY ? 'past' : ''}"><div class="sd-day"><b>${DANI[i]}</b><span>${23 + i}.11.</span></div>
       <div class="sd-list">${lista.length ? lista.map((t) => { const pok = (tocke || tockeGrupe.includes(t.g)) && (i < TODAY || dolazak(i, t) || izPokriva(i)), dc = pok ? dotCls(i, t) : ''; return `<div class="sd-t ${dc ? 'r-' + dc.slice(4) : ''}"><b>${t.v}–${t.do}</b><span>${grupaLabel(t.g)}</span><small>${t.d}</small>${dc ? `<i class="${dc}"></i>` : ''}</div>`; }).join('') : '<div class="sd-none">—</div>'}</div></div>`;
   }).join('');
-  return `${RASPORED_NAPOMENA}<div class="card sched-week">${redovi}</div>${tocke ? izostanakKartica() + utakmiceIgr() : ''}`;
+  return `${RASPORED_NAPOMENA}<div class="card sched-week">${redovi}</div>${tocke ? izostanakKartica() + utakmiceIgr() : tockeGrupe.length ? utakmiceIgr() : ''}`;
 }
 
 /* ---------- PROFIL IGRAČICE (isti sadržaj, vidljivost po ulozi) ---------- */
@@ -827,6 +831,18 @@ const pad2 = (n) => String(n).padStart(2, '0');
 const dKey = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
 // Lige (kategorije utakmica): cijela liga po kolima (subota/nedjelja), protivnik je zadan jednom po kolu
 const LIGE = LIGE_PODACI.map((l) => ({ ...l, kola: l.kola.map((k) => ({ ...k, vr: k.vr || undefined })) }));
+// rezultat i strijelci (admin upisuje): k.nasi, k.njihovi, k.rez = 'nasi : njihovi', k.strijelci = [{ id: igračica, k: koševi }] — izmišljeni primjeri
+(() => { const l = LIGE.find((x) => x.id === 'l4'); const pod = (br, n, nj, str) => { const k = l.kola.find((x) => x.k === br); if (k) { k.nasi = n; k.njihovi = nj; k.rez = n + ' : ' + nj; k.strijelci = str; } };
+  pod(2, 52, 38, [{ id: 1, k: 8 }, { id: 2, k: 14 }, { id: 3, k: 12 }, { id: 4, k: 10 }, { id: 5, k: 8 }]); pod(3, 41, 44, [{ id: 1, k: 6 }, { id: 2, k: 12 }, { id: 3, k: 9 }, { id: 4, k: 14 }]); })();
+const koloChip = (k) => (k.rez ? chip('Rezultat ' + k.rez, 'navy') : k.d < '2026-11-26' ? chip('Odigrano') : chip('Predstoji', 'warn'));
+const strChip = (k) => (k.nasi !== undefined ? chip(`Strijelci ${strZbroj(k)} od ${k.nasi}`, strZbroj(k) === +k.nasi ? 'ok' : 'warn') : '');
+const keloKolo = (key) => { const [lid, br] = key.split('-'); const l = LIGE.find((x) => x.id === lid); return l ? { l, k: l.kola.find((x) => x.k === +br) } : {}; };
+const igrOpt = (sel) => PLAYERS.map((p) => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${p.ime}</option>`).join('');
+const strZbroj = (k) => (k.strijelci || []).reduce((a, x) => a + (+x.k || 0), 0);
+const rezUnos = (l, k) => { const key = `${l.id}-${k.k}`, st = k.strijelci || [], zb = strZbroj(k), ima = k.nasi !== undefined && k.nasi !== '';
+  return `<div class="rez-box"><div class="rez-h">Rezultat i strijelci</div><div class="two"><div class="field"><label>Falcons</label><input class="input" type="number" min="0" inputmode="numeric" data-rez="${key}|nasi" value="${k.nasi ?? ''}"></div><div class="field"><label>${k.prot}</label><input class="input" type="number" min="0" inputmode="numeric" data-rez="${key}|njihovi" value="${k.njihovi ?? ''}"></div></div>
+    ${st.map((x, i) => `<div class="str-row"><select class="input" data-strigr="${key}|${i}">${igrOpt(x.id)}</select><input class="input str-k" type="number" min="0" inputmode="numeric" data-strkos="${key}|${i}" value="${x.k}" aria-label="Koševi"><button class="btn ghost sm" data-strdel="${key}|${i}" aria-label="Ukloni strijelca">${ic('trash', 16)}</button></div>`).join('')}
+    <div class="row" style="gap:8px;align-items:center"><button class="btn ghost sm" data-stradd="${key}">${ic('plus', 16)} Dodaj strijelca</button><span data-strsum="${key}">${strChip(k)}</span></div></div>`; };
 const isoDat = (iso) => { const [y, m, d] = iso.split('-'); return `${d}.${m}.${y}.`; };
 const isoDan = (iso) => { const [y, m, d] = iso.split('-').map(Number); const wd = new Date(y, m - 1, d).getDay(); return `${DANI_HR[wd]} ${isoDat(iso)}`; };
 const jeVikend = (iso) => { const [y, m, d] = iso.split('-').map(Number); return [0, 6].includes(new Date(y, m - 1, d).getDay()); };
@@ -932,11 +948,11 @@ function ligeScreen() {
   return `<div class="page-head"><div><h1>Lige</h1><div class="sub">Cijela liga po kolima (subota/nedjelja); protivnik se zadaje jednom, u kalendaru se više ne bira</div></div><div class="grow"></div>
     <button class="btn ghost" data-ligasnova>${ic('plus', 18)} Nova liga</button><button class="btn" data-ligakolo>${ic('plus', 18)} Dodaj kolo</button></div>
     <div class="baza-tabs" role="tablist">${LIGE.map((x) => `<button type="button" role="tab" class="${x.id === l.id ? 'on' : ''}" data-ligatab="${x.id}">${x.naziv}<span>${x.kola.length}</span></button>`).join('')}</div>
-    <div class="kolo-grid">${l.kola.map((k) => `<div class="card kolo-card"><div class="kolo-h"><span class="kolo-n">${k.k}. kolo</span>${k.rez ? chip('Rezultat ' + k.rez, 'navy') : k.d < '2026-11-26' ? chip('Odigrano') : chip('Predstoji', 'warn')}${k.zamjena ? chip('Zamjena domaćinstva', 'warn') : ''}<button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></div>
+    <div class="kolo-grid">${l.kola.map((k) => `<div class="card kolo-card"><div class="kolo-h"><span class="kolo-n">${k.k}. kolo</span><span data-kolochip="${l.id}-${k.k}">${koloChip(k)}</span>${k.zamjena ? chip('Zamjena domaćinstva', 'warn') : ''}<button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></div>
       <div class="kolo-vs">${protLogo(k.prot)}<b>${k.gost ? 'Gostujemo kod' : 'Doma protiv'} ${k.prot}</b></div>
       <div class="field"><label>Datum (dd.mm.gggg) · ${isoDan(k.d).split(' ')[0]}${jeVikend(k.d) ? '' : ' <span class="chip warn">nije vikend</span>'}</label><input class="input" data-kolodat="${l.id}-${k.k}" inputmode="numeric" value="${isoDat(k.d)}"></div>
       <div class="two"><div class="field"><label>Protivnik</label><select class="input" data-koloprot="${l.id}-${k.k}">${PROTIVNICI.map((p) => `<option ${p.naziv === k.prot ? 'selected' : ''}>${p.naziv}</option>`).join('')}</select></div>
-      <div class="field"><label>Igra se</label><select class="input" data-kologost="${l.id}-${k.k}"><option value="0" ${!k.gost ? 'selected' : ''}>Doma</option><option value="1" ${k.gost ? 'selected' : ''}>Gostujemo</option></select></div></div></div>`).join('') || '<div class="meta">Još nema kola. Dodaj prvo kolo.</div>'}</div>`;
+      <div class="field"><label>Igra se</label><select class="input" data-kologost="${l.id}-${k.k}"><option value="0" ${!k.gost ? 'selected' : ''}>Doma</option><option value="1" ${k.gost ? 'selected' : ''}>Gostujemo</option></select></div></div>${rezUnos(l, k)}</div>`).join('') || '<div class="meta">Još nema kola. Dodaj prvo kolo.</div>'}</div>`;
 }
 function adminUtakmica() {
   const u = UTAKMICA, { liga, kolo } = glavnoKolo();
@@ -1226,6 +1242,11 @@ document.addEventListener('change', (e) => {
   if (t.dataset && t.dataset.protnovilogo !== undefined) citajSliku(t.files[0], (u) => { state.protNoviLogo = u; const pv = $('#protPrev'); if (pv) pv.innerHTML = `<img class="prot-logo lg" src="${u}">`; });
 });
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
+document.addEventListener('change', (e) => { const t = e.target; if (!t.dataset) return; let key;
+  if (t.dataset.rez) { const [kk, f] = t.dataset.rez.split('|'), { k } = keloKolo(kk); key = kk; k[f] = t.value === '' ? undefined : Math.max(0, parseInt(t.value, 10) || 0); k.rez = k.nasi !== undefined && k.njihovi !== undefined ? k.nasi + ' : ' + k.njihovi : undefined; }
+  else if (t.dataset.strigr) { const [kk, i] = t.dataset.strigr.split('|'); key = kk; keloKolo(kk).k.strijelci[+i].id = +t.value; }
+  else if (t.dataset.strkos) { const [kk, i] = t.dataset.strkos.split('|'); key = kk; keloKolo(kk).k.strijelci[+i].k = Math.max(0, parseInt(t.value, 10) || 0); }
+  if (key) { const { k } = keloKolo(key), c = document.querySelector(`[data-kolochip="${key}"]`), z = document.querySelector(`[data-strsum="${key}"]`); if (c) c.innerHTML = koloChip(k); if (z) z.innerHTML = strChip(k); } });
 document.addEventListener('input', (e) => { const t = e.target; if (!t.dataset || t.dataset.inv === undefined) return; const [ix, pr] = t.dataset.inv.split('|'), r = KLUB_INVENTAR[+ix]; r.kol[pr] = Math.max(0, parseInt(t.value, 10) || 0);
   document.querySelectorAll(`[data-invtot="${ix}"]`).forEach((el) => { el.textContent = invUk(r); }); });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
@@ -1313,6 +1334,8 @@ document.addEventListener('click', (e) => {
   const lkb = e.target.closest('[data-kolouk]'); if (lkb) { const [li, ki] = lkb.dataset.kolouk.split('-'); const L = LIGE.find((x) => x.id === li); if (L.id === UTAKMICA.kolo.liga && +ki === UTAKMICA.kolo.k) { toastIn('Ovo kolo je povezano s idućom utakmicom'); return; } L.kola = L.kola.filter((x) => x.k !== +ki); render(); return; }
   if (e.target.closest('[data-ligakolo]')) { const L = LIGE.find((x) => x.id === (state.ligaTab || LIGE[0].id)) || LIGE[0]; const zad = L.kola[L.kola.length - 1]; const [y, m, d] = (zad ? zad.d : '2026-12-05').split('-').map(Number); const n = new Date(y, m - 1, d + 7);
     L.kola.push({ k: (zad ? zad.k : 0) + 1, d: `${n.getFullYear()}-${pad2(n.getMonth() + 1)}-${pad2(n.getDate())}`, prot: PROTIVNICI[0].naziv, gost: false }); render(); toastIn('Dodano kolo, odaberi protivnika'); return; }
+  const sa = e.target.closest('[data-stradd]'); if (sa) { const { k } = keloKolo(sa.dataset.stradd); k.strijelci = k.strijelci || []; const slob = PLAYERS.find((p) => !k.strijelci.some((x) => x.id === p.id)); k.strijelci.push({ id: (slob || PLAYERS[0]).id, k: 0 }); render(); return; }
+  const sd = e.target.closest('[data-strdel]'); if (sd) { const [key, i] = sd.dataset.strdel.split('|'); keloKolo(key).k.strijelci.splice(+i, 1); render(); return; }
   if (e.target.closest('[data-invnova]')) { modal(`<h3>Nova stavka inventara</h3><div class="field"><label>Naziv</label><input class="input" id="invNaziv" placeholder="npr. Lopte, veličina 7"></div>
     <div class="two"><div class="field"><label>Kategorija</label><input class="input" id="invKat" placeholder="npr. Lopte" value="Oprema"></div><div class="field"><label>Stanje</label><select class="input" id="invSt">${Object.keys(STANJE_INV).map((k) => `<option>${k}</option>`).join('')}</select></div></div>
     <div class="field"><label>Početna količina</label><div class="two"><select class="input" id="invPr">${KLUB_PROSTORI.map((p) => `<option>${p}</option>`).join('')}</select><input class="input" id="invKol" type="number" min="0" value="1" inputmode="numeric"></div></div>
