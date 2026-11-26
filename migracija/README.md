@@ -24,7 +24,7 @@ Izvor: phpMyAdmin dump `bluerder_portalwebapp` (MySQL 5.7, 26.11.2026.). **Dump 
 ## Skripte
 
 - `dump_parser.py` — čita phpMyAdmin dump u Python rječnike (bez MySQL-a).
-- `lige_iz_dumpa.py <dump.sql>` — generira `prototype/js/lige-podaci.js` (lige, kola, protivnici, dvorane; **bez osobnih podataka**). Protivnici su normalizirani (maknuto "ŽKK "/"KK ", točka na kraju; "Sisak" = "KK Sisak" — **potvrditi**). Domaćin koji igra izvan klupskih dvorana označen je kao **zamjena domaćinstva**, a ta dvorana je upisana kod protivnika.
+- `lige_iz_dumpa.py <dump.sql>` — generira `prototype/js/lige-podaci.js` (lige, kola, protivnici, dvorane; **bez osobnih podataka**). Protivnici su normalizirani (maknuto "ŽKK "/"KK ", točka na kraju; "Sisak" = "KK Sisak" — potvrđeno 26.11.). Domaćin koji igra izvan klupskih dvorana označen je kao **zamjena domaćinstva**, a ta dvorana je upisana kod protivnika.
 
 ## Odluke koje čekaju
 
