@@ -986,3 +986,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.challenge { position: relative; }
 .card.challenge .fc-help.zq { border-color: var(--navy); background: transparent; color: var(--navy); }
 .card.mystery .fc-help.zq { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.12); color: #fff; }
+.vid-state .vs-t { display:flex; align-items:center; gap:6px; }

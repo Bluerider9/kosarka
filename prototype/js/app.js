@@ -20,6 +20,7 @@ const ICON = {
   upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
   play: '<path d="M8 5l11 7-11 7z"/>',
   image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -480,9 +481,9 @@ function izazovKartica() {
   if (jeRad(z)) {
     const v = state.video; const foto = z.vrsta === 'foto';
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic(foto ? 'image' : 'upload', 18)} ${foto ? 'Slikaj ili dodaj fotografiju' : 'Snimi ili dodaj video'}</button>`
-      : v.st === 'čeka' ? `<div class="vid-state wait">${ic('check', 16)} ${foto ? 'Fotografija poslana' : 'Video poslan'}: ${v.datoteka}<small>Čeka odobrenje trenera</small></div>`
+      : v.st === 'čeka' ? `<div class="vid-state wait"><span class="vs-t">${ic('check', 16)} ${foto ? 'Fotografija poslana' : 'Video poslan'}: ${v.datoteka}</span><small>Čeka odobrenje trenera. Zadatak je ispunjen tek kad ga trener potvrdi.</small></div>`
       : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Bonus ${fmt(z.nagrada)} ${FLC} je tvoj.</div>`
-      : `<div class="vid-state no">${foto ? 'Fotografija' : 'Video'} nije prihvaćen${foto ? 'a' : ''}. Probaj ponovno.</div><button class="btn red block" style="margin-top:8px" data-vidopen>${foto ? 'Pošalji novu fotografiju' : 'Pošalji novi video'}</button>`;
+      : `<div class="vid-state no"><span class="vs-t">${ic('lock', 16)} Zadatak je zaključan</span><small>Trener ${foto ? 'fotografiju' : 'video'} nije odobrio, pa se zadatak ovaj tjedan više ne može ispuniti. Novi zadatak stiže u ponedjeljak u 00:01.</small></div>`;
     return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${kraj}</div>`;
   }
   const gotovo = z.odradeno >= z.cilj;
@@ -496,7 +497,7 @@ function videoSheet() {
   overlay(`<div style="display:flex;justify-content:center">${coinSvg(48)}</div><h2>${IZAZOV.naslov}</h2><p>${IZAZOV.opis}</p>
     <label class="btn ghost block vid-pick">${ic(foto ? 'image' : 'upload', 18)} <span id="vidName">${foto ? 'Odaberi ili slikaj fotografiju' : 'Odaberi ili snimi video'}</span><input type="file" id="vidFile" accept="${foto ? 'image/*' : 'video/*'}" capture="environment" hidden></label>
     <button class="btn red block" data-vidsend>${foto ? 'Pošalji fotografiju' : 'Pošalji video'}</button><button class="btn ghost block" data-fxclose>Odustani</button>
-    <small>${foto ? 'Fotografiju' : 'Video'} vidi samo trener. Bonus dobivaš kad ${foto ? 'je' : 'ga'} odobri. (Prototip: datoteka se ne učitava stvarno.)</small>`);
+    <small>${foto ? 'Fotografiju' : 'Video'} vidi samo trener. Nakon slanja čeka se odobrenje trenera: kad ${foto ? 'je' : 'ga'} potvrdi, zadatak je ispunjen i dobivaš bonus; ako ${foto ? 'je' : 'ga'} odbije, zadatak se zaključava. (Prototip: datoteka se ne učitava stvarno.)</small>`);
 }
 function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
   return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
