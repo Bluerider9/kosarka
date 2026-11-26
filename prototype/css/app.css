@@ -1137,3 +1137,14 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 
 .inv-in { width: 62px; padding: 6px 8px; text-align: center; font-weight: 700; }
 .inv-uk { font-size: 15px; color: var(--navy); }
+
+/* Redak treninga u rasporedu obojan prema ishodu (gradijent slijeva udesno, kao u Dolascima) */
+.sd-t { padding: 6px 10px; margin: 0 -10px; border-radius: 10px; }
+.sd-t.r-yes { background: linear-gradient(90deg, #fff, #cdeed9); }
+.sd-t.r-late { background: linear-gradient(90deg, #fff, #fbe4ae); }
+.sd-t.r-no { background: linear-gradient(90deg, #fff, #f3c2c2); }
+.sd-t.r-exc { background: linear-gradient(90deg, #fff, #cfdcf8); }
+.sd-t { margin: 0; }
+.sd.past { opacity: 1; }
+.sd.past .sd-day, .sd.past .sd-t:not([class*="r-"]) { opacity: .55; }
+.sd-t i { margin-left: auto; }
