@@ -907,6 +907,8 @@ function pogled(key, cfg) {
 
 /* ---------- Klub (admin): dvorane, osoblje, inventar ---------- */
 const KLUB_TABOVI = [['dvorane', 'Dvorane kluba', () => DVORANE_KLUB.length], ['osoblje', 'Osoblje kluba', () => KLUB_OSOBLJE.length], ['inventar', 'Inventar kluba', () => KLUB_INVENTAR.length]];
+const KLUB_PROSTORI = ['Skladište', ...DVORANE_KLUB];
+const invUk = (r) => Object.values(r.kol).reduce((a, b) => a + (+b || 0), 0);
 const STANJE_INV = { dobro: ['dobro', 'ok'], istrošeno: ['istrošeno', 'warn'], 'za zamjenu': ['za zamjenu', 'danger'] };
 function klubScreen() {
   const t = state.klubTab || 'dvorane', nov = { dvorane: 'Nova dvorana', osoblje: 'Nova osoba', inventar: 'Nova stavka' }[t];
@@ -916,10 +918,12 @@ function klubScreen() {
     : t === 'osoblje' ? pogled('klub-osoblje', { lnaslov: 'Osoblje', title: 'ime', empty: 'Nema osoblja.', lav: (r) => `<span class="lep-ini">${ini(r.ime)}</span>`, lsub: (r) => r.uloga, lchip: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn'), rows: KLUB_OSOBLJE,
       cols: [{ id: 'ime', label: 'Ime', val: (r) => r.ime, html: (r) => `<div class="who"><span class="lep-ini sm">${ini(r.ime)}</span><b>${r.ime}</b></div>` }, { id: 'uloga', label: 'Uloga', val: (r) => r.uloga }, { id: 'grupe', label: 'Grupe', val: (r) => r.grupe.join(', ') || '—', html: (r) => r.grupe.map((x) => chip(x, 'navy')).join(' ') || '—' },
         { id: 'kontakt', label: 'Kontakt', val: (r) => r.kontakt }, { id: 'status', label: 'Status', val: (r) => r.status, html: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn') }] })
-    : pogled('klub-inventar', { lnaslov: 'Inventar', title: 'naziv', empty: 'Nema stavki.', lsub: (r) => r.kol + ' kom · ' + r.lok, lchip: (r) => chip(...STANJE_INV[r.stanje]), rows: KLUB_INVENTAR,
-      cols: [{ id: 'naziv', label: 'Stavka', val: (r) => r.naziv, html: (r) => `<b>${r.naziv}</b>` }, { id: 'kat', label: 'Kategorija', val: (r) => r.kat, html: (r) => chip(r.kat, 'navy') }, { id: 'kol', label: 'Količina', val: (r) => r.kol, html: (r) => r.kol + ' kom' },
-        { id: 'lok', label: 'Lokacija', val: (r) => r.lok }, { id: 'stanje', label: 'Stanje', val: (r) => r.stanje, html: (r) => chip(...STANJE_INV[r.stanje]) }] });
-  return `<div class="page-head"><div><h1>Klub</h1><div class="sub">Dvorane, osoblje i inventar kluba</div></div><div class="grow"></div><button class="btn" data-toast="${nov} — sljedeći korak">${ic('plus', 18)} ${nov}</button></div>
+    : pogled('klub-inventar', { lnaslov: 'Inventar', title: 'naziv', empty: 'Nema stavki.', rows: KLUB_INVENTAR, lsub: (r) => invUk(r) + ' kom ukupno', lchip: (r) => chip(...STANJE_INV[r.stanje]),
+      cols: [{ id: 'naziv', label: 'Stavka', val: (r) => r.naziv, html: (r) => `<b>${r.naziv}</b>` }, { id: 'kat', label: 'Kategorija', val: (r) => r.kat, html: (r) => chip(r.kat, 'navy') },
+        { id: 'uk', label: 'Ukupno u klubu', val: (r) => invUk(r), html: (r) => `<b class="inv-uk" data-invtot="${KLUB_INVENTAR.indexOf(r)}">${invUk(r)}</b> kom` },
+        { id: 'stanje', label: 'Stanje', val: (r) => r.stanje, html: (r) => chip(...STANJE_INV[r.stanje]) },
+        ...KLUB_PROSTORI.map((p) => ({ id: 'p_' + p, label: p.replace(/^OŠ /, ''), val: (r) => r.kol[p] || 0, html: (r) => `<input class="input inv-in" type="number" min="0" step="1" inputmode="numeric" value="${r.kol[p] || 0}" data-inv="${KLUB_INVENTAR.indexOf(r)}|${p}" aria-label="${p}">` }))] });
+  return `<div class="page-head"><div><h1>Klub</h1><div class="sub">Dvorane, osoblje i inventar kluba</div></div><div class="grow"></div><button class="btn" ${t === 'inventar' ? 'data-invnova' : `data-toast="${nov} — sljedeći korak"`}>${ic('plus', 18)} ${nov}</button></div>
     <div class="baza-tabs" role="tablist">${KLUB_TABOVI.map(([k, l, n]) => `<button type="button" role="tab" class="${k === t ? 'on' : ''}" data-klubtab="${k}">${l}<span>${n()}</span></button>`).join('')}</div>${tijelo}`;
 }
 
@@ -1222,6 +1226,8 @@ document.addEventListener('change', (e) => {
   if (t.dataset && t.dataset.protnovilogo !== undefined) citajSliku(t.files[0], (u) => { state.protNoviLogo = u; const pv = $('#protPrev'); if (pv) pv.innerHTML = `<img class="prot-logo lg" src="${u}">`; });
 });
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
+document.addEventListener('input', (e) => { const t = e.target; if (!t.dataset || t.dataset.inv === undefined) return; const [ix, pr] = t.dataset.inv.split('|'), r = KLUB_INVENTAR[+ix]; r.kol[pr] = Math.max(0, parseInt(t.value, 10) || 0);
+  document.querySelectorAll(`[data-invtot="${ix}"]`).forEach((el) => { el.textContent = invUk(r); }); });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
 document.addEventListener('wheel', (e) => { const b = e.target.closest && e.target.closest('.lepeza'); if (!b || Math.abs(e.deltaX) < Math.abs(e.deltaY) && !e.shiftKey) return; e.preventDefault(); const now = Date.now(); if (now - (b._w || 0) < 160) return; b._w = now; lepPostavi(b, (state.lep[b.dataset.lep] || 0) + ((e.deltaX || e.deltaY) > 0 ? 1 : -1)); }, { passive: false });
 document.addEventListener('click', (e) => {
@@ -1307,6 +1313,11 @@ document.addEventListener('click', (e) => {
   const lkb = e.target.closest('[data-kolouk]'); if (lkb) { const [li, ki] = lkb.dataset.kolouk.split('-'); const L = LIGE.find((x) => x.id === li); if (L.id === UTAKMICA.kolo.liga && +ki === UTAKMICA.kolo.k) { toastIn('Ovo kolo je povezano s idućom utakmicom'); return; } L.kola = L.kola.filter((x) => x.k !== +ki); render(); return; }
   if (e.target.closest('[data-ligakolo]')) { const L = LIGE.find((x) => x.id === (state.ligaTab || LIGE[0].id)) || LIGE[0]; const zad = L.kola[L.kola.length - 1]; const [y, m, d] = (zad ? zad.d : '2026-12-05').split('-').map(Number); const n = new Date(y, m - 1, d + 7);
     L.kola.push({ k: (zad ? zad.k : 0) + 1, d: `${n.getFullYear()}-${pad2(n.getMonth() + 1)}-${pad2(n.getDate())}`, prot: PROTIVNICI[0].naziv, gost: false }); render(); toastIn('Dodano kolo, odaberi protivnika'); return; }
+  if (e.target.closest('[data-invnova]')) { modal(`<h3>Nova stavka inventara</h3><div class="field"><label>Naziv</label><input class="input" id="invNaziv" placeholder="npr. Lopte, veličina 7"></div>
+    <div class="two"><div class="field"><label>Kategorija</label><input class="input" id="invKat" placeholder="npr. Lopte" value="Oprema"></div><div class="field"><label>Stanje</label><select class="input" id="invSt">${Object.keys(STANJE_INV).map((k) => `<option>${k}</option>`).join('')}</select></div></div>
+    <div class="field"><label>Početna količina</label><div class="two"><select class="input" id="invPr">${KLUB_PROSTORI.map((p) => `<option>${p}</option>`).join('')}</select><input class="input" id="invKol" type="number" min="0" value="1" inputmode="numeric"></div></div>
+    <button class="btn block" data-invspremi>Spremi stavku</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
+  if (e.target.closest('[data-invspremi]')) { const n = $('#invNaziv').value.trim(); if (!n) { toastIn('Upiši naziv stavke'); return; } KLUB_INVENTAR.push({ naziv: n, kat: $('#invKat').value.trim() || 'Oprema', stanje: $('#invSt').value, kol: { [$('#invPr').value]: Math.max(0, parseInt($('#invKol').value, 10) || 0) } }); closeModal(); render(); return; }
   if (e.target.closest('[data-ligasnova]')) { modal(`<h3>Nova liga</h3><div class="field"><label>Naziv (npr. Prvenstvo U12)</label><input class="input" id="ligaNaziv"></div><div class="field"><label>Grupa</label><select class="input" id="ligaGrupa">${GROUPS.map((g) => `<option>${g.ime}</option>`).join('')}</select></div>
     <button class="btn block" data-ligaspremi>Spremi ligu</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
   if (e.target.closest('[data-ligaspremi]')) { const n = $('#ligaNaziv').value.trim(); if (!n) { toastIn('Upiši naziv lige'); return; } const id = 'l' + Date.now(); LIGE.push({ id, naziv: n, grupa: $('#ligaGrupa').value, kola: [] }); state.ligaTab = id; closeModal(); render(); return; }

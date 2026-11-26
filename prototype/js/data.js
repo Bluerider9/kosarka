@@ -116,15 +116,16 @@ const KLUB_OSOBLJE = [
   { ime: 'Petra Horvat', uloga: 'Tajnica / blagajna', grupe: [], kontakt: 'tajnistvo@zkkfalcons.hr', status: 'aktivan' },
   { ime: 'Dino Kralj', uloga: 'Pomoćni trener', grupe: ['U14'], kontakt: 'dino.kralj@zkkfalcons.hr', status: 'na pauzi' },
 ];
+// kol = količina po prostoru (Skladište + dvorane kluba); ukupno se računa
 const KLUB_INVENTAR = [
-  { naziv: 'Lopte, veličina 6', kat: 'Lopte', kol: 24, lok: 'Dom košarke', stanje: 'dobro' },
-  { naziv: 'Lopte, veličina 5', kat: 'Lopte', kol: 18, lok: 'OŠ Ante Kovačića', stanje: 'dobro' },
-  { naziv: 'Lopte, veličina 3', kat: 'Lopte', kol: 12, lok: 'OŠ Otona Ivekovića', stanje: 'istrošeno' },
-  { naziv: 'Prsluci za trening (set)', kat: 'Oprema', kol: 30, lok: 'Dom košarke', stanje: 'dobro' },
-  { naziv: 'Čunjevi i markeri', kat: 'Oprema', kol: 60, lok: 'OŠ Ante Kovačića', stanje: 'dobro' },
-  { naziv: 'Ljestve za koordinaciju', kat: 'Oprema', kol: 6, lok: 'Dom košarke', stanje: 'dobro' },
-  { naziv: 'Dresovi — domaći komplet', kat: 'Dresovi', kol: 20, lok: 'Dom košarke', stanje: 'dobro' },
-  { naziv: 'Dresovi — gostujući komplet', kat: 'Dresovi', kol: 20, lok: 'Dom košarke', stanje: 'za zamjenu' },
-  { naziv: 'Torba prve pomoći', kat: 'Zdravlje', kol: 4, lok: 'OŠ Malešnica', stanje: 'dobro' },
-  { naziv: 'Taktička ploča', kat: 'Oprema', kol: 3, lok: 'OŠ Nikole Tesle', stanje: 'dobro' },
+  { naziv: 'Lopte, veličina 6', kat: 'Lopte', stanje: 'dobro', kol: { 'Skladište': 6, 'Dom košarke': 12, 'OŠ Ante Kovačića': 6 } },
+  { naziv: 'Lopte, veličina 5', kat: 'Lopte', stanje: 'dobro', kol: { 'Skladište': 4, 'OŠ Ante Kovačića': 10, 'OŠ Ivana Cankara': 4 } },
+  { naziv: 'Lopte, veličina 3', kat: 'Lopte', stanje: 'istrošeno', kol: { 'OŠ Otona Ivekovića': 8, 'OŠ Malešnica': 4 } },
+  { naziv: 'Prsluci za trening (set)', kat: 'Oprema', stanje: 'dobro', kol: { 'Skladište': 10, 'Dom košarke': 20 } },
+  { naziv: 'Čunjevi i markeri', kat: 'Oprema', stanje: 'dobro', kol: { 'OŠ Ante Kovačića': 30, 'Dom košarke': 30 } },
+  { naziv: 'Ljestve za koordinaciju', kat: 'Oprema', stanje: 'dobro', kol: { 'Dom košarke': 4, 'OŠ Nikole Tesle': 2 } },
+  { naziv: 'Dresovi — domaći komplet', kat: 'Dresovi', stanje: 'dobro', kol: { 'Skladište': 20 } },
+  { naziv: 'Dresovi — gostujući komplet', kat: 'Dresovi', stanje: 'za zamjenu', kol: { 'Skladište': 20 } },
+  { naziv: 'Torba prve pomoći', kat: 'Zdravlje', stanje: 'dobro', kol: { 'Dom košarke': 1, 'OŠ Ante Kovačića': 1, 'OŠ Malešnica': 1, 'OŠ Otona Ivekovića': 1 } },
+  { naziv: 'Taktička ploča', kat: 'Oprema', stanje: 'dobro', kol: { 'Dom košarke': 1, 'OŠ Nikole Tesle': 1, 'Skladište': 1 } },
 ];

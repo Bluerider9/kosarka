@@ -1134,3 +1134,6 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 
 .proto-bar .seg button.gotovo { background: #2e9e5b; color: #fff; }
 .proto-bar .seg button.gotovo.on { background: #1f7a43; box-shadow: 0 0 0 2px #fff inset; }
+
+.inv-in { width: 62px; padding: 6px 8px; text-align: center; font-weight: 700; }
+.inv-uk { font-size: 15px; color: var(--navy); }
