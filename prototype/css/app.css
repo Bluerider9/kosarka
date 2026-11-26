@@ -992,3 +992,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .proto-sw span { font-size: 10px; color: #98a1b3; width: 100%; }
 .pp-chip { border: 1px solid #b4c0cc; background: #fff; color: var(--navy); border-radius: 999px; padding: 4px 9px; font: 700 11px Montserrat, sans-serif; cursor: pointer; }
 .pp-chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+.vid-state .vs-t { justify-content: center; text-align: center; }

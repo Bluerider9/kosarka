@@ -485,7 +485,7 @@ function izazovKartica() {
     const v = state.video; const foto = z.vrsta === 'foto';
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic(foto ? 'image' : 'upload', 18)} ${foto ? 'Slikaj ili dodaj fotografiju' : 'Snimi ili dodaj video'}</button>`
       : v.st === 'čeka' ? `<div class="vid-state wait"><span class="vs-t">${ic('check', 16)} ${foto ? 'Fotografija poslana' : 'Video poslan'}: ${v.datoteka}</span><small>Čeka odobrenje trenera. Zadatak je ispunjen tek kad ga trener potvrdi.</small></div>`
-      : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Čestitam! Osvojila si ${fmt(z.nagrada)} ${FLC}-a</div>`
+      : v.st === 'odobreno' ? `<div class="vid-state ok"><span class="vs-t">${ic('check', 16)} Čestitam! Osvojila si ${fmt(z.nagrada)} ${FLC}-a</span></div>`
       : `<div class="vid-state no"><span class="vs-t">${ic('lock', 16)} Zadatak je zaključan</span><small>Trener ${foto ? 'fotografiju' : 'video'} nije odobrio, pa se zadatak ovaj tjedan više ne može ispuniti. Novi zadatak stiže u ponedjeljak u 00:01.</small></div>`;
     return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${kraj}</div>`;
   }
