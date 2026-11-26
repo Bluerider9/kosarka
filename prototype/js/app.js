@@ -340,12 +340,13 @@ function novostCard(n) {
 }
 /* ---------- FALCOINI I ORMAR ---------- */
 const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;
+const FLC = 'FLC'; // kratica valute Falcoin
 const r2 = (n) => Math.round(n * 100) / 100;
 const fmt = (n) => r2(n).toFixed(2).replace('.', ',');
-const fc = (n, s = 16) => `<span class="fc">${coinSvg(s)}<b>${typeof n === 'number' ? fmt(n) : n}</b></span>`;
+const fc = (n, s = 16) => `<span class="fc">${coinSvg(s)}<b>${typeof n === 'number' ? fmt(n) : n}</b><small class="flc">${FLC}</small></span>`;
 const IGR_ID = 1; // prototip: prijavljena igračica je Ana Horvat
 const saldo = () => FALCOINI[IGR_ID];
-const plus = (n) => `<b class="amt ${n < 0 ? 'neg' : 'pos'}">${n > 0 ? '+' : ''}${fmt(n)}</b>`;
+const plus = (n) => `<b class="amt ${n < 0 ? 'neg' : 'pos'}">${n > 0 ? '+' : ''}${fmt(n)} ${FLC}</b>`;
 const pravilo = (k) => FALCOIN_PRAVILA.find((r) => r.k === k).iznos;
 const toastIn = (msg) => { const t = $('#toastIn'); if (!t) return; t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); };
 function overlay(html, cls = '') {
@@ -363,8 +364,8 @@ function scanSheet() {
 function scanResult() {
   if (state.skenirano) { overlay(`<div class="scan-res warn">${ic('check', 34)}</div><h2>Već si evidentirana</h2><p>Dolazak za ovaj trening je već spremljen.</p><button class="btn block" data-fxclose>U redu</button>`); return; }
   const n = pravilo('trening'); state.skenirano = true; awarded[IGR_ID] = true; att[IGR_ID] = true; FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: 'Trening U14 · 17:30', iznos: n });
-  overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${fmt(n)} Falcoina</div>
-    <p>U14 · OŠ Ante Kovačića · 17:30<br>Novo stanje: <b>${fmt(saldo())}</b></p><button class="btn red block" data-fxclose>Super</button>`);
+  overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${fmt(n)} ${FLC}</div>
+    <p>U14 · OŠ Ante Kovačića · 17:30<br>Novo stanje: <b>${fmt(saldo())} ${FLC}</b></p><button class="btn red block" data-fxclose>Super</button>`);
 }
 function redeemSheet(id) {
   const a = ORMAR.find((x) => x.id === id); const max = r2(Math.min(a.cijena, saldo()));
@@ -372,15 +373,15 @@ function redeemSheet(id) {
   state.redeem = { id, f: max, size: prva.v };
   overlay(`${itemTile(a, 'big')}<h2>${a.ime}</h2>${a.opis ? `<div class="meta" style="margin-top:-4px">${a.opis}</div>` : ''}
     <div class="sizes">${a.velicine.map((v) => `<button type="button" class="size ${v.v === prva.v ? 'on' : ''} ${!(v.n > 0) ? 'pre' : ''}" data-size="${v.v}">${v.v}<small>${!(v.n > 0) ? 'predbilježba' : `${v.n} kom`}</small></button>`).join('')}</div>
-    <div class="meta">Cijena <b>${fmt(a.cijena)}</b> (1 Falcoin = 1 €)</div>
-    <div class="split"><div class="split-row"><span>Plaćam Falcoinima</span><b id="rdF">${fmt(max)}</b></div>
+    <div class="meta">Cijena <b>${fmt(a.cijena)} ${FLC}</b> (1 ${FLC} = 1 €)</div>
+    <div class="split"><div class="split-row"><span>Plaćam Falcoinima</span><b id="rdF">${fmt(max)} ${FLC}</b></div>
       <input type="range" class="slider" min="0" max="${max}" step="0.01" value="${max}" data-fcslider ${max === 0 ? 'disabled' : ''}>
       <div class="split-row cash"><span>Doplaćujem gotovinom</span><b id="rdC">${fmt(a.cijena - max)} €</b></div></div>
     <p id="rdNote">${rdNote(a, max)}</p>
     <button class="btn red block" id="rdBtn" data-redeemok="${id}">${rdBtn(a, max, prva.v)}</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
 }
 const rdBtn = (a, f, vel) => { const v = a.velicine.find((x) => x.v === vel) || {}; return !(v.n > 0) ? 'Predbilježi' : f >= a.cijena - 0.004 ? 'Zamijeni' : 'Zamijeni + doplati'; };
-const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)}</b><br>${!(v.n > 0) ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
+const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)} ${FLC}</b><br>${!(v.n > 0) ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
 function falcoiniHistory() {
   return `<div class="card"><div class="list">${FALCOIN_POVIJEST.map((t) => `<div class="row"><div class="grow"><h3 style="font-size:var(--fs-sm)">${t.opis}</h3><div class="meta">${t.dat}</div></div>${plus(t.iznos)}</div>`).join('')}</div></div>`;
 }
@@ -607,7 +608,7 @@ const SCREENS = {
   'igracica-falcoini': () => ({
     header: mHeader(SEKCIJA_FALCOIN, 'Skupljaj Falcoine i mijenjaj ih u Ormaru'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
-    body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-side"><span>Falcoina</span><small>= ${fmt(saldo())} € u Ormaru</small></div></div>
+    body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-side"><span>${FLC}</span><small>= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
       <div class="section-title small">Kako zarađuješ</div>
@@ -1016,7 +1017,7 @@ render();
 document.addEventListener('input', (e) => {
   if (!e.target.matches('[data-fcslider]') || !state.redeem) return;
   const a = ORMAR.find((x) => x.id === state.redeem.id); const f = r2(+e.target.value); state.redeem.f = f;
-  $('#rdF').textContent = fmt(f); $('#rdC').textContent = `${fmt(a.cijena - f)} €`; $('#rdNote').innerHTML = rdNote(a, f); $('#rdBtn').textContent = rdBtn(a, f, state.redeem.size);
+  $('#rdF').textContent = `${fmt(f)} ${FLC}`; $('#rdC').textContent = `${fmt(a.cijena - f)} €`; $('#rdNote').innerHTML = rdNote(a, f); $('#rdBtn').textContent = rdBtn(a, f, state.redeem.size);
 });
 // pravila bodovanja: spremanje pri promjeni, na dvije decimale
 document.addEventListener('change', (e) => {

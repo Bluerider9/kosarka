@@ -880,3 +880,5 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 .ormar-entry { width: 100%; text-align: left; border: 2px solid var(--gold); background: #fff; cursor: pointer; font: inherit; color: inherit; }
 .ormar-entry b { font-weight: 800; }
+
+.fc .flc { font-size: .7em; font-weight: 700; opacity: .65; letter-spacing: .03em; margin-left: -2px; }
