@@ -1148,3 +1148,26 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .sd.past { opacity: 1; }
 .sd.past .sd-day, .sd.past .sd-t:not([class*="r-"]) { opacity: .55; }
 .sd-t i { margin-left: auto; }
+
+/* Sve stane u prozor (i na 360 px) */
+.sd-list { min-width: 0; }
+.sd-t { min-width: 0; flex-wrap: wrap; row-gap: 2px; }
+.sd-t b { min-width: 0; }
+.sd-t small { min-width: 0; flex: 1 1 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-t i { margin-left: auto; }
+@media (max-width: 700px) {
+  .proto-bar { padding-left: 8px; padding-right: 8px; gap: 6px; }
+  .proto-bar .brand .t { display: none; }
+  .proto-bar .seg { overflow-x: auto; max-width: 100%; scrollbar-width: none; flex: 1; }
+  .proto-bar .seg::-webkit-scrollbar { display: none; }
+  .proto-bar .seg button { flex: none; padding: 6px 10px; }
+}
+.sd-t { position: relative; padding-right: 26px; }
+.sd-t i { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); margin: 0; }
+@media (max-width: 400px) {
+  .app-header h1, .app-header .title, .app-header h2 { font-size: 17px; line-height: 1.15; min-width: 0; overflow-wrap: anywhere; }
+}
+.app-header .row > div:not(.cog) { min-width: 0; }
+.app-header .row .grow { min-width: 0; }
+.app-header h1 { min-width: 0; }
+@media (max-width: 400px) { .app-header .row { gap: 8px; } .app-header h1 { font-size: 18px; } .app-header .cog { width: 40px; height: 40px; flex: none; } }
