@@ -1094,7 +1094,9 @@ document.addEventListener('click', (e) => {
       IZAZOV.vrsta = v; IZAZOV.naslov = def[0]; IZAZOV.opis = def[1]; state.video = null;
     } else state.video = v === 'nista' ? null : { igr: 'Ana', datoteka: IZAZOV.vrsta === 'foto' ? 'dres.jpg' : 'trica.mp4', st: v, tip: IZAZOV.vrsta };
     render(); return; }
-  const zf = e.target.closest('[data-zfaza]'); if (zf) { state.zadFaza = zf.dataset.zfaza; render(); return; }
+  const zf = e.target.closest('[data-zfaza]'); if (zf) { state.zadFaza = zf.dataset.zfaza;
+    if (state.zadFaza === 'cekanje' && !state.notifPrikl) { state.notifPrikl = true; notify('igracica', 'Priključi se idućem tjednom zadatku', 'Priključivanje je otvoreno. Priključi se do ponedjeljka u 00:01 da vidiš zadatak čim se otkrije.'); }
+    render(); return; }
   if (e.target.closest('[data-izprikl2]')) { state.izPriklIduci = true; render(); toastIn('Priključena si idućem zadatku'); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
