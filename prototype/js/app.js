@@ -340,7 +340,7 @@ function novostCard(n) {
 }
 /* ---------- FALCOINI I ORMAR ---------- */
 const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;
-const FLC = 'FC'; // kratica valute Falcoin
+const FLC = 'FLC'; // kratica valute Falcoin
 const r2 = (n) => Math.round(n * 100) / 100;
 const fmt = (n) => r2(n).toFixed(2).replace('.', ',');
 const fc = (n, s = 16) => `<span class="fc">${coinSvg(s)}<b>${typeof n === 'number' ? fmt(n) : n}</b><small class="flc">${FLC}</small></span>`;
