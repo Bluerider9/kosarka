@@ -898,3 +898,14 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .ormar-vel .ov-vals { display: flex; gap: 18px; margin-top: 2px; font-size: var(--fs-sm); }
 .ormar-vel .ov-vals b { font-weight: 900; margin-left: 4px; }
 .vel-edit.static { position: static; flex: none; }
+
+.card.item .heart { position: absolute; top: 6px; right: 8px; z-index: 3; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); color: var(--navy); font-size: 18px; line-height: 1; cursor: pointer; padding: 0; box-shadow: 0 1px 4px rgba(24,36,84,.18); }
+.card.item .heart.on { color: var(--red); }
+.card.wish .item-tile.sm { width: 52px; height: 52px; flex: none; }
+.wish-line { font-size: var(--fs-sm); margin-top: 2px; } .wish-line .ok { color: #1f8a4c; }
+.wish-heart { font-size: 28px; color: var(--red); line-height: 1; }
+.card.wish.empty { cursor: pointer; border: 2px dashed var(--silver); box-shadow: none; }
+.wish-x { align-self: flex-start; width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--silver-100); font-size: 18px; line-height: 1; cursor: pointer; color: var(--navy); }
+.streak-dots { display: flex; justify-content: space-between; margin-top: 12px; }
+.streak-dots span { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--silver-100); color: #8a93a6; font-weight: 800; }
+.streak-dots span.on { background: var(--gold); color: var(--navy); }

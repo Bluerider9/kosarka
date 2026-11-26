@@ -396,6 +396,24 @@ const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
 const jednaVel = (a) => a.velicine.length === 1 && a.velicine[0].v === 'Jedna veličina';
 const mojaNaStanju = (a) => jednaVel(a) || (() => { const v = mojaVel(a); return !!v && v.n > 0; })();
 const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
+const NIZ_TRENINGA = 3; // prototip: igračica ima niz od 3 treninga zaredom; na 5 dobiva bonus
+const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
+function zeljaKartica() {
+  const a = zeljaArtikl();
+  if (!a) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>Moja želja</h3><div class="meta">Označi srcem artikl u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
+  const fali = r2(Math.max(0, a.cijena - saldo())); const pct = Math.min(100, Math.round(saldo() / a.cijena * 100));
+  return `<div class="card wish"><div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><div class="meta">Moja želja</div><h3>${a.ime}</h3>
+    <div class="wish-line">${fali > 0 ? `Još ti fali <b>${fmt(fali)} ${FLC}</b>` : `<b class="ok">Imaš dovoljno ${FLC}!</b>`}</div></div>
+    <button type="button" class="wish-x" data-zelja="${a.id}" aria-label="Makni želju">×</button></div>
+    <div class="progress" style="margin-top:12px"><i style="width:${pct}%"></i></div>
+    <div class="row spread" style="margin-top:6px"><span class="meta">${fmt(saldo())} / ${fmt(a.cijena)} ${FLC}</span><span class="meta">${pct}%</span></div>
+    ${fali > 0 ? '' : `<button class="btn red block sm" style="margin-top:10px" data-redeem="${a.id}">Zamijeni</button>`}</div>`;
+}
+function nizKartica() {
+  const n = NIZ_TRENINGA; const jos = 5 - n;
+  return `<div class="card streak"><div class="row spread"><div><h3>Niz treninga</h3><div class="meta">${n} zaredom · još ${jos} do bonusa</div></div>${fc(pravilo('niz'), 16)}</div>
+    <div class="streak-dots">${[1, 2, 3, 4, 5].map((i) => `<span class="${i <= n ? 'on' : ''}">${i <= n ? '✓' : i}</span>`).join('')}</div></div>`;
+}
 function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
   return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
     <button class="vel-edit static" data-velopen="${PLAYERS[0].id}" aria-label="Uredi veličine">${ic('edit', 18)}</button></div>`; }
@@ -404,7 +422,7 @@ function ormarGrid() {
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
-    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}"><button type="button" class="heart ${state.zelja === a.id ? 'on' : ''}" data-zelja="${a.id}" aria-label="Moja želja">${state.zelja === a.id ? '♥' : '♡'}</button>${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="stock">${jedna ? (ima ? `na stanju ${v.n}` : 'predbilježba') : moja ? `Tvoja veličina ${v.v} · na stanju ${v.n}` : ima ? 'dostupno · izaberi veličinu' : 'nema tvoje veličine · predbilježba'}</div>
       <button class="btn ${ima ? 'red' : 'ghost'} sm block" data-redeem="${a.id}">Izaberi</button></div>`; }).join('')}</div>`;
 }
@@ -614,6 +632,7 @@ const SCREENS = {
     body: `<div class="card fc-hero compact"><button type="button" class="fc-help" data-flchelp aria-label="Što je FLC?">?</button><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u klupski Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
+      ${zeljaKartica()}${nizKartica()}
       <div class="section-title">Povijest</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({
@@ -733,7 +752,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citanoPo: {}, skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -904,6 +923,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; return; }
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
+  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u Moju želju'); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
     <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
     <p><b>1 FLC = 1 €.</b> Ako ti Falcoina nema dovoljno za artikl, ostatak doplaćuješ gotovinom pri preuzimanju kod trenera.</p>
