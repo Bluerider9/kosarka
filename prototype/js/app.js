@@ -141,13 +141,10 @@ const PROTO_SADA = '12:10'; // "trenutno vrijeme" u prototipu
 const minuta = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60 + m; };
 const rsvpRok = () => { const m = minuta(DANAS_TRENING.vrijeme) - 180; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
 const rsvpOtvoren = () => minuta(PROTO_SADA) <= minuta(rsvpRok());
-const PROTIVNICI = [
-  { id: 1, naziv: 'ŽKK Primjer 1', grad: 'Zagreb', logo: null, dvorane: ['Sportska dvorana Primjer', '', ''] }, { id: 2, naziv: 'ŽKK Primjer 2', grad: 'Samobor', logo: null, dvorane: ['Dvorana OŠ Samobor', 'Gradska dvorana Samobor', ''] },
-  { id: 3, naziv: 'ŽKK Primjer 3', grad: 'Velika Gorica', logo: null, dvorane: ['Dvorana Velika Gorica', 'Dvorana Mraclin', 'Dvorana Kurilovec'] }, { id: 4, naziv: 'ŽKK Primjer 4', grad: 'Karlovac', logo: null, dvorane: ['', '', ''] },
-];
+const PROTIVNICI = PROTIVNICI_PODACI; // iz dumpa starog portala (migracija/lige_iz_dumpa.py)
 const protLogo = (naziv, cls = '') => { const k = PROTIVNICI.find((x) => x.naziv === naziv); return k ? (k.logo ? `<img class="prot-logo ${cls}" src="${k.logo}" alt="${k.naziv}">` : `<span class="prot-logo ph ${cls}">${ini(k.naziv.replace('ŽKK ', ''))}</span>`) : ''; };
-const UTAKMICA = { kolo: { liga: 'u14', k: 3 }, grupa: 'U14', natjecanje: 'Prvenstvo U14', protivnik: 'ŽKK Primjer 3', gost: false, zamjena: false, datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
-const UTK_DVORANE = ['Dvorana A', 'Dvorana B', 'OŠ Ante Kovačića'];
+const UTAKMICA = { kolo: { liga: 'l4', k: 4 }, grupa: 'U14', natjecanje: 'Pretkadetska liga', protivnik: 'Medveščak', gost: false, zamjena: false, datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'OŠ Ante Kovačića' };
+const UTK_DVORANE = DVORANE_KLUB;
 const DANI_HR = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
 const utkDanIz = (dat) => { const m = /^(\d{2})\.(\d{2})\.(\d{4})\.?$/.exec(dat.trim()); if (!m) return null; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] ? `${DANI_HR[d.getDay()]} ${m[1]}.${m[2]}.${m[3]}.` : null; };
 const tjedanStavke = () => DANI.flatMap((d, i) => (TRENINZI[i] || []).filter((t) => t.g === 'U14').map((t) => ({ d, i, t })));
@@ -278,13 +275,13 @@ const minute = (n) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'minutu' : [2, 3,
 const dolazakTekst = (i, t) => { const s = dolazakStatus(i, t), v = dolazak(i, t); if (s === 'cekaj' && izPokriva(i)) return `Opravdani izostanak: ${state.izostanak.razlog}`; return { da: 'Bila si i odradila', kasni: `Kasnila ${minute(v)}`, ne: 'Nisi bila', cekaj: 'Još nije bio trening' }[s]; };
 // utakmice igračice: 'igrala' (odigrane) i 'pozvana' (na popisu za iduću) — izmišljeni podaci
 const UTAKMICE_IGR = [
-  { dat: 'Sub 28.11.', vr: '11:00', opis: 'Prvenstvo U14', st: 'pozvana', nap: 'termin nije potvrđen' },
-  { dat: 'Sub 22.11.', vr: '', opis: 'Prvenstvo U14 · ŽKK Primjer 2', st: 'igrala', rez: '54 : 48' },
-  { dat: 'Sub 15.11.', vr: '', opis: 'Prvenstvo U14 · ŽKK Primjer 1', st: 'igrala', rez: '41 : 47' },
+  { dat: 'Sub 28.11.', vr: '11:00', opis: 'Pretkadetska liga · Medveščak', st: 'pozvana', nap: 'termin nije potvrđen' },
+  { dat: 'Sub 14.11.', vr: '', opis: 'Pretkadetska liga · Trešnjevka 2009', st: 'igrala', rez: '' },
+  { dat: 'Sub 17.10.', vr: '', opis: 'Pretkadetska liga · Studio Zagreb', st: 'igrala', rez: '' },
 ];
 const utakmiceIgr = () => `<div class="card sched-matches"><h3>Utakmice</h3>${UTAKMICE_IGR.map((u) => `<div class="mt"><div class="mt-d"><b>${u.st === 'pozvana' && UTAKMICA.potvrdeno ? UTAKMICA.datum.split(' ')[0].slice(0, 3) + ' ' + UTAKMICA.dat.slice(0, 6) : u.dat}</b><span>${u.st === 'pozvana' && UTAKMICA.potvrdeno ? UTAKMICA.vrijeme : (u.vr || 'odigrano')}</span></div>
   <div class="mt-o"><b>${protLogo((u.opis.split(' · ')[1]) || UTAKMICA.protivnik, 'sm')} ${u.opis}</b>${u.st === 'pozvana' ? (UTAKMICA.potvrdeno ? `<small>${UTAKMICA.dvorana}</small>` : `<small>${u.nap}</small>`) : ''}</div>
-  ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Nije u sastavu', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>`}</div>`).join('')}</div>`;
+  ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Nije u sastavu', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : (u.rez ? `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>` : '<span class="mt-r">odigrano</span>')}</div>`).join('')}</div>`;
 function rasporedScreen(filterGrupe, tocke = false, tockeGrupe = []) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
@@ -829,14 +826,7 @@ const MJ_GEN = ['siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnj
 const pad2 = (n) => String(n).padStart(2, '0');
 const dKey = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
 // Lige (kategorije utakmica): cijela liga po kolima (subota/nedjelja), protivnik je zadan jednom po kolu
-const LIGE = [
-  { id: 'u14', naziv: 'Prvenstvo U14', grupa: 'U14', kola: [
-    { k: 1, d: '2026-11-15', prot: 'ŽKK Primjer 1', gost: false, rez: '41 : 47' },
-    { k: 2, d: '2026-11-22', prot: 'ŽKK Primjer 2', gost: true, rez: '54 : 48' },
-    { k: 3, d: '2026-11-28', prot: 'ŽKK Primjer 3', gost: false },
-    { k: 4, d: '2026-12-12', prot: 'ŽKK Primjer 4', gost: true, vr: '12:00' } ] },
-  { id: 'u16', naziv: 'Prvenstvo U16', grupa: 'U16', kola: [{ k: 1, d: '2026-12-05', prot: 'ŽKK Primjer 3', gost: false, vr: '10:00' }] },
-];
+const LIGE = LIGE_PODACI.map((l) => ({ ...l, kola: l.kola.map((k) => ({ ...k, vr: k.vr || undefined })) }));
 const isoDat = (iso) => { const [y, m, d] = iso.split('-'); return `${d}.${m}.${y}.`; };
 const isoDan = (iso) => { const [y, m, d] = iso.split('-').map(Number); const wd = new Date(y, m - 1, d).getDay(); return `${DANI_HR[wd]} ${isoDat(iso)}`; };
 const jeVikend = (iso) => { const [y, m, d] = iso.split('-').map(Number); return [0, 6].includes(new Date(y, m - 1, d).getDay()); };
@@ -862,7 +852,7 @@ function adminKalendar() {
   const detalj = `<div class="cal-detail card"><h3>${DANI_PUNO[(sdt.getDay() + 6) % 7]}, ${sd}. ${MJ_GEN[sm - 1]}</h3>
     ${['tr', 'ut', 'iz'].map((tip) => { const l = sst.filter((x) => x.t === tip); if (!l.length) return ''; const nas = { tr: 'Treninzi', ut: 'Utakmice', iz: 'Tjedni zadatak' }[tip];
       return `<div class="section-title small">${nas}</div>${l.map((x) => `<div class="cal-row ${x.t}"><b>${x.t === 'iz' ? x.label : x.det.split(' · ')[0]}</b><span>${x.t === 'tr' ? `${x.label} · ${x.det.split(' · ')[1]}` : x.t === 'ut' ? x.u.opis : x.det}</span>
-        ${x.t === 'ut' ? (x.u.rez ? chip('Rezultat ' + x.u.rez, 'navy') : x.u.glavna ? (UTAKMICA.termin && UTAKMICA.dvorana ? chip('Potvrđeno', 'ok') : chip('Čeka potvrdu', 'warn')) : chip('Nije potvrđeno', 'warn')) : ''}
+        ${x.t === 'ut' ? (x.u.rez ? chip('Rezultat ' + x.u.rez, 'navy') : x.u.glavna ? (UTAKMICA.termin && UTAKMICA.dvorana ? chip('Potvrđeno', 'ok') : chip('Čeka potvrdu', 'warn')) : (x.u.d < '2026-11-26' ? chip('Odigrano') : chip('Nije potvrđeno', 'warn'))) : ''}
         ${x.t === 'iz' ? `<button class="btn ghost sm" data-izuredi="${x.wk}">Uredi</button>` : ''}</div>`).join('')}`; }).join('') || '<div class="meta">Nema termina ovaj dan.</div>'}
     ${sel === '2026-11-28' ? adminUtakmica() : ''}</div>`;
   return `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Treninzi, utakmice i tjedni zadaci</div></div><div class="grow"></div>
@@ -901,11 +891,11 @@ function pogled(key, cfg) {
 }
 
 function ligeScreen() {
-  const l = LIGE.find((x) => x.id === (state.ligaTab || 'u14')) || LIGE[0];
+  const l = LIGE.find((x) => x.id === (state.ligaTab || LIGE[0].id)) || LIGE[0];
   return `<div class="page-head"><div><h1>Lige</h1><div class="sub">Cijela liga po kolima (subota/nedjelja); protivnik se zadaje jednom, u kalendaru se više ne bira</div></div><div class="grow"></div>
     <button class="btn ghost" data-ligasnova>${ic('plus', 18)} Nova liga</button><button class="btn" data-ligakolo>${ic('plus', 18)} Dodaj kolo</button></div>
     <div class="baza-tabs" role="tablist">${LIGE.map((x) => `<button type="button" role="tab" class="${x.id === l.id ? 'on' : ''}" data-ligatab="${x.id}">${x.naziv}<span>${x.kola.length}</span></button>`).join('')}</div>
-    <div class="kolo-grid">${l.kola.map((k) => `<div class="card kolo-card"><div class="kolo-h"><span class="kolo-n">${k.k}. kolo</span>${k.rez ? chip('Rezultat ' + k.rez, 'navy') : chip('Predstoji', 'warn')}<button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></div>
+    <div class="kolo-grid">${l.kola.map((k) => `<div class="card kolo-card"><div class="kolo-h"><span class="kolo-n">${k.k}. kolo</span>${k.rez ? chip('Rezultat ' + k.rez, 'navy') : k.d < '2026-11-26' ? chip('Odigrano') : chip('Predstoji', 'warn')}${k.zamjena ? chip('Zamjena domaćinstva', 'warn') : ''}<button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></div>
       <div class="kolo-vs">${protLogo(k.prot)}<b>${k.gost ? 'Gostujemo kod' : 'Doma protiv'} ${k.prot}</b></div>
       <div class="field"><label>Datum (dd.mm.gggg) · ${isoDan(k.d).split(' ')[0]}${jeVikend(k.d) ? '' : ' <span class="chip warn">nije vikend</span>'}</label><input class="input" data-kolodat="${l.id}-${k.k}" inputmode="numeric" value="${isoDat(k.d)}"></div>
       <div class="two"><div class="field"><label>Protivnik</label><select class="input" data-koloprot="${l.id}-${k.k}">${PROTIVNICI.map((p) => `<option ${p.naziv === k.prot ? 'selected' : ''}>${p.naziv}</option>`).join('')}</select></div>
@@ -1265,7 +1255,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-protspremi]')) { const n = $('#protNaziv').value.trim(); if (!n) { toastIn('Upiši naziv kluba'); return; } PROTIVNICI.push({ id: Date.now(), naziv: n, grad: $('#protGrad').value.trim() || '—', logo: state.protNoviLogo || null, dvorane: [...document.querySelectorAll('.protdvn')].map((x) => x.value.trim()) }); closeModal(); render(); toastIn('Klub dodan'); return; }
   const ltab = e.target.closest('[data-ligatab]'); if (ltab) { state.ligaTab = ltab.dataset.ligatab; render(); return; }
   const lkb = e.target.closest('[data-kolouk]'); if (lkb) { const [li, ki] = lkb.dataset.kolouk.split('-'); const L = LIGE.find((x) => x.id === li); if (L.id === UTAKMICA.kolo.liga && +ki === UTAKMICA.kolo.k) { toastIn('Ovo kolo je povezano s idućom utakmicom'); return; } L.kola = L.kola.filter((x) => x.k !== +ki); render(); return; }
-  if (e.target.closest('[data-ligakolo]')) { const L = LIGE.find((x) => x.id === (state.ligaTab || 'u14')) || LIGE[0]; const zad = L.kola[L.kola.length - 1]; const [y, m, d] = (zad ? zad.d : '2026-12-05').split('-').map(Number); const n = new Date(y, m - 1, d + 7);
+  if (e.target.closest('[data-ligakolo]')) { const L = LIGE.find((x) => x.id === (state.ligaTab || LIGE[0].id)) || LIGE[0]; const zad = L.kola[L.kola.length - 1]; const [y, m, d] = (zad ? zad.d : '2026-12-05').split('-').map(Number); const n = new Date(y, m - 1, d + 7);
     L.kola.push({ k: (zad ? zad.k : 0) + 1, d: `${n.getFullYear()}-${pad2(n.getMonth() + 1)}-${pad2(n.getDate())}`, prot: PROTIVNICI[0].naziv, gost: false }); render(); toastIn('Dodano kolo, odaberi protivnika'); return; }
   if (e.target.closest('[data-ligasnova]')) { modal(`<h3>Nova liga</h3><div class="field"><label>Naziv (npr. Prvenstvo U12)</label><input class="input" id="ligaNaziv"></div><div class="field"><label>Grupa</label><select class="input" id="ligaGrupa">${GROUPS.map((g) => `<option>${g.ime}</option>`).join('')}</select></div>
     <button class="btn block" data-ligaspremi>Spremi ligu</button><button class="btn ghost block" data-close>Odustani</button>`); return; }

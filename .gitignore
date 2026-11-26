@@ -5,3 +5,6 @@ vendor/
 .env
 config.local.php
 *.log
+# Stvarni podaci iz Falcons Trackera: NIKAD u git (osobni podaci maloljetnica, hashevi lozinki)
+*.sql
+migracija/podaci/

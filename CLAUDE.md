@@ -193,3 +193,8 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 ## Admin sučelje: pogledi umjesto tablica
 
 - Popisi u adminu **nisu fiksne tablice** nego **biraš pogled**: prekidač **Kartice (zadano) / Popis / Tablica**, **Prikaži:** kapsule za uključivanje/isključivanje polja, **Sortiraj** (polje + uzlazno/silazno) i **Grupiraj** (po bilo kojem polju, sa zaglavljem i brojem). Izbor se pamti po stranici (`state.pog[ključ]`, komponenta `pogled()` u `app.js`). Primijenjeno na **Članovi** (pretraga i filteri grupa ostaju iznad), **Članarine** (uplate) i sve tabove **Baze**; **Lige** su kartice po kolu s izravnim izmjenama (datum, protivnik, doma/gost). Kartica/redak člana otvara profil. Ostale stranice (Prijave, Ormar narudžbe/artikli, Novosti) još imaju staru tablicu: sljedeći korak je prebaciti i njih na isti pogled.
+
+## Migracija iz Falcons Trackera
+
+- Dump stare baze (`bluerder_portalwebapp`) je analiziran: opis tablica, mapiranje i otvorene odluke su u `migracija/README.md`. **Sam dump i osobni podaci nisu u gitu** (`.gitignore`). Prototip koristi samo neosobne podatke iz dumpa: **lige s kolima, protivnike, dvorane** (`prototype/js/lige-podaci.js`, generira `migracija/lige_iz_dumpa.py`). Igračice u prototipu ostaju izmišljene.
+- Bitno za dizajn: stari sustav ima **trening grupe** (U18/U16/U14, U13/U12, SEN, ŠK A. Kovačić, ŠK O. Iveković) i **sastave za lige** (Seniorke, Juniorke, Kadetkinje, Pretkadetkinje, U13, U12, U11); lige su vezane uz sastav. Prototip još koristi U12/U14/U16/SEN: uskladiti.
