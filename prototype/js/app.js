@@ -142,11 +142,11 @@ const minuta = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60
 const rsvpRok = () => { const m = minuta(DANAS_TRENING.vrijeme) - 180; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
 const rsvpOtvoren = () => minuta(PROTO_SADA) <= minuta(rsvpRok());
 const PROTIVNICI = [
-  { id: 1, naziv: 'ŽKK Primjer 1', grad: 'Zagreb', logo: null }, { id: 2, naziv: 'ŽKK Primjer 2', grad: 'Samobor', logo: null },
-  { id: 3, naziv: 'ŽKK Primjer 3', grad: 'Velika Gorica', logo: null }, { id: 4, naziv: 'ŽKK Primjer 4', grad: 'Karlovac', logo: null },
+  { id: 1, naziv: 'ŽKK Primjer 1', grad: 'Zagreb', logo: null, dvorane: ['Sportska dvorana Primjer', '', ''] }, { id: 2, naziv: 'ŽKK Primjer 2', grad: 'Samobor', logo: null, dvorane: ['Dvorana OŠ Samobor', 'Gradska dvorana Samobor', ''] },
+  { id: 3, naziv: 'ŽKK Primjer 3', grad: 'Velika Gorica', logo: null, dvorane: ['Dvorana Velika Gorica', 'Dvorana Mraclin', 'Dvorana Kurilovec'] }, { id: 4, naziv: 'ŽKK Primjer 4', grad: 'Karlovac', logo: null, dvorane: ['', '', ''] },
 ];
 const protLogo = (naziv, cls = '') => { const k = PROTIVNICI.find((x) => x.naziv === naziv); return k ? (k.logo ? `<img class="prot-logo ${cls}" src="${k.logo}" alt="${k.naziv}">` : `<span class="prot-logo ph ${cls}">${ini(k.naziv.replace('ŽKK ', ''))}</span>`) : ''; };
-const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', protivnik: 'ŽKK Primjer 3', datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
+const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', protivnik: 'ŽKK Primjer 3', gost: false, datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
 const UTK_DVORANE = ['Dvorana A', 'Dvorana B', 'OŠ Ante Kovačića'];
 const DANI_HR = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
 const utkDanIz = (dat) => { const m = /^(\d{2})\.(\d{2})\.(\d{4})\.?$/.exec(dat.trim()); if (!m) return null; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] ? `${DANI_HR[d.getDay()]} ${m[1]}.${m[2]}.${m[3]}.` : null; };
@@ -241,7 +241,7 @@ function utkTrenerKartica() {
     ${b.ceka ? `<button class="btn ghost block sm" data-utkpodsjeti>${ic('bell', 16)} Podsjeti one koje čekaju (${b.ceka})</button>` : ''}</div>`;
 }
 const utkFlags = () => UTAKMICA.potvrdeno
-  ? `<div class="utk-info">${UTAKMICA.protivnik ? `<div class="utk-vs">${protLogo(UTAKMICA.protivnik)}<span>protiv <b>${UTAKMICA.protivnik}</b></span></div>` : ''}<b>${UTAKMICA.natjecanje}</b><div>${UTAKMICA.datum} u ${UTAKMICA.vrijeme}</div><div>${UTAKMICA.dvorana}</div></div>`
+  ? `<div class="utk-info">${UTAKMICA.protivnik ? `<div class="utk-vs">${protLogo(UTAKMICA.protivnik)}<span>${UTAKMICA.gost ? 'gostovanje kod' : 'protiv'} <b>${UTAKMICA.protivnik}</b></span></div>` : ''}<b>${UTAKMICA.natjecanje}</b><div>${UTAKMICA.datum} u ${UTAKMICA.vrijeme}</div><div>${UTAKMICA.dvorana}</div></div>`
   : `<div class="match-flags"><span>${ic('cal', 14)} Datum i vrijeme još nisu potvrđeni</span><span>${ic('pin', 14)} Dvorana još nije potvrđena</span></div>`;
 function utakmicaKartica() {
   const u = UTAKMICA;
@@ -865,14 +865,18 @@ function adminKalendar() {
       <span class="cal-leg"><i class="tr"></i>Trening</span><span class="cal-leg"><i class="ut"></i>Utakmica</span><span class="cal-leg"><i class="iz"></i>Zadatak</span></div>
     <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div></div>${detalj}</div>`;
 }
+const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PROTIVNICI.find((x) => x.naziv === prot); return k ? k.dvorane.filter(Boolean) : []; };
 function adminUtakmica() {
-  const u = UTAKMICA;
+  const u = UTAKMICA, d = state.utkDraft || (state.utkDraft = { dat: u.dat, vr: u.vrijeme, gost: u.gost, prot: u.protivnik, dv: u.dvoranaUnos });
+  const dv = utkDvorane(d.gost, d.prot);
   return `<div class="card adm-utk" style="margin-top:12px;box-shadow:none;border:1px solid var(--silver-100)"><h3>Utakmica · ${u.natjecanje}</h3>
-    ${u.potvrdeno ? `<div class="adm-utk-row"><div><b>Potvrđeno</b><div class="meta">${u.datum} u ${u.vrijeme} · ${u.dvorana}</div></div>${chip('Potvrđeno', 'ok')}<button class="btn ghost sm" data-admutk-ponisti>Uredi</button></div>`
+    ${u.potvrdeno ? `<div class="adm-utk-row"><div><b>Potvrđeno</b><div class="meta">${u.gost ? 'Gostovanje: ' : ''}${u.protivnik} · ${u.datum} u ${u.vrijeme} · ${u.dvorana}</div></div>${chip('Potvrđeno', 'ok')}<button class="btn ghost sm" data-admutk-ponisti>Uredi</button></div>`
     : `<div class="meta">Upiši datum, vrijeme i dvoranu pa potvrdi. Igračicama i roditeljima tada nestaje poruka "nije potvrđeno" i vide termin i dvoranu.</div>
-    <div class="field"><label>Datum (dd.mm.gggg)</label><input class="input" id="utkDat" inputmode="numeric" placeholder="28.11.2026." value="${u.dat}"></div>
-    <div class="two"><div class="field"><label>Vrijeme (hh:mm)</label><input class="input" id="utkVr" inputmode="numeric" placeholder="11:00" value="${u.vrijeme}"></div>
-    <div class="field"><label>Dvorana</label><select class="input" id="utkDv">${UTK_DVORANE.map((d) => `<option ${d === u.dvoranaUnos ? 'selected' : ''}>${d}</option>`).join('')}</select></div></div>
+    <div class="field"><label>Protivnik</label><select class="input" id="utkProt" data-utkdraft>${PROTIVNICI.map((k) => `<option ${k.naziv === d.prot ? 'selected' : ''}>${k.naziv}</option>`).join('')}</select></div>
+    <div class="field"><label>Igramo</label><div class="pub-tabs"><button type="button" class="pp-chip pub${!d.gost ? ' on' : ''}" data-utkgost="0">Doma</button><button type="button" class="pp-chip pub${d.gost ? ' on' : ''}" data-utkgost="1">Gostujemo</button></div></div>
+    <div class="field"><label>Datum (dd.mm.gggg)</label><input class="input" id="utkDat" inputmode="numeric" placeholder="28.11.2026." value="${d.dat}" data-utkdraft></div>
+    <div class="two"><div class="field"><label>Vrijeme (hh:mm)</label><input class="input" id="utkVr" inputmode="numeric" placeholder="11:00" value="${d.vr}" data-utkdraft></div>
+    <div class="field"><label>Dvorana${d.gost ? ' (protivnika)' : ''}</label><select class="input" id="utkDv" data-utkdraft>${dv.map((x) => `<option ${x === d.dv ? 'selected' : ''}>${x}</option>`).join('') || '<option value="">— protivnik nema upisanu dvoranu —</option>'}</select></div></div>
     <div class="err" id="utkErr" style="color:var(--red);font-size:var(--fs-sm)"></div>
     <button class="btn block" data-admutk-spremi>Potvrdi termin i dvoranu</button>`}
     <div class="meta" style="margin-top:10px">Igračice i roditelji potvrđuju dolazak kad trener objavi popis (ne čeka se potvrda termina).</div></div>`;
@@ -904,6 +908,7 @@ const ADMIN = {
   protivnici: () => `<div class="page-head"><div><h1>Protivnici</h1><div class="sub">Klubovi i njihovi logotipi (prikazuju se uz utakmice)</div></div><div class="grow"></div>
     <button class="btn" data-protnovi>${ic('plus', 18)} Novi klub</button></div>
     <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
+      <div class="prot-dv"><span>Dvorane (do 3)</span>${[0, 1, 2].map((i) => `<input class="input" data-protdv="${k.id}-${i}" placeholder="Dvorana ${i + 1}" value="${(k.dvorane && k.dvorane[i]) || ''}">`).join('')}</div>
       <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
   prijave: () => `<div class="page-head"><div><h1>Prijave</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
       <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
@@ -1112,6 +1117,10 @@ document.addEventListener('submit', (e) => {
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
+document.addEventListener('input', (e) => { const t = e.target; if (t.dataset && t.dataset.protdv) { const [id, i] = t.dataset.protdv.split('-'); PROTIVNICI.find((k) => k.id === +id).dvorane[+i] = t.value.trim(); } });
+document.addEventListener('change', (e) => { const t = e.target, d = state.utkDraft; if (!t.hasAttribute || !t.hasAttribute('data-utkdraft') || !d) return;
+  d.dat = $('#utkDat').value; d.vr = $('#utkVr').value; d.prot = $('#utkProt').value; d.dv = $('#utkDv').value;
+  if (t.id === 'utkProt') { d.dv = utkDvorane(d.gost, d.prot)[0] || ''; render(); } });
 const citajSliku = (f, cb) => { if (!f) return; const r = new FileReader(); r.onload = () => cb(r.result); r.readAsDataURL(f); };
 document.addEventListener('change', (e) => {
   const t = e.target;
@@ -1193,9 +1202,11 @@ document.addEventListener('click', (e) => {
   const fu = e.target.closest('[data-fotoukloni]'); if (fu) { delete state.fotoIgr[fu.dataset.fotoukloni]; render(); return; }
   const pu = e.target.closest('[data-protukloni]'); if (pu) { PROTIVNICI.find((k) => k.id === +pu.dataset.protukloni).logo = null; render(); return; }
   if (e.target.closest('[data-protnovi]')) { state.protNoviLogo = null; modal(`<h3>Novi klub</h3><div class="field"><label>Naziv kluba</label><input class="input" id="protNaziv" placeholder="ŽKK …"></div><div class="field"><label>Grad</label><input class="input" id="protGrad"></div>
+    <div class="field"><label>Dvorane (do 3)</label>${[0, 1, 2].map((i) => `<input class="input protdvn" placeholder="Dvorana ${i + 1}" style="margin-bottom:6px">`).join('')}</div>
     <div class="prot-up"><div id="protPrev"><span class="prot-logo ph lg">?</span></div><label class="btn ghost sm">${ic('upload', 16)} Učitaj logotip<input type="file" accept="image/*" hidden data-protnovilogo></label></div>
     <button class="btn block" data-protspremi>Spremi klub</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
-  if (e.target.closest('[data-protspremi]')) { const n = $('#protNaziv').value.trim(); if (!n) { toastIn('Upiši naziv kluba'); return; } PROTIVNICI.push({ id: Date.now(), naziv: n, grad: $('#protGrad').value.trim() || '—', logo: state.protNoviLogo || null }); closeModal(); render(); toastIn('Klub dodan'); return; }
+  if (e.target.closest('[data-protspremi]')) { const n = $('#protNaziv').value.trim(); if (!n) { toastIn('Upiši naziv kluba'); return; } PROTIVNICI.push({ id: Date.now(), naziv: n, grad: $('#protGrad').value.trim() || '—', logo: state.protNoviLogo || null, dvorane: [...document.querySelectorAll('.protdvn')].map((x) => x.value.trim()) }); closeModal(); render(); toastIn('Klub dodan'); return; }
+  const ugo = e.target.closest('[data-utkgost]'); if (ugo) { const d = state.utkDraft; d.gost = ugo.dataset.utkgost === '1'; d.dv = utkDvorane(d.gost, d.prot)[0] || ''; render(); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
@@ -1311,11 +1322,11 @@ document.addEventListener('click', (e) => {
     toastIn(dano || vraceno ? `Spremljeno · dodijeljeno ${fmt(dano * n)} Falcoina za ${dano} ${dano === 1 ? 'igračicu' : 'igračica'}${vraceno ? `, vraćeno ${vraceno}` : ''}` : 'Dolasci spremljeni — nema promjena'); return;
   }
   const rs = e.target.closest('[data-rsvp]');
-  if (e.target.closest('[data-admutk-ponisti]')) { UTAKMICA.potvrdeno = UTAKMICA.termin = false; UTAKMICA.dvorana = false; render(); return; }
-  if (e.target.closest('[data-admutk-spremi]')) { const dat = $('#utkDat').value.trim(), vr = $('#utkVr').value.trim(), dv = $('#utkDv').value, err = $('#utkErr'); const dan = utkDanIz(dat);
-    if (!dan) { err.textContent = 'Upiši ispravan datum (dd.mm.gggg).'; return; } if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(vr)) { err.textContent = 'Upiši vrijeme u obliku hh:mm.'; return; }
-    Object.assign(UTAKMICA, { datum: dan, dat: dat.endsWith('.') ? dat : dat + '.', vrijeme: vr, dvorana: dv, dvoranaUnos: dv, termin: true, potvrdeno: true });
-    const t = `${UTAKMICA.natjecanje}: ${UTAKMICA.datum} u ${UTAKMICA.vrijeme}, ${UTAKMICA.dvorana}.`; notify('igracica', 'Utakmica potvrđena', t); notify('roditelj', 'Utakmica potvrđena', t); notify('trener', 'Utakmica potvrđena', t);
+  if (e.target.closest('[data-admutk-ponisti]')) { UTAKMICA.potvrdeno = UTAKMICA.termin = false; UTAKMICA.dvorana = false; state.utkDraft = null; render(); return; }
+  if (e.target.closest('[data-admutk-spremi]')) { const dat = $('#utkDat').value.trim(), vr = $('#utkVr').value.trim(), dv = $('#utkDv').value, err = $('#utkErr'), dr = state.utkDraft; const dan = utkDanIz(dat);
+    if (!dan) { err.textContent = 'Upiši ispravan datum (dd.mm.gggg).'; return; } if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(vr)) { err.textContent = 'Upiši vrijeme u obliku hh:mm.'; return; } if (!dv) { err.textContent = 'Odaberi dvoranu (protivnik je nema upisanu: dodaj je u Protivnici).'; return; }
+    Object.assign(UTAKMICA, { protivnik: dr.prot, gost: dr.gost, datum: dan, dat: dat.endsWith('.') ? dat : dat + '.', vrijeme: vr, dvorana: dv, dvoranaUnos: dv, termin: true, potvrdeno: true });
+    const t = `${UTAKMICA.natjecanje}${UTAKMICA.gost ? ' (gostovanje)' : ''}: ${UTAKMICA.datum} u ${UTAKMICA.vrijeme}, ${UTAKMICA.dvorana}.`; notify('igracica', 'Utakmica potvrđena', t); notify('roditelj', 'Utakmica potvrđena', t); notify('trener', 'Utakmica potvrđena', t);
     render(); toastIn('Termin i dvorana su potvrđeni'); return; }
   const uo = e.target.closest('[data-utkotkaz]');
   if (uo) { state.utkOtkaz = uo.dataset.utkotkaz === '1'; if (state.utkOtkaz) state.utkOdg = null;

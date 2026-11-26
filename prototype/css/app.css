@@ -1057,3 +1057,7 @@ table.baza .rn { color: #8a97a6; background: #f6f8fa; text-align: right; width: 
 .prot-card .btn { cursor: pointer; }
 .prot-up { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; }
 .utk-vs { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: var(--fs-sm); }
+
+.prot-dv { display: flex; flex-direction: column; gap: 5px; width: 100%; margin: 4px 0; }
+.prot-dv span { font-size: var(--fs-xs); font-weight: 700; color: var(--silver-600, #6b7a8c); text-align: left; }
+.prot-dv .input { padding: 6px 8px; font-size: var(--fs-xs); }
