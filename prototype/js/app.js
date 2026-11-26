@@ -396,6 +396,9 @@ const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
 const jednaVel = (a) => a.velicine.length === 1 && a.velicine[0].v === 'Jedna veličina';
 const mojaNaStanju = (a) => jednaVel(a) || (() => { const v = mojaVel(a); return !!v && v.n > 0; })();
 const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
+function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
+  return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
+    <button class="vel-edit static" data-velopen="${PLAYERS[0].id}" aria-label="Uredi veličine">${ic('edit', 18)}</button></div>`; }
 function ormarGrid() {
   const kat = state.ormarKat || 'Sve';
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
@@ -616,7 +619,7 @@ const SCREENS = {
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
-    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ ${SEKCIJA_FALCOIN}</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarGrid()}`,
+    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ ${SEKCIJA_FALCOIN}</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarVelStrip()}${ormarGrid()}`,
   }),
   'igracica-profil': () => ({
     header: mHeader('Moj profil', 'Ana Horvat'),

@@ -892,3 +892,9 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 .fc-hero.compact { position: relative; }
 .fc-help { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.55); background: rgba(255,255,255,.12); color: #fff; font: 800 14px/1 Montserrat, sans-serif; cursor: pointer; padding: 0; display: grid; place-items: center; }
+
+.ormar-vel { border: 2px solid transparent; }
+.ormar-vel.missing { border-color: var(--red); }
+.ormar-vel .ov-vals { display: flex; gap: 18px; margin-top: 2px; font-size: var(--fs-sm); }
+.ormar-vel .ov-vals b { font-weight: 900; margin-left: 4px; }
+.vel-edit.static { position: static; flex: none; }
