@@ -716,7 +716,7 @@ const SCREENS = {
     body: `<div class="card fc-hero compact"><button type="button" class="fc-help" data-flchelp aria-label="Što je FLC?">?</button><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div><button type="button" class="fc-ormar" data-go="igracica-ormar" aria-label="Uđi u klupski Ormar">${ic('bag', 24)}<span>Ormar</span></button></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       ${izazovKartica()}${zeljaKartica()}
-      <div class="section-title">Povijest</div>${falcoiniHistory()}`,
+      <div class="section-title">Povijest zarađenih FLC-a</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
