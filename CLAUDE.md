@@ -211,4 +211,4 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Dump stare baze (`bluerder_portalwebapp`) je analiziran: opis tablica, mapiranje i otvorene odluke su u `migracija/README.md`. **Sam dump i osobni podaci nisu u gitu** (`.gitignore`). Prototip koristi samo neosobne podatke iz dumpa: **lige s kolima, protivnike, dvorane** (`prototype/js/lige-podaci.js`, generira `migracija/lige_iz_dumpa.py`). Igračice u prototipu ostaju izmišljene.
 - Bitno za dizajn: stari sustav ima **trening grupe** (U18/U16/U14, U13/U12, SEN, ŠK A. Kovačić, ŠK O. Iveković) i **sastave za lige** (Seniorke, Juniorke, Kadetkinje, Pretkadetkinje, U13, U12, U11); lige su vezane uz sastav. Prototip još koristi U12/U14/U16/SEN: uskladiti.
 
-- **Admin izbornik:** stavka koja je prije bila "Prijave" zove se **"Registracije na portal"** (nove članice iz javnog obrasca koje čekaju potvrdu; ruta `admin-prijave` ostaje).
+- **Admin izbornik:** stavka koja je prije bila "Prijave" zove se **"Registracije"** (nove članice iz javnog obrasca koje čekaju potvrdu; ruta `admin-prijave` ostaje).

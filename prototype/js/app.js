@@ -817,7 +817,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracija', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracije', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -1000,9 +1000,9 @@ const ADMIN = {
     <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
       <div class="prot-dv"><span>Dvorane (do 3)</span>${[0, 1, 2].map((i) => `<input class="input" data-protdv="${k.id}-${i}" placeholder="Dvorana ${i + 1}" value="${(k.dvorane && k.dvorane[i]) || ''}">`).join('')}</div>
       <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
-  prijave: () => `<div class="page-head"><div><h1>Registracija</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
+  prijave: () => `<div class="page-head"><div><h1>Registracije</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
       <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
-    ${pogled('prijave', { lnaslov: 'Registracija', title: 'ime', attr: (p) => `data-open="${p.id}"`, empty: 'Nema registracija.', rows: prijave, lav: (p) => av(p, 'sm'), lsub: (p) => p.grupa + ' · ' + p.rod.slice(0, 4) + '.', lchip: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]),
+    ${pogled('prijave', { lepeza: false, title: 'ime', attr: (p) => `data-open="${p.id}"`, empty: 'Nema registracija.', rows: prijave, lav: (p) => av(p, 'sm'), lsub: (p) => p.grupa + ' · ' + p.rod.slice(0, 4) + '.', lchip: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]),
       cols: [{ id: 'ime', label: 'Djevojčica', val: (p) => p.ime + ' ' + p.prezime, html: (p) => `<div class="who">${av(p, 'sm')}${p.ime} ${p.prezime}</div>` }, { id: 'dat', label: 'Datum', val: (p) => p.dat }, { id: 'god', label: 'Godište', val: (p) => p.rod.slice(0, 4), html: (p) => p.rod.slice(0, 4) + '.' },
         { id: 'grupa', label: 'Zatražena grupa', val: (p) => p.grupa, html: (p) => chip(p.grupa, 'navy') }, { id: 'email', label: 'Kontakt roditelja', val: (p) => p.email },
         { id: 'st', label: 'Status', val: (p) => STATUS_P[p.status][0], html: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]) + (p.dup && p.status === 'ceka' ? ' ' + chip('Moguća dvostruka', 'danger') : '') }] })}`,
