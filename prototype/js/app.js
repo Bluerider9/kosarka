@@ -376,8 +376,9 @@ function redeemSheet(id) {
       <input type="range" class="slider" min="0" max="${max}" step="0.01" value="${max}" data-fcslider ${max === 0 ? 'disabled' : ''}>
       <div class="split-row cash"><span>Doplaćujem gotovinom</span><b id="rdC">${fmt(a.cijena - max)} €</b></div></div>
     <p id="rdNote">${rdNote(a, max)}</p>
-    <button class="btn red block" data-redeemok="${id}">Naruči</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
+    <button class="btn red block" id="rdBtn" data-redeemok="${id}">${rdBtn(a, max, prva.v)}</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
 }
+const rdBtn = (a, f, vel) => { const v = a.velicine.find((x) => x.v === vel) || {}; return !(v.n > 0) ? 'Predbilježi' : f >= a.cijena - 0.004 ? 'Zamijeni' : 'Zamijeni + doplati'; };
 const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)}</b><br>${!(v.n > 0) ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
 function falcoiniHistory() {
   return `<div class="card"><div class="list">${FALCOIN_POVIJEST.map((t) => `<div class="row"><div class="grow"><h3 style="font-size:var(--fs-sm)">${t.opis}</h3><div class="meta">${t.dat}</div></div>${plus(t.iznos)}</div>`).join('')}</div></div>`;
@@ -399,9 +400,8 @@ function ormarGrid() {
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
     return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}">${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
-      <div class="tile-sizes">${a.velicine.map((x) => `<button type="button" class="tsz ${x.v === sv ? 'on' : ''} ${x.n === 0 ? 'out' : ''} ${x.n === null ? 'pre' : ''}" data-tsize="${x.v}" data-aid="${a.id}">${x.v}</button>`).join('')}</div>
-      <div class="stock">${v.n === null ? (jedna ? 'predbilježba' : 'nema na stanju · predbilježba') : v.n > 0 ? `na stanju ${v.n}` : (jedna ? 'predbilježba' : 'nema na stanju · predbilježba')}</div>
-      <button class="btn ${ima ? (puno ? 'red' : 'navy') : 'ghost'} sm block" data-redeem="${a.id}">${ima ? (puno ? 'Zamijeni' : 'Zamijeni + doplati') : 'Predbilježi'}</button></div>`; }).join('')}</div>`;
+      <div class="stock">${jedna ? (ima ? `na stanju ${v.n}` : 'predbilježba') : moja ? `Tvoja veličina ${v.v} · na stanju ${v.n}` : ima ? 'dostupno · izaberi veličinu' : 'nema tvoje veličine · predbilježba'}</div>
+      <button class="btn ${ima ? 'red' : 'ghost'} sm block" data-redeem="${a.id}">Izaberi</button></div>`; }).join('')}</div>`;
 }
 /* ---------- TRENER ---------- */
 const TRENER_TABS = [['danas', 'Danas', 'home'], ['dolasci', 'Dolasci', 'check'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['profil', 'Profil', 'user']];
@@ -903,7 +903,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
   const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }
   const sz = e.target.closest('[data-size]');
-  if (sz && state.redeem) { state.redeem.size = sz.dataset.size; document.querySelectorAll('.sizes .size').forEach((b) => b.classList.toggle('on', b === sz)); const a = ORMAR.find((x) => x.id === state.redeem.id); $('#rdNote').innerHTML = rdNote(a, state.redeem.f); return; }
+  if (sz && state.redeem) { state.redeem.size = sz.dataset.size; document.querySelectorAll('.sizes .size').forEach((b) => b.classList.toggle('on', b === sz)); const a = ORMAR.find((x) => x.id === state.redeem.id); $('#rdNote').innerHTML = rdNote(a, state.redeem.f); $('#rdBtn').textContent = rdBtn(a, state.redeem.f, state.redeem.size); return; }
   const vo = e.target.closest('[data-velopen]'); if (vo) { const p = PLAYERS.find((x) => x.id === +vo.dataset.velopen), vl = velOd(p);
     overlay(`<h2>Moje veličine</h2><div class="meta" style="margin-top:-4px">Za odjevne predmete iz Ormara. Možeš ih promijeniti kad god želiš.</div>
       <label class="vel-row"><span>Veličina majice</span><select id="velMajica"><option value="">Odaberi</option>${MAJICE.map((m) => `<option ${m === vl.majica ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
@@ -1015,7 +1015,7 @@ render();
 document.addEventListener('input', (e) => {
   if (!e.target.matches('[data-fcslider]') || !state.redeem) return;
   const a = ORMAR.find((x) => x.id === state.redeem.id); const f = r2(+e.target.value); state.redeem.f = f;
-  $('#rdF').textContent = fmt(f); $('#rdC').textContent = `${fmt(a.cijena - f)} €`; $('#rdNote').innerHTML = rdNote(a, f);
+  $('#rdF').textContent = fmt(f); $('#rdC').textContent = `${fmt(a.cijena - f)} €`; $('#rdNote').innerHTML = rdNote(a, f); $('#rdBtn').textContent = rdBtn(a, f, state.redeem.size);
 });
 // pravila bodovanja: spremanje pri promjeni, na dvije decimale
 document.addEventListener('change', (e) => {
