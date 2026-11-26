@@ -401,8 +401,8 @@ const IZ_TJEDNI = [['23.–29.11.', '29.11.'], ['30.11.–6.12.', '6.12.'], ['7.
 // planer izazova: indeks 0 = aktivni tjedan (isti objekt kao IZAZOV), ostalo unaprijed planirano (null = nije planirano)
 let IZ_PLAN = [];
 const VIDEA = [{ igr: 'Lea Kovač', datoteka: 'trica_lea.mp4', st: 'čeka' }, { igr: 'Mia Babić', datoteka: 'zabijanje_mia.mov', st: 'čeka' }]; // prototip: predani videi
-const IZAZOV = { vrsta: 'dolasci', naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11.' }; // prototip: admin postavlja izazov tjedna
-IZ_PLAN = [IZAZOV, null, null, { vrsta: 'video', naslov: 'Snimi kako zabijaš tricu', opis: 'Snimi 3 pokušaja trice i pošalji najbolji.', cilj: 3, odradeno: 0, do: 'nedjelje 20.12.' }, null, null];
+const IZAZOV = { prikljuci: true, vrsta: 'dolasci', naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11.' }; // prototip: admin postavlja izazov tjedna
+IZ_PLAN = [IZAZOV, null, null, { prikljuci: true, vrsta: 'video', naslov: 'Snimi kako zabijaš tricu', opis: 'Snimi 3 pokušaja trice i pošalji najbolji.', cilj: 3, odradeno: 0, do: 'nedjelje 20.12.' }, null, null];
 const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
 function zeljaKartica() {
   const a = zeljaArtikl();
@@ -443,16 +443,17 @@ const mfMenu = () => `<div class="mf-menu" role="tablist">${MF_TABOVI.map(([k, l
 const mfSadrzaj = () => ({ izazov: izazovKartica, zelja: zeljaKartica, mile: milestoneKartica, povijest: falcoiniHistory })[state.mfTab]();
 function izazovKartica() {
   const z = IZAZOV; const head = `<div class="row spread"><div><div class="meta">Ovotjedni izazov · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
+  if (z.prikljuci && !state.izPrikl) return `<div class="card challenge">${head}<div class="join-note">Za ovaj izazov se moraš priključiti. Napredak se računa od trenutka priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se izazovu</button></div>`;
   if (z.vrsta === 'video') {
     const v = state.video;
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic('upload', 18)} Snimi ili dodaj video</button>`
       : v.st === 'čeka' ? `<div class="vid-state wait">${ic('check', 16)} Video poslan: ${v.datoteka}<small>Čeka odobrenje trenera</small></div>`
       : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Bonus ${fmt(pravilo('izazov'))} ${FLC} je tvoj.</div>`
       : `<div class="vid-state no">Video nije prihvaćen. Probaj ponovno.</div><button class="btn red block" style="margin-top:8px" data-vidopen>Pošalji novi video</button>`;
-    return `<div class="card challenge">${head}${dno}</div>`;
+    return `<div class="card challenge">${head}${z.prikljuci ? `<div class="joined">${ic('check', 14)} Priključena</div>` : ''}${dno}</div>`;
   }
   const gotovo = z.odradeno >= z.cilj;
-  return `<div class="card challenge">${head}
+  return `<div class="card challenge">${head}${z.prikljuci ? `<div class="joined">${ic('check', 14)} Priključena</div>` : ''}
     <div class="streak-dots">${Array.from({ length: z.cilj }, (_, i) => `<span class="${i < z.odradeno ? 'on' : ''}">${i < z.odradeno ? '✓' : i + 1}</span>`).join('')}</div>
     <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Izazov ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div></div>`;
 }
@@ -805,7 +806,7 @@ const ADMIN = {
         <small class="err" id="fcErr" style="color:var(--navy)">${(() => { const m = state.fcMsg || ''; state.fcMsg = ''; return m; })()}</small></div>
       <div class="card pf-sec wide"><h4>Planer izazova tjedna</h4>
         <div class="plan-list">${IZ_TJEDNI.map(([t], i) => { const z = IZ_PLAN[i]; return `<div class="plan-row ${state.izTjedan === i ? 'sel' : ''} ${i === 0 ? 'now' : ''}"><div class="plan-wk"><b>${t}</b><span>${i === 0 ? 'ovaj tjedan' : i === 1 ? 'idući tjedan' : ''}</span></div>
-          <div class="grow">${z ? `<b>${z.naslov}</b><div class="meta">${z.vrsta === 'video' ? 'Video zadatak' : `Dolasci na ${z.cilj} treninga`}</div>` : '<span class="meta">Nije planirano</span>'}</div>
+          <div class="grow">${z ? `<b>${z.naslov}</b><div class="meta">${z.vrsta === 'video' ? 'Video zadatak' : `Dolasci na ${z.cilj} treninga`} · ${z.prikljuci ? 'uz priključivanje' : 'sudjeluju sve'}${i === 0 && z.prikljuci ? ` · priključeno ${9 + (state.izPrikl ? 1 : 0)} igračica` : ''}</div>` : '<span class="meta">Nije planirano</span>'}</div>
           ${z ? chip(i === 0 ? 'aktivan' : 'planirano', i === 0 ? 'ok' : 'navy') : (i === 1 ? chip('treba objaviti', 'warn') : '')}
           <button class="btn ghost sm" data-izuredi="${i}">${z ? 'Uredi' : 'Dodaj'}</button></div>`; }).join('')}</div>
         ${(() => { const i = state.izTjedan; if (i === undefined || i === null) return '<div class="meta" style="margin-top:10px">Odaberi tjedan za planiranje (Dodaj / Uredi).</div>'; const z = IZ_PLAN[i] || { vrsta: 'dolasci', naslov: '', opis: '', cilj: 3 };
@@ -814,6 +815,7 @@ const ADMIN = {
         <div class="field"><label>Naslov</label><input class="input" id="izNaslov" value="${z.naslov}" placeholder="npr. Snimi kako zabijaš tricu"></div>
         <div class="field"><label>Opis zadatka</label><input class="input" id="izOpis" value="${z.opis}"></div>
         <div class="field"><label>Broj treninga (za dolaske)</label><input class="input" id="izCilj" type="number" min="1" max="7" value="${z.cilj}"></div>
+        <label class="check-line"><input type="checkbox" id="izPr" ${z.prikljuci !== false ? 'checked' : ''}> Igračica se mora priključiti izazovu (inače sudjeluju sve automatski)</label>
         <div class="meta">Nagrada je iznos "Izazov tjedna (bonus)" iz pravila bodovanja. Izazov se igračicama pokaže u ponedjeljak ujutro.</div>
         <div class="row" style="gap:10px"><button class="btn grow" data-izspremi="${i}">Spremi izazov</button>${IZ_PLAN[i] && i > 0 ? `<button class="btn ghost" data-izbrisi="${i}">Obriši</button>` : ''}</div></div>`; })()}</div>
       <div class="card pf-sec"><h4>Predani videi</h4>${VIDEA.length ? VIDEA.map((v, i) => `<div class="pf-kv vid-row"><span class="row" style="gap:10px">${ic('play', 18)}<span><b>${v.igr}</b><div class="meta">${v.datoteka}</div></span></span>
@@ -854,7 +856,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izPrikl: false, izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -1026,6 +1028,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; return; }
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
+  if (e.target.closest('[data-izprikl]')) { state.izPrikl = true; IZAZOV.odradeno = 0; render(); toastIn('Priključila si se izazovu'); notify('trener', 'Izazov tjedna', 'Ana Horvat se priključila izazovu: ' + IZAZOV.naslov); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
@@ -1047,8 +1050,8 @@ document.addEventListener('click', (e) => {
   if (iu) { state.izTjedan = +iu.dataset.izuredi; if (!location.hash.includes('admin-falcoini')) { location.hash = 'admin-falcoini'; } else render(); return; }
   const isp = e.target.closest('[data-izspremi]');
   if (isp) { const i = +isp.dataset.izspremi; const naslov = $('#izNaslov').value.trim(); if (!naslov) { toastIn('Upiši naslov izazova'); return; }
-    const z = { vrsta: $('#izVrsta').value, naslov, opis: $('#izOpis').value.trim(), cilj: Math.max(1, Math.min(7, +$('#izCilj').value || 3)), odradeno: 0, do: `nedjelje ${IZ_TJEDNI[i][1]}` };
-    if (i === 0) { Object.assign(IZAZOV, z); state.video = null; notify('igracica', 'Novi izazov tjedna', z.naslov); notify('roditelj', 'Novi izazov tjedna', z.naslov); } else IZ_PLAN[i] = z;
+    const z = { vrsta: $('#izVrsta').value, naslov, opis: $('#izOpis').value.trim(), cilj: Math.max(1, Math.min(7, +$('#izCilj').value || 3)), prikljuci: $('#izPr').checked, odradeno: 0, do: `nedjelje ${IZ_TJEDNI[i][1]}` };
+    if (i === 0) { Object.assign(IZAZOV, z); state.video = null; state.izPrikl = false; notify('igracica', 'Novi izazov tjedna', z.naslov); notify('roditelj', 'Novi izazov tjedna', z.naslov); } else IZ_PLAN[i] = z;
     toastIn(i === 0 ? 'Izazov je objavljen' : 'Izazov je planiran'); render(); return; }
   const ib = e.target.closest('[data-izbrisi]'); if (ib) { IZ_PLAN[+ib.dataset.izbrisi] = null; state.izTjedan = null; render(); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
