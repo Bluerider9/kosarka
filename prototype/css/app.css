@@ -976,3 +976,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .fc-hero.compact .fc-ormar { margin-left: auto; margin-top: 26px; width: 58px; height: 58px; border-radius: 16px; border: 0; background: var(--gold); color: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: 800 10px/1 Montserrat, sans-serif; cursor: pointer; padding: 0; }
 .fc-hero.compact .fc-ormar { margin-top: 14px; width: 54px; height: 54px; border-radius: 14px; }
 .fc-hero.compact .fc-top { align-items: center; }
+.fc-hero.compact .fc-ormar { margin-top: 0; margin-right: 44px; }
