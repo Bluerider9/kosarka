@@ -982,3 +982,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.mystery .meta, .card.mystery .mys { color: #fff; }
 .card.mystery .mys { color: var(--gold); }
 .card.mystery .join-note { background: rgba(255,255,255,.12); color: #fff; }
+.card.mystery h3:not(.mys) { color: #fff; }

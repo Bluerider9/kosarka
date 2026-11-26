@@ -399,6 +399,7 @@ const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
 const jednaVel = (a) => a.velicine.length === 1 && a.velicine[0].v === 'Jedna veličina';
 const mojaNaStanju = (a) => jednaVel(a) || (() => { const v = mojaVel(a); return !!v && v.n > 0; })();
 const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
+const IZ_RASPON = ['23.11. - 29.11.', '30.11. - 06.12.', '07.12. - 13.12.', '14.12. - 20.12.', '21.12. - 27.12.', '28.12. - 03.01.'];
 const IZ_TJEDNI = [['23.–29.11.', '29.11.'], ['30.11.–6.12.', '6.12.'], ['7.–13.12.', '13.12.'], ['14.–20.12.', '20.12.'], ['21.–27.12.', '27.12.'], ['28.12.–3.1.', '3.1.']];
 // planer izazova: indeks 0 = aktivni tjedan (isti objekt kao IZAZOV), ostalo unaprijed planirano (null = nije planirano)
 let IZ_PLAN = [];
@@ -467,15 +468,15 @@ function izazovKartica() {
   const proto = (k, t) => `<button type="button" class="proto-link" data-zfaza="${k}">Prototip: ${t}</button>`;
   if (faza === 'cekanje') {  // nedjelja 12:01 → ponedjeljak 00:01: zadatak je završen, novi još nije otkriven, priključivanje je otvoreno
     const prosli = ovajTjedanRez();
-    return `<div class="card challenge mystery"><div class="row spread"><div><div class="meta">Idući tjedni zadatak · otkriva se u ponedjeljak u 00:01</div><h3 class="mys">??? ???</h3></div>${sat}</div>
+    return `<div class="card challenge mystery"><div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[1]} · otkriva se u ponedjeljak u 00:01</div></div>${sat}</div><h3 class="mys" style="margin-top:6px">??? ???</h3>
       <div class="prosli ${prosli}">${prosliTekst(prosli, prosli === 'uspješno' ? z.nagrada : 0)}</div>
       ${state.izPriklIduci ? `<div class="joined" style="margin-top:12px">${ic('check', 14)} Priključena — zadatak se otkriva u ponedjeljak u 00:01</div>` : `<div class="join-note">Priključivanje je otvoreno. Priključi se već sada pa u ponedjeljak u 00:01 odmah vidiš zadatak.</div><button class="btn red block" style="margin-top:10px" data-izprikl2>Priključi se idućem zadatku</button>`}
       ${proto('aktivan', 'vrati na utorak')}</div>`;
   }
-  const head = `<div class="row spread"><div><div class="meta">Tjedni zadatak · do ${z.do}</div><h3>${z.naslov}</h3></div>${nagr}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
+  const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:6px">${z.naslov}</h3><div class="meta" style="margin-top:4px">${z.opis}</div>`;
   const prosliRed = `<div class="prosli ${ZADACI_POVIJEST[0].st}">${prosliTekst(ZADACI_POVIJEST[0].st, ZADACI_POVIJEST[0].nagrada)}</div>`;
   const kraj = proto('cekanje', 'pogledaj nedjelju 12:01');
-  if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery"><div class="row spread"><div><div class="meta">Tjedni zadatak · do ${z.do}</div><h3 class="mys">??? ???</h3></div>${nagr}</div>
+  if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery"><div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 class="mys" style="margin-top:6px">??? ???</h3>
     <div class="join-note">Zadatak je tajna. Priključi se i otkrij što te ovaj tjedan čeka. Napredak se računa od trenutka priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${prosliRed}${kraj}</div>`;
   if (jeRad(z)) {
     const v = state.video; const foto = z.vrsta === 'foto';
