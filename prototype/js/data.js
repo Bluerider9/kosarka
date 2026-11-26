@@ -85,7 +85,7 @@ const FALCOIN_PRAVILA = [
   { k: 'trening', label: 'Dolazak na trening', iznos: 1.0 },
   { k: 'utakmica', label: 'Dolazak na utakmicu (gledanje)', iznos: 2.5 },
   { k: 'turnir', label: 'Dolazak na turnir', iznos: 4.0 },
-  { k: 'niz', label: 'Niz od 5 treninga zaredom (bonus)', iznos: 2.0 },
+  { k: 'izazov', label: 'Izazov tjedna (bonus)', iznos: 3.0 },
   { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 1.5 },
 ];
 // Stvarni katalog s ormar.zkkfalcons.hr (stanje 24.11.2026.). n = na stanju, n: null = predbilježba. Slike se učitavaju sa shopa.
@@ -113,7 +113,7 @@ const FALCOIN_POVIJEST = [
   { dat: '21.11.', opis: 'Utakmica U14 — gostovanje', iznos: 2.5 },
   { dat: '20.11.', opis: 'Trening U14', iznos: 1.0 },
   { dat: '18.11.', opis: 'Trening U14', iznos: 1.0 },
-  { dat: '17.11.', opis: 'Bonus: niz od 5 treninga', iznos: 2.0 },
+  { dat: '17.11.', opis: 'Bonus: izazov tjedna', iznos: 3.0 },
   { dat: '14.11.', opis: 'Zamjena: Čarape "FLCN" bijele', iznos: -10.0 },
   { dat: '13.11.', opis: 'Trening U14', iznos: 1.0 },
 ];

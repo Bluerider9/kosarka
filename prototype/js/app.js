@@ -396,7 +396,7 @@ const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
 const jednaVel = (a) => a.velicine.length === 1 && a.velicine[0].v === 'Jedna veličina';
 const mojaNaStanju = (a) => jednaVel(a) || (() => { const v = mojaVel(a); return !!v && v.n > 0; })();
 const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
-const NIZ_TRENINGA = 3; // prototip: igračica ima niz od 3 treninga zaredom; na 5 dobiva bonus
+const IZAZOV = { naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11.' }; // prototip: admin postavlja izazov tjedna
 const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
 function zeljaKartica() {
   const a = zeljaArtikl();
@@ -409,10 +409,12 @@ function zeljaKartica() {
     <div class="row spread" style="margin-top:6px"><span class="meta">${fmt(saldo())} / ${fmt(a.cijena)} ${FLC}</span><span class="meta">${pct}%</span></div>
     ${fali > 0 ? '' : `<button class="btn red block sm" style="margin-top:10px" data-redeem="${a.id}">Zamijeni</button>`}</div>`;
 }
-function nizKartica() {
-  const n = NIZ_TRENINGA; const jos = 5 - n;
-  return `<div class="card streak"><div class="row spread"><div><h3>Niz treninga</h3><div class="meta">${n} zaredom · još ${jos} do bonusa</div></div>${fc(pravilo('niz'), 16)}</div>
-    <div class="streak-dots">${[1, 2, 3, 4, 5].map((i) => `<span class="${i <= n ? 'on' : ''}">${i <= n ? '✓' : i}</span>`).join('')}</div></div>`;
+function izazovKartica() {
+  const z = IZAZOV; const gotovo = z.odradeno >= z.cilj;
+  return `<div class="card challenge"><div class="row spread"><div><div class="meta">Izazov tjedna · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div>
+    <div class="meta" style="margin-top:4px">${z.opis}</div>
+    <div class="streak-dots">${Array.from({ length: z.cilj }, (_, i) => `<span class="${i < z.odradeno ? 'on' : ''}">${i < z.odradeno ? '✓' : i + 1}</span>`).join('')}</div>
+    <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Izazov ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div></div>`;
 }
 function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
   return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
@@ -632,7 +634,7 @@ const SCREENS = {
     body: `<div class="card fc-hero compact"><button type="button" class="fc-help" data-flchelp aria-label="Što je FLC?">?</button><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u klupski Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
-      ${zeljaKartica()}${nizKartica()}
+      ${izazovKartica()}${zeljaKartica()}
       <div class="section-title">Povijest</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({

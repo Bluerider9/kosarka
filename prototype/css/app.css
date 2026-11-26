@@ -906,6 +906,6 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .wish-heart { font-size: 28px; color: var(--red); line-height: 1; }
 .card.wish.empty { cursor: pointer; border: 2px dashed var(--silver); box-shadow: none; }
 .wish-x { align-self: flex-start; width: 28px; height: 28px; border-radius: 50%; border: 0; background: var(--silver-100); font-size: 18px; line-height: 1; cursor: pointer; color: var(--navy); }
-.streak-dots { display: flex; justify-content: space-between; margin-top: 12px; }
+.streak-dots { display: flex; justify-content: space-around; margin-top: 12px; }
 .streak-dots span { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--silver-100); color: #8a93a6; font-weight: 800; }
 .streak-dots span.on { background: var(--gold); color: var(--navy); }
