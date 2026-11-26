@@ -866,7 +866,14 @@ function adminKalendar() {
 const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PROTIVNICI.find((x) => x.naziv === prot); return k ? k.dvorane.filter(Boolean) : []; };
 /* ---------- Pogled (admin): kartice / popis / tablica + polja, sortiranje, grupiranje ---------- */
 // cfg: { cols:[{id,label,val(r),html?(r)}], rows, title: colId, attr?(r), hidden?:[ids], empty }
-const pogSt = (key, cfg) => { state.pog = state.pog || {}; return state.pog[key] || (state.pog[key] = { v: 'kartice', skriveno: cfg.hidden || [], sort: '', dir: 1, grupa: '' }); };
+const pogSt = (key, cfg) => { state.pog = state.pog || {}; return state.pog[key] || (state.pog[key] = { v: 'tablica', skriveno: cfg.hidden || [], sort: '', dir: 1, grupa: '' }); };
+/* Lepeza: vodoravna traka preklopljenih kartica iznad tablice (pregled na prvi pogled) */
+function lepezaHtml(items, naslov) {
+  if (!items.length) return '';
+  const n = items.length;
+  return `<div class="lepeza-wrap"><div class="lepeza-h"><b>${naslov || 'Pregled'}</b><span>${n}</span></div><div class="lepeza">${items.map((it, i) => { const rot = ((i % 7) - 3) * 1.4, dy = Math.abs((i % 7) - 3) * 2;
+    return `<div class="lep-card ${it.attr ? 'click' : ''}" ${it.attr || ''} style="--r:${rot}deg;--dy:${dy}px;z-index:${i + 1}">${it.av || ''}<b>${it.t}</b>${it.s ? `<small>${it.s}</small>` : ''}${it.chip || ''}</div>`; }).join('')}</div></div>`;
+}
 function pogled(key, cfg) {
   const st = pogSt(key, cfg), cols = cfg.cols, vis = cols.filter((c) => !st.skriveno.includes(c.id)), tit = cols.find((c) => c.id === cfg.title) || cols[0];
   let rows = cfg.rows.slice();
@@ -882,7 +889,8 @@ function pogled(key, cfg) {
     if (st.v === 'popis') return `<div class="pog-list">${rs.map((r) => `<div class="pog-row ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div><div class="pog-vals">${vis.filter((c) => c !== tit).map((c) => `<span><small>${c.label}</small>${cell(c, r)}</span>`).join('')}</div></div>`).join('')}</div>`;
     return `<div class="pog-cards">${rs.map((r) => `<div class="card pog-card ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div>${vis.filter((c) => c !== tit).map((c) => `<div class="pog-f"><small>${c.label}</small><div>${cell(c, r)}</div></div>`).join('')}</div>`).join('')}</div>`;
   };
-  return `<div class="pog-bar"><div class="seg" role="tablist">${[['kartice', 'Kartice'], ['popis', 'Popis'], ['tablica', 'Tablica']].map(([v, t]) => `<button type="button" class="${st.v === v ? 'on' : ''}" data-pogv="${key}|${v}">${t}</button>`).join('')}</div>
+  const lep = cfg.lepeza === false ? '' : lepezaHtml(rows.map((r) => { const o = vis.find((c) => c !== tit); return { attr: at(r), av: cfg.lav ? cfg.lav(r) : '', t: bazaVal(tit.val(r)), s: cfg.lsub ? cfg.lsub(r) : (o ? bazaVal(o.val(r)) : ''), chip: cfg.lchip ? cfg.lchip(r) : '' }; }), cfg.lnaslov);
+  return `${lep}<div class="pog-bar"><div class="seg" role="tablist">${[['tablica', 'Tablica'], ['popis', 'Popis'], ['kartice', 'Kartice']].map(([v, t]) => `<button type="button" class="${st.v === v ? 'on' : ''}" data-pogv="${key}|${v}">${t}</button>`).join('')}</div>
     <label class="pog-sel">Sortiraj<select data-pogsort="${key}"><option value="">—</option>${cols.map((c) => `<option value="${c.id}" ${st.sort === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label>
     ${st.sort ? `<button type="button" class="btn ghost sm" data-pogdir="${key}">${st.dir > 0 ? '↑ uzlazno' : '↓ silazno'}</button>` : ''}
     <label class="pog-sel">Grupiraj<select data-pogrup="${key}"><option value="">Bez grupiranja</option>${cols.filter((c) => c !== tit).map((c) => `<option value="${c.id}" ${st.grupa === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label></div>
@@ -935,21 +943,23 @@ function bazaScreen() {
     <button class="btn ghost" data-bazacsv>${ic('file', 18)} Izvezi CSV</button><button class="btn" data-toast="Novi redak — sljedeći korak">${ic('plus', 18)} Novi redak</button></div>
     <div class="baza-tabs" role="tablist">${BAZA.map((x) => `<button type="button" role="tab" class="${x[0] === t[0] ? 'on' : ''}" data-bazatab="${x[0]}">${x[1]}<span>${x[3]().length}</span></button>`).join('')}</div>
     <div class="baza-bar"><input class="input" id="bazaQ" placeholder="Traži u tablici ${t[1]}…" value="${state.bazaQ || ''}"><span class="meta">${rows.length} redaka · tablica <b>${t[0]}</b></span></div>
-    ${pogled('baza-' + t[0], { cols: t[2].map((c, ci) => ({ id: c, label: c.replace(/_/g, ' '), val: (r) => r[ci] })), rows, title: t[2][t[2][0] === 'id' ? 1 : 0], empty: 'Nema redaka.' })}`;
+    ${pogled('baza-' + t[0], { cols: t[2].map((c, ci) => ({ id: c, label: c.replace(/_/g, ' '), val: (r) => r[ci] })), rows, lnaslov: t[1], title: t[2][t[2][0] === 'id' ? 1 : 0], empty: 'Nema redaka.' })}`;
 }
 const ADMIN = {
   baza: () => bazaScreen(),
   lige: () => ligeScreen(),
   protivnici: () => `<div class="page-head"><div><h1>Protivnici</h1><div class="sub">Klubovi i njihovi logotipi (prikazuju se uz utakmice)</div></div><div class="grow"></div>
     <button class="btn" data-protnovi>${ic('plus', 18)} Novi klub</button></div>
+    ${lepezaHtml(PROTIVNICI.map((k) => ({ av: protLogo(k.naziv, 'lg'), t: k.naziv, s: k.grad + ' · ' + (k.dvorane || []).filter(Boolean).length + ' dvorana' })), 'Klubovi')}
     <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
       <div class="prot-dv"><span>Dvorane (do 3)</span>${[0, 1, 2].map((i) => `<input class="input" data-protdv="${k.id}-${i}" placeholder="Dvorana ${i + 1}" value="${(k.dvorane && k.dvorane[i]) || ''}">`).join('')}</div>
       <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
   prijave: () => `<div class="page-head"><div><h1>Prijave</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
       <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
-    <table><thead><tr><th>Datum</th><th>Djevojčica</th><th>Godište</th><th>Zatražena grupa</th><th>Kontakt roditelja</th><th>Status</th></tr></thead><tbody>${prijave.map((p) =>
-      `<tr class="click" data-open="${p.id}"><td>${p.dat}</td><td><div class="who">${av(p, 'sm')}${p.ime} ${p.prezime}</div></td><td>${p.rod.slice(0, 4)}.</td><td>${chip(p.grupa, 'navy')}</td>
-      <td>${p.email}</td><td>${chip(STATUS_P[p.status][0], STATUS_P[p.status][1])}${p.dup && p.status === 'ceka' ? ' ' + chip('Moguća dvostruka', 'danger') : ''}</td></tr>`).join('')}</tbody></table>`,
+    ${pogled('prijave', { lnaslov: 'Prijave', title: 'ime', attr: (p) => `data-open="${p.id}"`, empty: 'Nema prijava.', rows: prijave, lav: (p) => av(p, 'sm'), lsub: (p) => p.grupa + ' · ' + p.rod.slice(0, 4) + '.', lchip: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]),
+      cols: [{ id: 'ime', label: 'Djevojčica', val: (p) => p.ime + ' ' + p.prezime, html: (p) => `<div class="who">${av(p, 'sm')}${p.ime} ${p.prezime}</div>` }, { id: 'dat', label: 'Datum', val: (p) => p.dat }, { id: 'god', label: 'Godište', val: (p) => p.rod.slice(0, 4), html: (p) => p.rod.slice(0, 4) + '.' },
+        { id: 'grupa', label: 'Zatražena grupa', val: (p) => p.grupa, html: (p) => chip(p.grupa, 'navy') }, { id: 'email', label: 'Kontakt roditelja', val: (p) => p.email },
+        { id: 'st', label: 'Status', val: (p) => STATUS_P[p.status][0], html: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]) + (p.dup && p.status === 'ceka' ? ' ' + chip('Moguća dvostruka', 'danger') : '') }] })}`,
   pregled: () => `<div class="page-head"><div><h1>Pregled</h1><div class="sub">Utorak, 24. studenoga 2026.</div></div></div>${izazovPodsjetnik()}
     <div class="stats">
       <div class="stat"><div class="lbl">Aktivne članice</div><div class="val">128</div><div class="hint">+6 ovaj mjesec</div></div>
@@ -965,7 +975,7 @@ const ADMIN = {
       <button class="btn" data-toast="Obrazac za novu članicu — sljedeći korak">${ic('plus', 18)} Nova članica</button></div>
     <div class="toolbar"><label class="search">${ic('search', 18)}<input id="q" placeholder="Pretraži po imenu…" value="${state.clQ || ''}"></label>
       <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f) => `<span class="chip ${(state.clG || 'Sve') === f ? 'on' : ''}" data-f="${f}">${f}</span>`).join('')}</div></div>
-    ${pogled('clanovi', { title: 'ime', attr: (p) => `data-profil="${p.id}"`, empty: 'Nema članica za ovaj filter.',
+    ${pogled('clanovi', { lnaslov: 'Igračice', lav: (p) => av(p, 'sm'), lsub: (p) => p.grupe.join(' · ') + ' · ' + p.god + '.', lchip: (p) => clan(p.clanarina), title: 'ime', attr: (p) => `data-profil="${p.id}"`, empty: 'Nema članica za ovaj filter.',
       rows: PLAYERS.filter((p) => ((state.clG || 'Sve') === 'Sve' || p.grupe.some((x) => x.startsWith(state.clG))) && p.ime.toLowerCase().includes((state.clQ || '').toLowerCase())),
       cols: [{ id: 'ime', label: 'Ime', val: (p) => p.ime, html: (p) => `<div class="who">${av(p, 'sm')}${p.ime}</div>` }, { id: 'god', label: 'Godište', val: (p) => p.god, html: (p) => `${p.god}.` },
         { id: 'grupe', label: 'Grupe', val: (p) => p.grupe.join(', '), html: (p) => p.grupe.map((x) => chip(x, 'navy')).join(' ') }, { id: 'roditelj', label: 'Roditelj', val: (p) => p.roditelj },
@@ -1009,27 +1019,36 @@ const ADMIN = {
     <div class="card row spread" style="margin-bottom:16px"><div><h3>Za naplatiti gotovinom</h3><div class="meta">${NARUDZBE.filter((n) => n.st === 'čeka' && n.gotovina > 0).length} narudžbi čeka preuzimanje s doplatom</div></div>
       <b style="font-size:var(--fs-xl);font-weight:900">${fmt(NARUDZBE.filter((n) => n.st === 'čeka').reduce((s, n) => s + n.gotovina, 0))} €</b></div>
     <h2 style="font-size:var(--fs-lg);margin:0 0 10px">Narudžbe</h2>
-    <table><thead><tr><th>Igračica</th><th>Artikl</th><th>Falcoini</th><th>Gotovina</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>${NARUDZBE.map((n, i) => ({ n, i })).filter(({ n }) => n.st !== 'čeka roditelja' && n.st !== 'odbijeno').map(({ n, i }) => `<tr><td><b>${n.igr}</b>${n.izvor === 'roditelj' ? '<div class="meta">Iznenađenje roditelja — ne najavljivati</div>' : ''}</td><td>${n.artikl}<div class="meta">veličina ${n.velicina}${n.pre ? ' · ' + 'predbilježba' : ''} · cijena ${fmt(n.cijena)}</div></td><td>${fc(n.f)}</td>
-      <td>${n.gotovina > 0 ? `<b>${fmt(n.gotovina)} €</b>` : '—'}</td><td>${n.dat}</td>
-      <td>${n.st === 'čeka' ? chip('Čeka preuzimanje', 'warn') : n.st === 'izdano' ? chip('Izdano', 'ok') : chip('Otkazano', 'danger')}</td>
-      <td>${n.st === 'čeka' ? `<div class="row" style="gap:6px"><button class="btn ghost sm" data-izdano="${i}">${n.gotovina > 0 ? 'Izdano i naplaćeno' : 'Izdano'}</button><button class="btn ghost sm" data-otkazi="${i}">Otkaži</button></div>` : ''}</td></tr>`).join('')}</tbody></table>
+    ${pogled('ormar-narudzbe', { lnaslov: 'Narudžbe', title: 'igr', empty: 'Nema narudžbi.', rows: NARUDZBE.map((n, i) => ({ n, i })).filter(({ n }) => n.st !== 'čeka roditelja' && n.st !== 'odbijeno'),
+      lsub: ({ n }) => n.artikl + ' · ' + n.velicina, lchip: ({ n }) => (n.st === 'čeka' ? chip('Čeka', 'warn') : n.st === 'izdano' ? chip('Izdano', 'ok') : chip('Otkazano', 'danger')),
+      cols: [{ id: 'igr', label: 'Igračica', val: ({ n }) => n.igr, html: ({ n }) => `<b>${n.igr}</b>${n.izvor === 'roditelj' ? '<div class="meta">Iznenađenje roditelja — ne najavljivati</div>' : ''}` },
+        { id: 'artikl', label: 'Artikl', val: ({ n }) => n.artikl, html: ({ n }) => `${n.artikl}<div class="meta">veličina ${n.velicina}${n.pre ? ' · predbilježba' : ''} · cijena ${fmt(n.cijena)}</div>` },
+        { id: 'f', label: 'Falcoini', val: ({ n }) => n.f, html: ({ n }) => fc(n.f) }, { id: 'got', label: 'Gotovina', val: ({ n }) => n.gotovina, html: ({ n }) => (n.gotovina > 0 ? `<b>${fmt(n.gotovina)} €</b>` : '—') },
+        { id: 'dat', label: 'Datum', val: ({ n }) => n.dat }, { id: 'st', label: 'Status', val: ({ n }) => n.st, html: ({ n }) => (n.st === 'čeka' ? chip('Čeka preuzimanje', 'warn') : n.st === 'izdano' ? chip('Izdano', 'ok') : chip('Otkazano', 'danger')) },
+        { id: 'akc', label: 'Radnja', val: () => '', html: ({ n, i }) => (n.st === 'čeka' ? `<div class="row" style="gap:6px"><button class="btn ghost sm" data-izdano="${i}">${n.gotovina > 0 ? 'Izdano i naplaćeno' : 'Izdano'}</button><button class="btn ghost sm" data-otkazi="${i}">Otkaži</button></div>` : '') }] })}
     <h2 style="font-size:var(--fs-lg);margin:28px 0 10px">Artikli</h2>
-    <table><thead><tr><th>Artikl</th><th>Kategorija</th><th>Cijena (F = €)</th><th>Zaliha</th></tr></thead><tbody>${ORMAR.map((a) => `<tr><td><div class="who">${itemTile(a, 'sm')}<span>${a.ime}</span></div></td><td>${chip(a.kat, 'navy')}</td><td>${cijenaHtml(a)}</td>
-      <td>${zaliha(a) ? `${zaliha(a)} kom` : '—'}${imaPre(a) ? ` ${chip('predbilježba', 'warn')}` : ''}</td></tr>`).join('')}</tbody></table>`,
+    ${pogled('ormar-artikli', { lnaslov: 'Artikli', title: 'ime', empty: 'Nema artikala.', rows: ORMAR, lav: (a) => itemTile(a, 'sm'), lsub: (a) => fmt(a.cijena) + ' FLC · ' + (zaliha(a) ? zaliha(a) + ' kom' : 'predbilježba'),
+      cols: [{ id: 'ime', label: 'Artikl', val: (a) => a.ime, html: (a) => `<div class="who">${itemTile(a, 'sm')}<span>${a.ime}</span></div>` }, { id: 'kat', label: 'Kategorija', val: (a) => a.kat, html: (a) => chip(a.kat, 'navy') },
+        { id: 'cij', label: 'Cijena (FLC = €)', val: (a) => a.cijena, html: (a) => cijenaHtml(a) }, { id: 'zal', label: 'Zaliha', val: (a) => zaliha(a), html: (a) => `${zaliha(a) ? `${zaliha(a)} kom` : '—'}${imaPre(a) ? ` ${chip('predbilježba', 'warn')}` : ''}` }] })}`,
   novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje, igračice i trenere</div></div><div class="grow"></div>
       <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
-    <table><thead><tr><th>Objava</th><th>Za</th><th>Datum</th><th>Pročitalo</th></tr></thead><tbody>${NOVOSTI.map((n) => `<tr><td><b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div></td>
-      <td>${chip(n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa, 'navy')}</td><td>${n.dat}</td><td>${n.citalo ? `${n.citalo} / ${n.od}` : '—'}</td></tr>`).join('')}</tbody></table>`,
+    ${pogled('novosti', { lnaslov: 'Objave', title: 'naslov', empty: 'Nema objava.', rows: NOVOSTI, lsub: (n) => n.dat + ' · ' + (n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa), lchip: (n) => chip(n.oznaka, OZNAKE[n.oznaka] || 'navy'),
+      cols: [{ id: 'naslov', label: 'Objava', val: (n) => n.naslov, html: (n) => `<b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div>` }, { id: 'za', label: 'Za', val: (n) => (n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa), html: (n) => chip(n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa, 'navy') },
+        { id: 'dat', label: 'Datum', val: (n) => n.dat }, { id: 'cit', label: 'Pročitalo', val: (n) => n.citalo, html: (n) => (n.citalo ? `${n.citalo} / ${n.od}` : '—') }] })}`,
   grupe: () => `<div class="page-head"><div><h1>Grupe</h1><div class="sub">${GROUPS.length} grupa</div></div><div class="grow"></div>
       <button class="btn" data-toast="Nova grupa — sljedeći korak">${ic('plus', 18)} Nova grupa</button></div>
-    <div class="grid-3">${GROUPS.map((g) => `<div class="card stack"><div class="row spread"><h2 style="font-size:var(--fs-xl)">${g.ime}</h2>${chip(g.cl + ' članica', 'navy')}</div>
-      <div class="meta">Trener: <b style="color:var(--text)">${g.trener}</b></div><div class="meta">${g.raspored}</div></div>`).join('')}</div>`,
+    ${pogled('grupe', { lnaslov: 'Grupe', title: 'ime', empty: 'Nema grupa.', rows: GROUPS, lsub: (g) => g.trener + ' · ' + g.cl + ' članica', lchip: (g) => chip(g.raspored, ''),
+      cols: [{ id: 'ime', label: 'Grupa', val: (g) => g.ime, html: (g) => `<b>${g.ime}</b>` }, { id: 'trener', label: 'Trener', val: (g) => g.trener }, { id: 'cl', label: 'Članica', val: (g) => g.cl, html: (g) => chip(g.cl + ' članica', 'navy') }, { id: 'rasp', label: 'Raspored', val: (g) => g.raspored }] })}
+    <h2 style="font-size:var(--fs-lg);margin:28px 0 10px">Treneri</h2>
+    ${pogled('treneri', { lnaslov: 'Treneri', title: 'ime', empty: 'Nema trenera.', rows: [...new Set(GROUPS.map((g) => g.trener))].map((t) => ({ ime: t, grupe: GROUPS.filter((g) => g.trener === t).map((g) => g.ime), cl: GROUPS.filter((g) => g.trener === t).reduce((a, g) => a + g.cl, 0) })),
+      lav: (t) => `<span class="lep-ini">${ini(t.ime)}</span>`, lsub: (t) => t.grupe.join(' · '),
+      cols: [{ id: 'ime', label: 'Trener', val: (t) => t.ime, html: (t) => `<div class="who"><span class="lep-ini sm">${ini(t.ime)}</span><b>${t.ime}</b></div>` }, { id: 'grupe', label: 'Grupe', val: (t) => t.grupe.join(', '), html: (t) => t.grupe.map((x) => chip(x, 'navy')).join(' ') }, { id: 'cl', label: 'Članica ukupno', val: (t) => t.cl }] })}`,
   raspored: () => adminKalendar(),
   clanarine: () => `<div class="page-head"><div><h1>Članarine</h1><div class="sub">Uplate i uvoz bankovnog izvoda</div></div></div>
     <div class="dropzone" style="margin-bottom:24px"><div style="color:var(--navy);margin-bottom:8px;display:flex;justify-content:center">${ic('upload', 28)}</div>
       <b style="color:var(--text)">Povuci Erste izvod (WRI) ovdje</b><div style="margin:4px 0 14px">ili</div>
       <button class="btn" data-toast="U pravoj aplikaciji se ovdje učitava izvod">Odaberi datoteku</button></div>
-    ${pogled('uplate', { title: 'platitelj', cols: [
+    ${pogled('uplate', { lnaslov: 'Uplate', lsub: (u) => u.iznos + ' € · ' + u.dat, title: 'platitelj', cols: [
       { id: 'platitelj', label: 'Platitelj', val: (u) => u.platitelj, html: (u) => `<b>${u.platitelj}</b>` }, { id: 'dat', label: 'Datum', val: (u) => u.dat }, { id: 'opis', label: 'Opis', val: (u) => u.opis },
       { id: 'iznos', label: 'Iznos', val: (u) => parseFloat(String(u.iznos).replace(',', '.')) || 0, html: (u) => `${u.iznos} €` }, { id: 'clan', label: 'Sparena članica', val: (u) => u.clan },
       { id: 'st', label: 'Status', val: (u) => ({ ok: 'Spareno', review: 'Za pregled' }[u.st] || 'Preskočeno'), html: (u) => (u.st === 'ok' ? chip('Spareno', 'ok') : u.st === 'review' ? chip('Za pregled', 'warn') : chip('Preskočeno')) }], rows: UPLATE })}`,
