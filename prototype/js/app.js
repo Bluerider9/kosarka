@@ -476,7 +476,7 @@ function izazovKartica() {
   const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:6px">${z.naslov}</h3><div class="meta" style="margin-top:4px">${z.opis}</div>`;
   const kraj = proto('cekanje', 'pogledaj nedjelju 12:01');
   if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery">${zq}<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div>
-    <div class="join-note">Zadatak je tajna. Da bi ga vidjela, moraš se priključiti; priključenima se zadatak otkriva od ponedjeljka u 00:01. Napredak se računa od priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${kraj}</div>`;
+    <button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${kraj}</div>`;
   if (jeRad(z)) {
     const v = state.video; const foto = z.vrsta === 'foto';
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic(foto ? 'image' : 'upload', 18)} ${foto ? 'Slikaj ili dodaj fotografiju' : 'Snimi ili dodaj video'}</button>`
