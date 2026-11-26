@@ -373,7 +373,15 @@ function scanResult() {
   overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${fmt(n)} ${FLC}</div>
     <p>U14 · OŠ Ante Kovačića · 17:30<br>Novo stanje: <b>${fmt(saldo())} ${FLC}</b></p><button class="btn red block" data-fxclose>Super</button>`);
 }
+const cekaRoditelja = () => NARUDZBE.map((n, i) => ({ n, i })).filter(({ n }) => n.st === 'čeka roditelja');
+function narudzbaKartica({ n, i }, rod) {
+  const a = ORMAR.find((x) => x.ime === n.artikl);
+  return `<div class="card narudzba-ceka">${a ? `<div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><b>${n.artikl}</b><div class="meta">veličina ${n.velicina}${n.pre ? ' · predbilježba' : ''}</div></div></div>` : `<b>${n.artikl}</b>`}
+    <div class="meta" style="margin-top:8px">Cijena ${fmt(n.cijena)} ${FLC} · ${n.f > 0 ? `plaća se <b>${fmt(n.f)} ${FLC}</b>` : ''}${n.f > 0 && n.gotovina > 0 ? ' + ' : ''}${n.gotovina > 0 ? `<b>${fmt(n.gotovina)} €</b> gotovinom pri preuzimanju` : ''}</div>
+    ${rod ? `<div class="row" style="gap:8px;margin-top:10px"><button class="btn red grow" data-rodok="${i}">Odobri</button><button class="btn ghost grow" data-rodno="${i}">Odbij</button></div>` : `<div class="vid-state wait" style="margin-top:10px"><span class="vs-t">${ic('clock', 16)} Čeka odobrenje roditelja</span></div>`}</div>`;
+}
 function redeemSheet(id) {
+  if (uloga() === 'roditelj') return redeemRoditelj(id);
   const a = ORMAR.find((x) => x.id === id); const max = r2(Math.min(a.cijena, saldo()));
   const prva = a.velicine.find((v) => v.v === velOdabrana(a)) || a.velicine[0];
   state.redeem = { id, f: max, size: prva.v };
@@ -385,6 +393,15 @@ function redeemSheet(id) {
       <div class="split-row cash"><span>Doplaćujem gotovinom</span><b id="rdC">${fmt(a.cijena - max)} €</b></div></div>
     <p id="rdNote">${rdNote(a, max)}</p>
     <button class="btn red block" id="rdBtn" data-redeemok="${id}">${rdBtn(a, max, prva.v)}</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
+}
+function redeemRoditelj(id) {
+  const a = ORMAR.find((x) => x.id === id); const prva = a.velicine.find((v) => v.v === velOdabrana(a)) || a.velicine[0];
+  state.redeem = { id, f: 0, size: prva.v };
+  overlay(`${itemTile(a, 'big')}<h2>${a.ime}</h2>${a.opis ? `<div class="meta" style="margin-top:-4px">${a.opis}</div>` : ''}
+    <div class="sizes">${a.velicine.map((v) => `<button type="button" class="size ${v.v === prva.v ? 'on' : ''} ${!(v.n > 0) ? 'pre' : ''}" data-size="${v.v}">${v.v}<small>${!(v.n > 0) ? 'predbilježba' : `${v.n} kom`}</small></button>`).join('')}</div>
+    <div class="meta">Cijena <b>${fmt(a.cijena)} €</b></div>
+    <div class="join-note" style="background:#eef2f7;color:var(--navy)">Naručuješ za Anu kao <b>iznenađenje</b>: ona neće dobiti nikakvu obavijest, a Falcoini se ne troše. Plaćaš <b>gotovinom pri preuzimanju</b> kod trenera.</div>
+    <button class="btn red block" data-redeemok="${id}">Naruči za Anu</button><button class="btn ghost block" data-fxclose>Odustani</button>`);
 }
 const rdBtn = (a, f, vel) => { const v = a.velicine.find((x) => x.v === vel) || {}; return !(v.n > 0) ? 'Predbilježi' : f >= a.cijena - 0.004 ? 'Zamijeni' : 'Zamijeni + doplati'; };
 const rdNote = (a, f) => { const v = a.velicine.find((x) => x.v === (state.redeem || {}).size) || {}; return `Stanje nakon narudžbe: <b>${fmt(saldo() - f)} ${FLC}</b><br>${!(v.n > 0) ? 'Predbilježba: javimo ti kad artikl stigne. ' : ''}${a.cijena - f > 0.004 ? 'Gotovinu doplaćuješ pri preuzimanju kod trenera.' : 'Artikl preuzimaš kod trenera na treningu.'}`; };
@@ -526,14 +543,14 @@ function videoSheet() {
     <small>${foto ? 'Fotografiju' : 'Video'} vidi samo trener. Nakon slanja čeka se odobrenje trenera: kad ${foto ? 'je' : 'ga'} potvrdi, zadatak je ispunjen i dobivaš nagradu; ako ${foto ? 'je' : 'ga'} odbije, zadatak se zaključava. (Prototip: datoteka se ne učitava stvarno.)</small>`);
 }
 function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
-  return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
+  return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">${uloga() === 'roditelj' ? 'Veličine: Ana' : 'Moje veličine'}</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
     <button class="vel-edit static" data-velopen="${PLAYERS[0].id}" aria-label="Uredi veličine">${ic('edit', 18)}</button></div>`; }
 function ormarGrid() {
   const kat = state.ormarKat || 'Sve';
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
-    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}"><button type="button" class="heart ${state.zelje.includes(a.id) ? 'on' : ''}" data-zelja="${a.id}" aria-label="My favorites">${state.zelje.includes(a.id) ? '♥' : '♡'}</button>${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}">${uloga() === 'roditelj' ? '' : `<button type="button" class="heart ${state.zelje.includes(a.id) ? 'on' : ''}" data-zelja="${a.id}" aria-label="My favorites">${state.zelje.includes(a.id) ? '♥' : '♡'}</button>`}${moja ? `<span class="mine-badge">${uloga() === 'roditelj' ? (jedna ? 'Odgovara Ani' : 'Anina veličina') : (jedna ? 'Odgovara ti' : 'Tvoja veličina')}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="stock">${jedna ? (ima ? `na stanju ${v.n}` : 'predbilježba') : moja ? `Tvoja veličina ${v.v} · na stanju ${v.n}` : ima ? 'dostupno · izaberi veličinu' : 'nema tvoje veličine · predbilježba'}</div>
       <button class="btn ${ima ? 'red' : 'ghost'} sm block" data-redeem="${a.id}">Izaberi</button></div>`; }).join('')}</div>`;
 }
@@ -627,6 +644,7 @@ const SCREENS = {
         <button class="btn ghost block" data-profil="${p.id}">Profil ${ic('chev', 16)}</button></div>`).join('') +
       `<div class="card row"><div class="grow"><h3>Dospjelo za platiti</h3><div class="meta">Lea · studeni 2026.</div></div><b style="font-size:var(--fs-lg);font-weight:900">30 €</b></div>
        ${novostiTeaser('roditelj')}
+       <div class="card row ${cekaRoditelja().length ? 'ceka-od' : ''}" data-go="roditelj-ormar" style="cursor:pointer"><span class="mapa-ic">${ic('bag', 18)}</span><div class="grow"><h3>Ormar</h3><div class="meta">${cekaRoditelja().length ? `<b style="color:var(--red)">Ana je izabrala artikl — čeka tvoje odobrenje (${cekaRoditelja().length})</b>` : 'Naruči artikl za Anu kao iznenađenje'}</div></div>${ic('chev', 16)}</div>
        <button class="btn red block" data-go="roditelj-clanarina">${ic('wallet', 18)} Podaci za uplatu</button>`,
   }),
   'roditelj-novosti': () => novostiScreen('roditelj', tabbar('roditelj', RODITELJ_TABS, 'novosti')),
@@ -748,12 +766,20 @@ const SCREENS = {
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
-    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ ${SEKCIJA_FALCOIN}</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarVelStrip()}${ormarGrid()}`,
+    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ ${SEKCIJA_FALCOIN}</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${NARUDZBE.map((n, i) => ({ n, i })).filter(({ n }) => n.st === 'čeka roditelja' && n.izvor !== 'roditelj').map((x) => narudzbaKartica(x, false)).join('')}${ormarVelStrip()}${ormarGrid()}`,
   }),
   'igracica-profil': () => ({
     header: mHeader('Moj profil', 'Ana Horvat'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'profil'),
     body: profilBody(PLAYERS[0], 'igracica'),
+  }),
+  'roditelj-ormar': () => ({
+    header: mHeader('Ormar', 'Narudžbe za Anu'),
+    tabs: tabbar('roditelj', RODITELJ_TABS, 'pocetna'),
+    body: `<button class="btn ghost block sm" data-go="roditelj-pocetna">‹ Početna</button>
+      ${cekaRoditelja().length ? `<div class="section-title">Čeka tvoje odobrenje</div>${cekaRoditelja().map((x) => narudzbaKartica(x, true)).join('')}` : ''}
+      <div class="card" style="background:#eef2f7;box-shadow:none"><b>Iznenađenje za Anu</b><div class="meta">Možeš naručiti artikl za Anu, a ona o tome neće dobiti nikakvu obavijest. Plaća se gotovinom pri preuzimanju kod trenera.</div></div>
+      ${ormarVelStrip()}${ormarGrid()}`,
   }),
   'roditelj-igracica': () => ({
     header: mHeader('Profil', profilIgr().ime),
@@ -893,7 +919,7 @@ const ADMIN = {
     <div class="card row spread" style="margin-bottom:16px"><div><h3>Za naplatiti gotovinom</h3><div class="meta">${NARUDZBE.filter((n) => n.st === 'čeka' && n.gotovina > 0).length} narudžbi čeka preuzimanje s doplatom</div></div>
       <b style="font-size:var(--fs-xl);font-weight:900">${fmt(NARUDZBE.filter((n) => n.st === 'čeka').reduce((s, n) => s + n.gotovina, 0))} €</b></div>
     <h2 style="font-size:var(--fs-lg);margin:0 0 10px">Narudžbe</h2>
-    <table><thead><tr><th>Igračica</th><th>Artikl</th><th>Falcoini</th><th>Gotovina</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>${NARUDZBE.map((n, i) => `<tr><td><b>${n.igr}</b></td><td>${n.artikl}<div class="meta">veličina ${n.velicina}${n.pre ? ' · ' + 'predbilježba' : ''} · cijena ${fmt(n.cijena)}</div></td><td>${fc(n.f)}</td>
+    <table><thead><tr><th>Igračica</th><th>Artikl</th><th>Falcoini</th><th>Gotovina</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>${NARUDZBE.map((n, i) => ({ n, i })).filter(({ n }) => n.st !== 'čeka roditelja' && n.st !== 'odbijeno').map(({ n, i }) => `<tr><td><b>${n.igr}</b>${n.izvor === 'roditelj' ? '<div class="meta">Iznenađenje roditelja — ne najavljivati</div>' : ''}</td><td>${n.artikl}<div class="meta">veličina ${n.velicina}${n.pre ? ' · ' + 'predbilježba' : ''} · cijena ${fmt(n.cijena)}</div></td><td>${fc(n.f)}</td>
       <td>${n.gotovina > 0 ? `<b>${fmt(n.gotovina)} €</b>` : '—'}</td><td>${n.dat}</td>
       <td>${n.st === 'čeka' ? chip('Čeka preuzimanje', 'warn') : n.st === 'izdano' ? chip('Izdano', 'ok') : chip('Otkazano', 'danger')}</td>
       <td>${n.st === 'čeka' ? `<div class="row" style="gap:6px"><button class="btn ghost sm" data-izdano="${i}">${n.gotovina > 0 ? 'Izdano i naplaćeno' : 'Izdano'}</button><button class="btn ghost sm" data-otkazi="${i}">Otkaži</button></div>` : ''}</td></tr>`).join('')}</tbody></table>
@@ -1161,10 +1187,20 @@ document.addEventListener('click', (e) => {
   const ts = e.target.closest('[data-tsize]'); if (ts) { (state.ormarVel = state.ormarVel || {})[+ts.dataset.aid] = ts.dataset.tsize; render(); return; }
   const ok = e.target.closest('[data-okat]'); if (ok) { state.ormarKat = ok.dataset.okat; render(); return; }
   const rk = e.target.closest('[data-redeemok]');
-  if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const f = r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f);
-    { const pre = !(v.n > 0); FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (!pre) v.n--; NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre, cijena: a.cijena, f, gotovina: cash, dat: '24.11.2026.', st: 'čeka' });
-      if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f }); }
-    notify('admin', 'Nova narudžba u Ormaru', `Ana Horvat: ${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · naplatiti ${fmt(cash)} €` : ''}`); closeOverlay(); render(); toastIn(cash > 0 ? `Narudžba poslana — doplati ${fmt(cash)} € pri preuzimanju` : 'Narudžba poslana — preuzmi na treningu'); return; }
+  if (rk) { const a = ORMAR.find((x) => x.id === +rk.dataset.redeemok); const v = a.velicine.find((x) => x.v === state.redeem.size); const rod = uloga() === 'roditelj';
+    const f = rod ? 0 : r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f); const pre = !(v.n > 0);
+    if (!rod) FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (!pre) v.n--;
+    NARUDZBE.unshift({ igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre, cijena: a.cijena, f, gotovina: cash, dat: '26.11.2026.', st: rod ? 'čeka' : 'čeka roditelja', izvor: rod ? 'roditelj' : 'igracica' });
+    if (rod) { notify('admin', 'Nova narudžba u Ormaru (roditelj)', `Ana Horvat: ${a.ime} (${v.v}) · iznenađenje, ne najavljivati igračici · naplatiti ${fmt(cash)} €`); closeOverlay(); render(); toastIn('Narudžba poslana — Ana ne zna'); return; }
+    if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f });
+    notify('roditelj', 'Ana je izabrala artikl u Ormaru', `${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · doplata ${fmt(cash)} €` : ''}. Pogledaj i odobri u Ormaru.`);
+    closeOverlay(); render(); toastIn('Poslano roditelju na odobrenje'); return; }
+  const ro = e.target.closest('[data-rodok],[data-rodno]');
+  if (ro) { const ok = ro.dataset.rodok !== undefined; const n = NARUDZBE[+(ok ? ro.dataset.rodok : ro.dataset.rodno)];
+    if (ok) { n.st = 'čeka'; notify('admin', 'Nova narudžba u Ormaru', `Ana Horvat: ${n.artikl} (${n.velicina}), ${fmt(n.cijena)}${n.gotovina > 0 ? ` · naplatiti ${fmt(n.gotovina)} €` : ''} · odobrio roditelj`); notify('igracica', 'Roditelj je odobrio narudžbu', `${n.artikl} (${n.velicina}) — preuzmi na treningu kod trenera.`); toastIn('Odobreno — narudžba ide klubu'); }
+    else { n.st = 'odbijeno'; const a = ORMAR.find((x) => x.ime === n.artikl); const vv = a && a.velicine.find((x) => x.v === n.velicina); if (vv && vv.n !== null && !n.pre) vv.n++;
+      FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n.f); if (n.f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Povrat: ${n.artikl} (roditelj nije odobrio)`, iznos: n.f }); notify('igracica', 'Roditelj nije odobrio narudžbu', `${n.artikl} (${n.velicina}) — Falcoini su vraćeni na stanje.`); toastIn('Odbijeno — Falcoini vraćeni Ani'); }
+    render(); return; }
   const qt = e.target.closest('[data-qrtip]'); if (qt) { state.qrTip = qt.dataset.qrtip; render(); return; }
   const iz = e.target.closest('[data-izdano]'); if (iz) { NARUDZBE[+iz.dataset.izdano].st = 'izdano'; render(); return; }
   const ot = e.target.closest('[data-otkazi]');
