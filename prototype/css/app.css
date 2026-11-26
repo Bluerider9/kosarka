@@ -1025,3 +1025,5 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.challenge .zhist-btn { background: #fff; }
 .pub-tabs { display: flex; gap: 6px; margin: 4px 0 10px; }
 .pp-chip.pub { padding: 7px 14px; font-size: 12px; }
+.izsame { display: flex; gap: 8px; align-items: flex-start; font-size: var(--fs-sm); padding: 8px 10px; border-radius: 10px; background: #eef2f7; color: var(--navy); }
+.izsame input { margin-top: 3px; }

@@ -869,6 +869,7 @@ const ADMIN = {
         <div class="field"><label>Opis zadatka</label><input class="input" id="izOpis" value="${z.opis}"></div>
         <div class="field"><label>Broj treninga (za dolaske)</label><input class="input" id="izCilj" type="number" min="1" max="7" value="${z.cilj}"></div>
         <div class="field"><label>Nagrada za ovaj zadatak (FLC)</label><input class="input" id="izNagrada" type="number" min="0" step="0.01" inputmode="decimal" value="${(z.nagrada ?? 3).toFixed(2)}"></div>
+        <label class="izsame"><input type="checkbox" id="izObje"> <span>Isti zadatak za <b>Selekciju i Škole košarke</b> (spremi u oba plana)</span></label>
         <div class="meta">Nagrada se upisuje za svaki zadatak posebno. Zadatak se otkriva priključenim igračicama u <b>ponedjeljak u 00:01</b> i traje do <b>nedjelje u 12:00</b>. Priključivanje se otvara u nedjelju u 12:01 (prije otkrivanja novog zadatka).</div>
         <div class="row" style="gap:10px"><button class="btn grow" data-izspremi="${i}">Spremi zadatak</button>${izPlan()[i] && i > 0 ? `<button class="btn ghost" data-izbrisi="${i}">Obriši</button>` : ''}</div></div>`; })()}</div>
       <div class="card pf-sec"><h4>Predani radovi (video i fotografije)</h4>${radoviMape()}</div>
@@ -1130,6 +1131,7 @@ document.addEventListener('click', (e) => {
   const isp = e.target.closest('[data-izspremi]');
   if (isp) { const i = +isp.dataset.izspremi; const naslov = $('#izNaslov').value.trim(); if (!naslov) { toastIn('Upiši naslov izazova'); return; }
     const z = { vrsta: $('#izVrsta').value, naslov, opis: $('#izOpis').value.trim(), cilj: Math.max(1, Math.min(7, +$('#izCilj').value || 3)), prikljuci: true, nagrada: r2(Math.max(0, +$('#izNagrada').value || 0)), odradeno: 0, do: `nedjelje ${IZ_TJEDNI[i][1]} u 12:00` };
+    if ($('#izObje') && $('#izObje').checked) { IZ_PLAN_SKOLE[i] = { ...z }; if (state.izPubl === 'skole') { IZ_PLAN[i] = { ...z }; if (i === 0) { Object.assign(IZAZOV, z); state.video = null; state.izPrikl = false; } } }
     if (i === 0 && state.izPubl === 'skole') IZ_PLAN_SKOLE[0] = z; else if (i === 0) { Object.assign(IZAZOV, z); state.video = null; state.izPrikl = false; notify('igracica', 'Novi tjedni zadatak', 'Priključi se i otkrij što te čeka.'); notify('roditelj', 'Novi tjedni zadatak', 'Za tvoju igračicu je objavljen novi tjedni zadatak.'); } else izPlan()[i] = z;
     toastIn(i === 0 ? 'Zadatak je objavljen' : 'Zadatak je planiran'); render(); return; }
   const ib = e.target.closest('[data-izbrisi]'); if (ib) { izPlan()[+ib.dataset.izbrisi] = null; state.izTjedan = null; render(); return; }
