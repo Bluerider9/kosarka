@@ -438,6 +438,9 @@ function milestoneKartica() {
       : `<button type="button" class="mile off" data-mile="${m.id}"><span class="mile-b">?</span><b>Skriveno</b></button>`).join('')}</div>
     <div class="meta" style="margin-top:10px">Milestones ne nose bodove. Otkrivaju se tek kad ih ostvariš.</div></div>`;
 }
+const MF_TABOVI = [['izazov', 'Izazov'], ['zelja', 'Želja'], ['mile', 'Milestones'], ['povijest', 'Povijest']];
+const mfMenu = () => `<div class="mf-menu" role="tablist">${MF_TABOVI.map(([k, l]) => `<button type="button" role="tab" class="${state.mfTab === k ? 'on' : ''}" data-mftab="${k}">${l}${k === 'mile' ? `<small>${MILESTONES.filter((m) => m.dat).length}/${MILESTONES.length}</small>` : ''}</button>`).join('')}</div>`;
+const mfSadrzaj = () => ({ izazov: izazovKartica, zelja: zeljaKartica, mile: milestoneKartica, povijest: falcoiniHistory })[state.mfTab]();
 function izazovKartica() {
   const z = IZAZOV; const head = `<div class="row spread"><div><div class="meta">Izazov tjedna · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
   if (z.vrsta === 'video') {
@@ -678,8 +681,7 @@ const SCREENS = {
     body: `<div class="card fc-hero compact"><button type="button" class="fc-help" data-flchelp aria-label="Što je FLC?">?</button><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u klupski Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
-      ${izazovKartica()}${zeljaKartica()}${milestoneKartica()}
-      <div class="section-title">Povijest</div>${falcoiniHistory()}`,
+      ${mfMenu()}${mfSadrzaj()}`,
   }),
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
@@ -851,7 +853,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izTjedan: null, admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -1023,6 +1025,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; return; }
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
+  const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
   const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u Moju želju'); return; }

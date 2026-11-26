@@ -947,3 +947,8 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .mile-b { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 18px; background: radial-gradient(circle at 30% 25%, #ffd98a, var(--gold)); color: var(--navy); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--gold); }
 .mile.off .mile-b { background: var(--silver-100); color: #aab2c2; box-shadow: none; border: 2px dashed var(--silver); } .mile.off b { color: #98a1b3; }
 .mile-big { width: 96px; height: 96px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 34px; background: radial-gradient(circle at 30% 25%, #ffd98a, var(--gold)); color: var(--navy); box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--gold); }
+
+.mf-menu { display: flex; gap: 6px; background: var(--silver-100); padding: 4px; border-radius: var(--r-pill); }
+.mf-menu button { flex: 1; border: 0; background: none; padding: 9px 4px; border-radius: var(--r-pill); font: inherit; font-size: 12px; font-weight: 800; color: var(--muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
+.mf-menu button small { font-size: 9.5px; font-weight: 700; opacity: .75; line-height: 1; }
+.mf-menu button.on { background: var(--navy); color: #fff; box-shadow: var(--shadow-1); }
