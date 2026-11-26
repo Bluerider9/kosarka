@@ -415,6 +415,29 @@ function zeljaKartica() {
     <div class="row spread" style="margin-top:6px"><span class="meta">${fmt(saldo())} / ${fmt(a.cijena)} ${FLC}</span><span class="meta">${pct}%</span></div>
     ${fali > 0 ? '' : `<button class="btn red block sm" style="margin-top:10px" data-redeem="${a.id}">Zamijeni</button>`}</div>`;
 }
+/* milestones: bez bodova; skriveni dok ih igračica ne ostvari */
+const MILESTONES = [
+  { id: 'prvi', glif: '1', naslov: 'Prvi trening', opis: 'Došla si na svoj prvi trening u klubu.', dat: '09.09.2026.' },
+  { id: 'utk1', glif: '★', naslov: 'Prva utakmica', opis: 'Nastupila si na svojoj prvoj utakmici.', dat: '03.10.2026.' },
+  { id: 'tr10', glif: '10', naslov: '10 treninga', opis: 'Deset dolazaka na trening.', dat: '17.10.2026.' },
+  { id: 'pobjeda', glif: '✓', naslov: 'Prva pobjeda', opis: 'Tvoja ekipa je pobijedila dok si bila na popisu.', dat: '22.11.2026.' },
+  { id: 'ormar', glif: 'F', naslov: 'Prva zamjena u Ormaru', opis: 'Zamijenila si FLC za svoj prvi artikl.', dat: '14.11.2026.' },
+  { id: 'izazov', glif: '!', naslov: 'Izazov ispunjen', opis: 'Ispunila si svoj prvi izazov tjedna.', dat: null },
+  { id: 'tr25', glif: '25', naslov: '25 treninga', opis: 'Dvadeset i pet dolazaka na trening.', dat: null },
+  { id: 'tr50', glif: '50', naslov: '50 treninga', opis: 'Pedeset dolazaka na trening.', dat: null },
+  { id: 'turnir', glif: 'T', naslov: 'Prvi turnir', opis: 'Nastupila si na svom prvom turniru.', dat: null },
+  { id: 'flc100', glif: '100', naslov: '100 FLC skupljeno', opis: 'Ukupno si skupila 100 FLC.', dat: null },
+  { id: 'sezona', glif: '★', naslov: 'Sezona bez izostanka', opis: 'Cijeli mjesec bez nenajavljenog izostanka.', dat: null },
+  { id: 'veteran', glif: '∞', naslov: 'Falcon godinu dana', opis: 'Godinu dana si u klubu.', dat: null },
+];
+const odkrij = (id, dat = 'Danas') => { const m = MILESTONES.find((x) => x.id === id); if (m && !m.dat) { m.dat = dat; notify('igracica', 'Novi milestone!', m.naslov); notify('roditelj', 'Novi milestone', `Ana je otkrila milestone: ${m.naslov}`); } };
+function milestoneKartica() {
+  const otk = MILESTONES.filter((m) => m.dat).length;
+  return `<div class="card miles"><div class="row spread"><h3>Milestones</h3><span class="meta">${otk} od ${MILESTONES.length} otkriveno</span></div>
+    <div class="mile-grid">${MILESTONES.map((m) => m.dat ? `<button type="button" class="mile on" data-mile="${m.id}"><span class="mile-b">${m.glif}</span><b>${m.naslov}</b></button>`
+      : `<button type="button" class="mile off" data-mile="${m.id}"><span class="mile-b">?</span><b>Skriveno</b></button>`).join('')}</div>
+    <div class="meta" style="margin-top:10px">Milestones ne nose bodove. Otkrivaju se tek kad ih ostvariš.</div></div>`;
+}
 function izazovKartica() {
   const z = IZAZOV; const head = `<div class="row spread"><div><div class="meta">Izazov tjedna · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
   if (z.vrsta === 'video') {
@@ -655,7 +678,7 @@ const SCREENS = {
     body: `<div class="card fc-hero compact"><button type="button" class="fc-help" data-flchelp aria-label="Što je FLC?">?</button><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u klupski Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
-      ${izazovKartica()}${zeljaKartica()}
+      ${izazovKartica()}${zeljaKartica()}${milestoneKartica()}
       <div class="section-title">Povijest</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({
@@ -1000,6 +1023,8 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; return; }
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
+  const ml = e.target.closest('[data-mile]');
+  if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
   const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u Moju želju'); return; }
   if (e.target.closest('[data-vidopen]')) { videoSheet(); return; }
   if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : 'trica_ana.mp4', st: 'čeka', ana: true };
@@ -1008,7 +1033,7 @@ document.addEventListener('click', (e) => {
   const vk = e.target.closest('[data-vidok],[data-vidno]');
   if (vk) { const ok = vk.dataset.vidok !== undefined; const v = VIDEA[+(ok ? vk.dataset.vidok : vk.dataset.vidno)]; v.st = ok ? 'odobreno' : 'odbijeno';
     const pl = PLAYERS.find((p) => p.ime === v.igr);
-    if (ok && pl) { const n = pravilo('izazov'); FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Izazov tjedna: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Izazov odobren', `Dobila si +${fmt(n)} ${FLC} za izazov tjedna.`); notify('roditelj', 'Izazov odobren', `Ana je ispunila izazov tjedna (+${fmt(n)} ${FLC}).`); } }
+    if (ok && pl) { const n = pravilo('izazov'); FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { odkrij('izazov'); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Izazov tjedna: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Izazov odobren', `Dobila si +${fmt(n)} ${FLC} za izazov tjedna.`); notify('roditelj', 'Izazov odobren', `Ana je ispunila izazov tjedna (+${fmt(n)} ${FLC}).`); } }
     else if (v.ana) notify('igracica', 'Video nije prihvaćen', 'Probaj snimiti ponovno.');
     render(); return; }
   const am = e.target.closest('[data-admmj]');

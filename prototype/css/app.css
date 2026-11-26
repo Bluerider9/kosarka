@@ -940,3 +940,10 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .cal-detail { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 6px; }
 .cal-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--silver-100); flex-wrap: wrap; } .cal-row b { min-width: 46px; } .cal-row span { flex: 1; font-size: var(--fs-sm); color: var(--muted); }
 .cal-row.ut { background: #fbe9e9; } .cal-row.iz { background: #fff4d9; }
+
+.mile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.mile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 4px; border: 0; background: none; cursor: pointer; font: inherit; color: var(--navy); text-align: center; }
+.mile b { font-size: 11px; font-weight: 800; line-height: 1.2; }
+.mile-b { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 18px; background: radial-gradient(circle at 30% 25%, #ffd98a, var(--gold)); color: var(--navy); box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--gold); }
+.mile.off .mile-b { background: var(--silver-100); color: #aab2c2; box-shadow: none; border: 2px dashed var(--silver); } .mile.off b { color: #98a1b3; }
+.mile-big { width: 96px; height: 96px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 34px; background: radial-gradient(circle at 30% 25%, #ffd98a, var(--gold)); color: var(--navy); box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--gold); }
