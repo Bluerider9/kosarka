@@ -85,7 +85,6 @@ const FALCOIN_PRAVILA = [
   { k: 'trening', label: 'Dolazak na trening', iznos: 1.0 },
   { k: 'utakmica', label: 'Dolazak na utakmicu (gledanje)', iznos: 2.5 },
   { k: 'turnir', label: 'Dolazak na turnir', iznos: 4.0 },
-  { k: 'izazov', label: 'Tjedni zadatak (bonus)', iznos: 3.0 },
   { k: 'pomoc', label: 'Pomoć u organizaciji (ručno)', iznos: 1.5 },
 ];
 // Stvarni katalog s ormar.zkkfalcons.hr (stanje 24.11.2026.). n = na stanju, n: null = predbilježba. Slike se učitavaju sa shopa.

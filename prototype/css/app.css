@@ -961,3 +961,5 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 
 .mys { letter-spacing: .12em; color: var(--muted); }
 .card.mystery { border: 2px dashed var(--gold); }
+
+.plan-rew { flex: none; }
