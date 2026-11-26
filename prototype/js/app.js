@@ -874,18 +874,42 @@ function adminKalendar() {
     <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div></div>${detalj}</div>`;
 }
 const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PROTIVNICI.find((x) => x.naziv === prot); return k ? k.dvorane.filter(Boolean) : []; };
+/* ---------- Pogled (admin): kartice / popis / tablica + polja, sortiranje, grupiranje ---------- */
+// cfg: { cols:[{id,label,val(r),html?(r)}], rows, title: colId, attr?(r), hidden?:[ids], empty }
+const pogSt = (key, cfg) => { state.pog = state.pog || {}; return state.pog[key] || (state.pog[key] = { v: 'kartice', skriveno: cfg.hidden || [], sort: '', dir: 1, grupa: '' }); };
+function pogled(key, cfg) {
+  const st = pogSt(key, cfg), cols = cfg.cols, vis = cols.filter((c) => !st.skriveno.includes(c.id)), tit = cols.find((c) => c.id === cfg.title) || cols[0];
+  let rows = cfg.rows.slice();
+  const sc = cols.find((c) => c.id === st.sort);
+  if (sc) rows.sort((a, b) => { const x = sc.val(a), y = sc.val(b); return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'hr')) * st.dir; });
+  const gc = cols.find((c) => c.id === st.grupa);
+  const grupe = gc ? [...new Set(rows.map((r) => String(gc.val(r))))].map((g) => [g, rows.filter((r) => String(gc.val(r)) === g)]) : [['', rows]];
+  const cell = (c, r) => (c.html ? c.html(r) : bazaVal(c.val(r)));
+  const at = (r) => (cfg.attr ? cfg.attr(r) : '');
+  const prikaz = (rs) => {
+    if (!rs.length) return `<div class="pog-empty meta">${cfg.empty || 'Nema stavki.'}</div>`;
+    if (st.v === 'tablica') return `<div class="baza-wrap"><table class="baza"><thead><tr>${vis.map((c) => `<th>${c.label}</th>`).join('')}</tr></thead><tbody>${rs.map((r) => `<tr class="${cfg.attr ? 'click' : ''}" ${at(r)}>${vis.map((c) => `<td>${cell(c, r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    if (st.v === 'popis') return `<div class="pog-list">${rs.map((r) => `<div class="pog-row ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div><div class="pog-vals">${vis.filter((c) => c !== tit).map((c) => `<span><small>${c.label}</small>${cell(c, r)}</span>`).join('')}</div></div>`).join('')}</div>`;
+    return `<div class="pog-cards">${rs.map((r) => `<div class="card pog-card ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div>${vis.filter((c) => c !== tit).map((c) => `<div class="pog-f"><small>${c.label}</small><div>${cell(c, r)}</div></div>`).join('')}</div>`).join('')}</div>`;
+  };
+  return `<div class="pog-bar"><div class="seg" role="tablist">${[['kartice', 'Kartice'], ['popis', 'Popis'], ['tablica', 'Tablica']].map(([v, t]) => `<button type="button" class="${st.v === v ? 'on' : ''}" data-pogv="${key}|${v}">${t}</button>`).join('')}</div>
+    <label class="pog-sel">Sortiraj<select data-pogsort="${key}"><option value="">—</option>${cols.map((c) => `<option value="${c.id}" ${st.sort === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label>
+    ${st.sort ? `<button type="button" class="btn ghost sm" data-pogdir="${key}">${st.dir > 0 ? '↑ uzlazno' : '↓ silazno'}</button>` : ''}
+    <label class="pog-sel">Grupiraj<select data-pogrup="${key}"><option value="">Bez grupiranja</option>${cols.filter((c) => c !== tit).map((c) => `<option value="${c.id}" ${st.grupa === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label></div>
+    <div class="pog-fields"><span class="meta">Prikaži:</span>${cols.filter((c) => c !== tit).map((c) => `<button type="button" class="chip ${st.skriveno.includes(c.id) ? '' : 'on'}" data-pogcol="${key}|${c.id}">${c.label}</button>`).join('')}</div>
+    ${grupe.map(([g, rs]) => `${gc ? `<div class="pog-gh"><b>${g || '—'}</b><span>${rs.length}</span></div>` : ''}${prikaz(rs)}`).join('')}`;
+}
+
 function ligeScreen() {
   const l = LIGE.find((x) => x.id === (state.ligaTab || 'u14')) || LIGE[0];
   return `<div class="page-head"><div><h1>Lige</h1><div class="sub">Cijela liga po kolima (subota/nedjelja); protivnik se zadaje jednom, u kalendaru se više ne bira</div></div><div class="grow"></div>
     <button class="btn ghost" data-ligasnova>${ic('plus', 18)} Nova liga</button><button class="btn" data-ligakolo>${ic('plus', 18)} Dodaj kolo</button></div>
     <div class="baza-tabs" role="tablist">${LIGE.map((x) => `<button type="button" role="tab" class="${x.id === l.id ? 'on' : ''}" data-ligatab="${x.id}">${x.naziv}<span>${x.kola.length}</span></button>`).join('')}</div>
-    <div class="baza-wrap"><table class="baza liga"><thead><tr><th class="rn">Kolo</th><th>Datum (dd.mm.gggg)</th><th>Dan</th><th>Protivnik</th><th>Igra se</th><th>Rezultat</th><th></th></tr></thead>
-    <tbody>${l.kola.map((k) => `<tr><td class="rn">${k.k}</td>
-      <td><input class="input" data-kolodat="${l.id}-${k.k}" inputmode="numeric" value="${isoDat(k.d)}"></td>
-      <td>${isoDan(k.d).split(' ')[0]}${jeVikend(k.d) ? '' : ' <span class="chip warn">nije vikend</span>'}</td>
-      <td><select class="input" data-koloprot="${l.id}-${k.k}">${PROTIVNICI.map((p) => `<option ${p.naziv === k.prot ? 'selected' : ''}>${p.naziv}</option>`).join('')}</select></td>
-      <td><select class="input" data-kologost="${l.id}-${k.k}"><option value="0" ${!k.gost ? 'selected' : ''}>Doma</option><option value="1" ${k.gost ? 'selected' : ''}>Gostujemo</option></select></td>
-      <td>${k.rez || '—'}</td><td><button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></td></tr>`).join('') || '<tr><td colspan="7" class="meta">Još nema kola.</td></tr>'}</tbody></table></div>`;
+    <div class="kolo-grid">${l.kola.map((k) => `<div class="card kolo-card"><div class="kolo-h"><span class="kolo-n">${k.k}. kolo</span>${k.rez ? chip('Rezultat ' + k.rez, 'navy') : chip('Predstoji', 'warn')}<button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></div>
+      <div class="kolo-vs">${protLogo(k.prot)}<b>${k.gost ? 'Gostujemo kod' : 'Doma protiv'} ${k.prot}</b></div>
+      <div class="field"><label>Datum (dd.mm.gggg) · ${isoDan(k.d).split(' ')[0]}${jeVikend(k.d) ? '' : ' <span class="chip warn">nije vikend</span>'}</label><input class="input" data-kolodat="${l.id}-${k.k}" inputmode="numeric" value="${isoDat(k.d)}"></div>
+      <div class="two"><div class="field"><label>Protivnik</label><select class="input" data-koloprot="${l.id}-${k.k}">${PROTIVNICI.map((p) => `<option ${p.naziv === k.prot ? 'selected' : ''}>${p.naziv}</option>`).join('')}</select></div>
+      <div class="field"><label>Igra se</label><select class="input" data-kologost="${l.id}-${k.k}"><option value="0" ${!k.gost ? 'selected' : ''}>Doma</option><option value="1" ${k.gost ? 'selected' : ''}>Gostujemo</option></select></div></div></div>`).join('') || '<div class="meta">Još nema kola. Dodaj prvo kolo.</div>'}</div>`;
 }
 function adminUtakmica() {
   const u = UTAKMICA, { liga, kolo } = glavnoKolo();
@@ -921,8 +945,7 @@ function bazaScreen() {
     <button class="btn ghost" data-bazacsv>${ic('file', 18)} Izvezi CSV</button><button class="btn" data-toast="Novi redak — sljedeći korak">${ic('plus', 18)} Novi redak</button></div>
     <div class="baza-tabs" role="tablist">${BAZA.map((x) => `<button type="button" role="tab" class="${x[0] === t[0] ? 'on' : ''}" data-bazatab="${x[0]}">${x[1]}<span>${x[3]().length}</span></button>`).join('')}</div>
     <div class="baza-bar"><input class="input" id="bazaQ" placeholder="Traži u tablici ${t[1]}…" value="${state.bazaQ || ''}"><span class="meta">${rows.length} redaka · tablica <b>${t[0]}</b></span></div>
-    <div class="baza-wrap"><table class="baza"><thead><tr><th class="rn">#</th>${t[2].map((c) => `<th>${c}</th>`).join('')}</tr></thead>
-    <tbody>${rows.map((r, i) => `<tr><td class="rn">${i + 1}</td>${r.map((v) => `<td>${bazaVal(v)}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${t[2].length + 1}" class="meta">Nema redaka.</td></tr>`}</tbody></table></div>`;
+    ${pogled('baza-' + t[0], { cols: t[2].map((c, ci) => ({ id: c, label: c.replace(/_/g, ' '), val: (r) => r[ci] })), rows, title: t[2][t[2][0] === 'id' ? 1 : 0], empty: 'Nema redaka.' })}`;
 }
 const ADMIN = {
   baza: () => bazaScreen(),
@@ -950,9 +973,13 @@ const ADMIN = {
         <button class="btn ghost" data-go="admin-clanarine">Otvori članarine</button></div></div>`,
   clanovi: () => `<div class="page-head"><div><h1>Članovi</h1><div class="sub">128 aktivnih</div></div><div class="grow"></div>
       <button class="btn" data-toast="Obrazac za novu članicu — sljedeći korak">${ic('plus', 18)} Nova članica</button></div>
-    <div class="toolbar"><label class="search">${ic('search', 18)}<input id="q" placeholder="Pretraži po imenu…"></label>
-      <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f, i) => `<span class="chip ${i ? '' : 'on'}" data-f="${f}">${f}</span>`).join('')}</div></div>
-    <table><thead><tr><th>Ime</th><th>Godište</th><th>Grupe</th><th>Roditelj</th><th>Članarina</th></tr></thead><tbody id="rows">${memberRows()}</tbody></table>`,
+    <div class="toolbar"><label class="search">${ic('search', 18)}<input id="q" placeholder="Pretraži po imenu…" value="${state.clQ || ''}"></label>
+      <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f) => `<span class="chip ${(state.clG || 'Sve') === f ? 'on' : ''}" data-f="${f}">${f}</span>`).join('')}</div></div>
+    ${pogled('clanovi', { title: 'ime', attr: (p) => `data-profil="${p.id}"`, empty: 'Nema članica za ovaj filter.',
+      rows: PLAYERS.filter((p) => ((state.clG || 'Sve') === 'Sve' || p.grupe.some((x) => x.startsWith(state.clG))) && p.ime.toLowerCase().includes((state.clQ || '').toLowerCase())),
+      cols: [{ id: 'ime', label: 'Ime', val: (p) => p.ime, html: (p) => `<div class="who">${av(p, 'sm')}${p.ime}</div>` }, { id: 'god', label: 'Godište', val: (p) => p.god, html: (p) => `${p.god}.` },
+        { id: 'grupe', label: 'Grupe', val: (p) => p.grupe.join(', '), html: (p) => p.grupe.map((x) => chip(x, 'navy')).join(' ') }, { id: 'roditelj', label: 'Roditelj', val: (p) => p.roditelj },
+        { id: 'clan', label: 'Članarina', val: (p) => CLANARINA[p.clanarina].label, html: (p) => clan(p.clanarina) }] })}`,
   profil: () => profilBody(profilIgr(), 'admin'),
   zadatak: () => `<div class="page-head"><div><h1>Tjedni zadatak</h1><div class="sub">Planiranje zadataka i odobravanje videa i fotografija</div></div></div>${izazovPodsjetnik()}
     <div class="pf-grid">
@@ -1012,9 +1039,10 @@ const ADMIN = {
     <div class="dropzone" style="margin-bottom:24px"><div style="color:var(--navy);margin-bottom:8px;display:flex;justify-content:center">${ic('upload', 28)}</div>
       <b style="color:var(--text)">Povuci Erste izvod (WRI) ovdje</b><div style="margin:4px 0 14px">ili</div>
       <button class="btn" data-toast="U pravoj aplikaciji se ovdje učitava izvod">Odaberi datoteku</button></div>
-    <table><thead><tr><th>Datum</th><th>Platitelj</th><th>Opis</th><th class="num">Iznos</th><th>Sparena članica</th><th>Status</th></tr></thead><tbody>${UPLATE.map((u) =>
-      `<tr><td>${u.dat}</td><td><b>${u.platitelj}</b></td><td>${u.opis}</td><td class="num">${u.iznos} €</td><td>${u.clan}</td>
-      <td>${u.st === 'ok' ? chip('Spareno', 'ok') : u.st === 'review' ? chip('Za pregled', 'warn') : chip('Preskočeno')}</td></tr>`).join('')}</tbody></table>`,
+    ${pogled('uplate', { title: 'platitelj', cols: [
+      { id: 'platitelj', label: 'Platitelj', val: (u) => u.platitelj, html: (u) => `<b>${u.platitelj}</b>` }, { id: 'dat', label: 'Datum', val: (u) => u.dat }, { id: 'opis', label: 'Opis', val: (u) => u.opis },
+      { id: 'iznos', label: 'Iznos', val: (u) => parseFloat(String(u.iznos).replace(',', '.')) || 0, html: (u) => `${u.iznos} €` }, { id: 'clan', label: 'Sparena članica', val: (u) => u.clan },
+      { id: 'st', label: 'Status', val: (u) => ({ ok: 'Spareno', review: 'Za pregled' }[u.st] || 'Preskočeno'), html: (u) => (u.st === 'ok' ? chip('Spareno', 'ok') : u.st === 'review' ? chip('Za pregled', 'warn') : chip('Preskočeno')) }], rows: UPLATE })}`,
 };
 
 /* ---------- usmjeravanje i prikaz ---------- */
@@ -1144,6 +1172,8 @@ document.addEventListener('change', (e) => { const t = e.target, d = state.utkDr
   const { kolo } = glavnoKolo(); d.vr = $('#utkVr').value; d.dv = $('#utkDv').value;
   if (t.hasAttribute('data-utkzam')) { d.zamjena = t.checked; d.dv = utkDvorane(kolo.gost !== d.zamjena, kolo.prot)[0] || ''; render(); } });
 document.addEventListener('change', (e) => { const t = e.target; if (!t.dataset) return;
+  if (t.dataset.pogsort !== undefined) { state.pog[t.dataset.pogsort].sort = t.value; render(); }
+  if (t.dataset.pogrup !== undefined) { state.pog[t.dataset.pogrup].grupa = t.value; render(); }
   const f = (a) => { const [li, ki] = a.split('-'); return LIGE.find((x) => x.id === li).kola.find((x) => x.k === +ki); };
   if (t.dataset.kolodat) { const k = f(t.dataset.kolodat), m = /^(\d{2})\.(\d{2})\.(\d{4})\.?$/.exec(t.value.trim()); if (!m || !utkDanIz(t.value)) { toastIn('Upiši datum u obliku dd.mm.gggg'); render(); return; } k.d = `${m[3]}-${m[2]}-${m[1]}`; render(); if (!jeVikend(k.d)) toastIn('Pažnja: to nije subota ni nedjelja'); }
   if (t.dataset.koloprot) { f(t.dataset.koloprot).prot = t.value; render(); }
@@ -1403,14 +1433,17 @@ document.addEventListener('click', (e) => {
   }
   const t = e.target.closest('[data-toast]'); if (t) { const inner = $('#toastIn'); if (inner) { inner.textContent = t.dataset.toast; inner.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => inner.classList.remove('show'), 1800); } else { const g = $('#toast'); g.textContent = t.dataset.toast; g.classList.add('show', 'fixed'); clearTimeout(toastT); toastT = setTimeout(() => g.classList.remove('show'), 1800); } return; }
   const f = e.target.closest('[data-f]');
-  if (f) { document.querySelectorAll('#filters .chip').forEach((c) => c.classList.toggle('on', c === f)); $('#rows').innerHTML = memberRows($('#q').value, f.dataset.f); }
+  if (f) { state.clG = f.dataset.f; render(); return; }
+  const pgv = e.target.closest('[data-pogv]'); if (pgv) { const [k, v] = pgv.dataset.pogv.split('|'); state.pog[k].v = v; render(); return; }
+  const pgc = e.target.closest('[data-pogcol]'); if (pgc) { const [k, c] = pgc.dataset.pogcol.split('|'), a = state.pog[k].skriveno; state.pog[k].skriveno = a.includes(c) ? a.filter((x) => x !== c) : [...a, c]; render(); return; }
+  const pgd = e.target.closest('[data-pogdir]'); if (pgd) { state.pog[pgd.dataset.pogdir].dir *= -1; render(); return; }
 });
 document.addEventListener('input', (e) => {
   if (e.target.name === 'rod' && e.target.closest('#prijavaForm')) {
     const z = e.target.value.replace(/\D/g, '').slice(0, 8);
     e.target.value = [z.slice(0, 2), z.slice(2, 4), z.slice(4)].filter(Boolean).join('.') + (z.length === 2 || z.length === 4 ? '.' : '');
   }
-  if (e.target.id === 'q') { const on = $('#filters .chip.on'); $('#rows').innerHTML = memberRows(e.target.value, on ? on.dataset.f : 'Sve'); }
+  if (e.target.id === 'q') { state.clQ = e.target.value; const p = e.target.selectionStart; render(); const n = $('#q'); if (n) { n.focus(); n.setSelectionRange(p, p); } }
 });
 window.addEventListener('hashchange', render);
 render();

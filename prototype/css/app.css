@@ -1071,3 +1071,34 @@ table.baza .rn { color: #8a97a6; background: #f6f8fa; text-align: right; width: 
 .utk-kolo { display: flex; gap: 10px; align-items: center; padding: 8px 0 10px; }
 table.baza.liga td { padding: 6px 8px; }
 table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 120px; }
+
+.pog-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 4px 0 10px; }
+.seg { display: inline-flex; background: var(--silver-100); border-radius: 12px; padding: 3px; }
+.seg button { border: 0; background: transparent; padding: 7px 14px; border-radius: 9px; font: 700 var(--fs-sm) Montserrat, sans-serif; color: var(--navy); cursor: pointer; }
+.seg button.on { background: var(--navy); color: #fff; }
+.pog-sel { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 700; color: #6b7a8c; }
+.pog-sel select { border: 1px solid var(--silver-100); border-radius: 10px; padding: 6px 8px; font: 600 var(--fs-sm) Montserrat, sans-serif; color: var(--navy); background: #fff; }
+.pog-fields { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 14px; }
+.pog-fields .chip { cursor: pointer; border: 0; }
+.pog-fields .chip:not(.on) { opacity: .45; text-decoration: line-through; }
+.pog-cards, .kolo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.kolo-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.pog-card { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.pog-card.click, .pog-row.click { cursor: pointer; }
+.pog-card.click:hover, .pog-row.click:hover { box-shadow: 0 4px 14px rgba(24,36,84,.12); }
+.pog-t { font-weight: 800; color: var(--navy); }
+.pog-f small, .pog-vals small { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #8a97a6; }
+.pog-f { font-size: var(--fs-sm); }
+.pog-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.pog-row { display: flex; gap: 16px; align-items: center; background: #fff; border-radius: 12px; padding: 10px 14px; border: 1px solid var(--silver-100); }
+.pog-row .pog-t { min-width: 200px; }
+.pog-vals { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: var(--fs-sm); }
+.pog-gh { display: flex; gap: 8px; align-items: center; margin: 14px 0 8px; color: var(--navy); }
+.pog-gh span { background: var(--silver-100); border-radius: 8px; padding: 1px 8px; font-size: var(--fs-xs); font-weight: 700; }
+.kolo-card { padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.kolo-h { display: flex; gap: 8px; align-items: center; }
+.kolo-h .btn { margin-left: auto; }
+.kolo-n { font-weight: 900; color: var(--navy); }
+.kolo-vs { display: flex; gap: 8px; align-items: center; color: var(--navy); margin-bottom: 4px; }
+.pog-t .who { display: flex; align-items: center; gap: 10px; }
+.pog-row .pog-t { display: flex; align-items: center; }
