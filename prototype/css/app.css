@@ -1027,3 +1027,5 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .pp-chip.pub { padding: 7px 14px; font-size: 12px; }
 .izsame { display: flex; gap: 8px; align-items: flex-start; font-size: var(--fs-sm); padding: 8px 10px; border-radius: 10px; background: #eef2f7; color: var(--navy); }
 .izsame input { margin-top: 3px; }
+.wish-item { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--silver-100); }
+.card.wish .row.spread + .wish-item { margin-top: 10px; }

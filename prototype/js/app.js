@@ -430,17 +430,18 @@ function radoviMape() {
 }
 const IZAZOV = { nagrada: 3.0, prikljuci: true, vrsta: 'dolasci', naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11. u 12:00' }; // prototip: admin postavlja izazov tjedna
 IZ_PLAN = [IZAZOV, null, { nagrada: 2.0, prikljuci: true, vrsta: 'foto', naslov: 'Fotografiraj svoj Falcons dres', opis: 'Pošalji fotografiju sebe u dresu ispred koša.', cilj: 3, odradeno: 0, do: 'nedjelje 13.12. u 12:00' },  { nagrada: 5.0, prikljuci: true, vrsta: 'video', naslov: 'Snimi kako zabijaš tricu', opis: 'Snimi 3 pokušaja trice i pošalji najbolji.', cilj: 3, odradeno: 0, do: 'nedjelje 20.12. u 12:00' }, null, null];
-const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
+const zeljaArtikli = () => state.zelje.map((id) => ORMAR.find((a) => a.id === id)).filter(Boolean);
 function zeljaKartica() {
-  const a = zeljaArtikl();
-  if (!a) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>My favorites</h3><div class="meta">Označi srcem artikl u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
-  const fali = r2(Math.max(0, a.cijena - saldo())); const pct = Math.min(100, Math.round(saldo() / a.cijena * 100));
-  return `<div class="card wish"><div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><div class="meta">My favorites</div><h3>${a.ime}</h3>
-    <div class="wish-line">${fali > 0 ? `Još ti fali <b>${fmt(fali)} ${FLC}</b>` : `<b class="ok">Imaš dovoljno ${FLC}!</b>`}</div></div>
-    <button type="button" class="wish-x" data-zelja="${a.id}" aria-label="Makni želju">×</button></div>
-    <div class="progress" style="margin-top:12px"><i style="width:${pct}%"></i></div>
-    <div class="row spread" style="margin-top:6px"><span class="meta">${fmt(saldo())} / ${fmt(a.cijena)} ${FLC}</span><span class="meta">${pct}%</span></div>
-    ${fali > 0 ? '' : `<button class="btn red block sm" style="margin-top:10px" data-redeem="${a.id}">Zamijeni</button>`}</div>`;
+  const lista = zeljaArtikli();
+  if (!lista.length) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>My favorites</h3><div class="meta">Označi srcem artikle u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
+  return `<div class="card wish"><div class="row spread"><h3 style="margin:0">My favorites</h3><span class="meta">${lista.length} ${lista.length === 1 ? 'artikl' : lista.length < 5 ? 'artikla' : 'artikala'}</span></div>
+    ${lista.map((a) => { const fali = r2(Math.max(0, a.cijena - saldo())); const pct = Math.min(100, Math.round(saldo() / a.cijena * 100));
+      return `<div class="wish-item"><div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><b>${a.ime}</b>
+        <div class="wish-line">${fali > 0 ? `Još ti fali <b>${fmt(fali)} ${FLC}</b>` : `<b class="ok">Imaš dovoljno ${FLC}!</b>`}</div></div>
+        <button type="button" class="wish-x" data-zelja="${a.id}" aria-label="Makni iz favorita">×</button></div>
+        <div class="progress" style="margin-top:10px"><i style="width:${pct}%"></i></div>
+        <div class="row spread" style="margin-top:6px"><span class="meta">${fmt(saldo())} / ${fmt(a.cijena)} ${FLC}</span><span class="meta">${pct}%</span></div>
+        ${fali > 0 ? '' : `<button class="btn red block sm" style="margin-top:10px" data-redeem="${a.id}">Zamijeni</button>`}</div>`; }).join('')}</div>`;
 }
 /* milestones: bez bodova; skriveni dok ih igračica ne ostvari */
 const MILESTONES = [
@@ -532,7 +533,7 @@ function ormarGrid() {
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
-    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}"><button type="button" class="heart ${state.zelja === a.id ? 'on' : ''}" data-zelja="${a.id}" aria-label="My favorites">${state.zelja === a.id ? '♥' : '♡'}</button>${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}"><button type="button" class="heart ${state.zelje.includes(a.id) ? 'on' : ''}" data-zelja="${a.id}" aria-label="My favorites">${state.zelje.includes(a.id) ? '♥' : '♡'}</button>${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="stock">${jedna ? (ima ? `na stanju ${v.n}` : 'predbilježba') : moja ? `Tvoja veličina ${v.v} · na stanju ${v.n}` : ima ? 'dostupno · izaberi veličinu' : 'nema tvoje veličine · predbilježba'}</div>
       <button class="btn ${ima ? 'red' : 'ghost'} sm block" data-redeem="${a.id}">Izaberi</button></div>`; }).join('')}</div>`;
 }
@@ -920,7 +921,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citanoPo: {}, zelja: 7, izPrikl: false, izPriklIduci: false, zadFaza: 'aktivan', izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, zelje: [7], izPrikl: false, izPriklIduci: false, zadFaza: 'aktivan', izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -1108,7 +1109,7 @@ document.addEventListener('click', (e) => {
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
-  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u My favorites'); return; }
+  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja, ima = state.zelje.includes(id); state.zelje = ima ? state.zelje.filter((x) => x !== id) : [...state.zelje, id]; render(); toastIn(ima ? 'Maknuto iz My favorites' : 'Dodano u My favorites'); return; }
   if (e.target.closest('[data-vidopen]')) { videoSheet(); return; }
   if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : (IZAZOV.vrsta === 'foto' ? 'dres_ana.jpg' : 'trica_ana.mp4'), st: 'čeka', ana: true, tip: IZAZOV.vrsta };
     if (state.video) VIDEA.splice(VIDEA.indexOf(state.video), 1); VIDEA.unshift(v); state.video = v; closeOverlay(); render(); toastIn(IZAZOV.vrsta === 'foto' ? 'Fotografija poslana treneru' : 'Video poslan treneru');
