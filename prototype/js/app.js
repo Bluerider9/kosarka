@@ -608,14 +608,15 @@ const SCREENS = {
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
     body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-side"><span>Falcoina</span><small>= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
+      <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
       <div class="section-title small">Kako zarađuješ</div>
       <div class="card earn"><div class="list">${FALCOIN_PRAVILA.map((r) => `<div class="row spread"><span style="font-size:var(--fs-sm)">${r.label}</span>${fc(r.iznos)}</div>`).join('')}</div></div>
       <div class="section-title">Povijest</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
-    tabs: tabbar('igracica', IGRACICA_TABS, 'ormar'),
-    body: `<div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarGrid()}`,
+    tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
+    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ Falcoini</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarGrid()}`,
   }),
   'igracica-profil': () => ({
     header: mHeader('Moj profil', 'Ana Horvat'),
@@ -639,7 +640,7 @@ const SCREENS = {
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
-const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag'], ['profil', 'Profil', 'user']];
+const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
