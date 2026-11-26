@@ -882,7 +882,7 @@ function adminKalendar() {
 const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PROTIVNICI.find((x) => x.naziv === prot); return k ? k.dvorane.filter(Boolean) : []; };
 /* ---------- Pogled (admin): kartice / popis / tablica + polja, sortiranje, grupiranje ---------- */
 // cfg: { cols:[{id,label,val(r),html?(r)}], rows, title: colId, attr?(r), hidden?:[ids], empty }
-const pogSt = (key, cfg) => { state.pog = state.pog || {}; return state.pog[key] || (state.pog[key] = { v: cfg.pocetni || 'tablica', skriveno: cfg.hidden || [], sort: '', dir: 1, grupa: '' }); };
+const pogSt = (key, cfg) => { state.pog = state.pog || {}; if (cfg.samoKartice && state.pog[key]) state.pog[key].v = 'kartice'; return state.pog[key] || (state.pog[key] = { v: cfg.pocetni || 'tablica', skriveno: cfg.hidden || [], sort: '', dir: 1, grupa: '' }); };
 /* Lepeza (coverflow): jedna glavna kartica u sredini, po 2 sa svake strane izlaze iz zamućenja prema sredini / odlaze u zamućenje */
 const lepSt = (key, n) => { state.lep = state.lep || {}; const c = state.lep[key] || 0; return (state.lep[key] = Math.max(0, Math.min(n - 1, c))); };
 function lepPostavi(box, c) {
@@ -913,7 +913,7 @@ function pogled(key, cfg) {
     return `<div class="pog-cards">${rs.map((r) => `<div class="card pog-card ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div>${vis.filter((c) => c !== tit).map((c) => `<div class="pog-f"><small>${c.label}</small><div>${cell(c, r)}</div></div>`).join('')}</div>`).join('')}</div>`;
   };
   const lep = cfg.lepeza === false ? '' : lepezaHtml(rows.map((r) => { const o = vis.find((c) => c !== tit); return { attr: at(r), av: cfg.lav ? cfg.lav(r) : '', t: bazaVal(tit.val(r)), s: cfg.lsub ? cfg.lsub(r) : (o ? bazaVal(o.val(r)) : ''), chip: cfg.lchip ? cfg.lchip(r) : '' }; }), cfg.lnaslov, key);
-  return `${lep}<div class="pog-bar"><div class="seg" role="tablist">${[['tablica', 'Tablica'], ['popis', 'Popis'], ['kartice', 'Kartice']].map(([v, t]) => `<button type="button" class="${st.v === v ? 'on' : ''}" data-pogv="${key}|${v}">${t}</button>`).join('')}</div>
+  return `${lep}<div class="pog-bar"><div class="seg" role="tablist" ${cfg.samoKartice ? 'hidden' : ''}>${[['tablica', 'Tablica'], ['popis', 'Popis'], ['kartice', 'Kartice']].map(([v, t]) => `<button type="button" class="${st.v === v ? 'on' : ''}" data-pogv="${key}|${v}">${t}</button>`).join('')}</div>
     <label class="pog-sel">Sortiraj<select data-pogsort="${key}"><option value="">—</option>${cols.map((c) => `<option value="${c.id}" ${st.sort === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label>
     ${st.sort ? `<button type="button" class="btn ghost sm" data-pogdir="${key}">${st.dir > 0 ? '↑ uzlazno' : '↓ silazno'}</button>` : ''}
     <label class="pog-sel">Grupiraj<select data-pogrup="${key}"><option value="">Bez grupiranja</option>${cols.filter((c) => c !== tit).map((c) => `<option value="${c.id}" ${st.grupa === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label></div>
@@ -1002,7 +1002,7 @@ const ADMIN = {
       <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
   prijave: () => `<div class="page-head"><div><h1>Registracije</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
       <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
-    ${pogled('prijave', { lepeza: false, pocetni: 'kartice', title: 'ime', attr: (p) => `data-open="${p.id}"`, empty: 'Nema registracija.', rows: prijave, lav: (p) => av(p, 'sm'), lsub: (p) => p.grupa + ' · ' + p.rod.slice(0, 4) + '.', lchip: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]),
+    ${pogled('prijave', { lepeza: false, pocetni: 'kartice', samoKartice: true, title: 'ime', attr: (p) => `data-open="${p.id}"`, empty: 'Nema registracija.', rows: prijave, lav: (p) => av(p, 'sm'), lsub: (p) => p.grupa + ' · ' + p.rod.slice(0, 4) + '.', lchip: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]),
       cols: [{ id: 'ime', label: 'Djevojčica', val: (p) => p.ime + ' ' + p.prezime, html: (p) => `<div class="who">${av(p, 'sm')}${p.ime} ${p.prezime}</div>` }, { id: 'dat', label: 'Datum', val: (p) => p.dat }, { id: 'god', label: 'Godište', val: (p) => p.rod.slice(0, 4), html: (p) => p.rod.slice(0, 4) + '.' },
         { id: 'grupa', label: 'Zatražena grupa', val: (p) => p.grupa, html: (p) => chip(p.grupa, 'navy') }, { id: 'email', label: 'Kontakt roditelja', val: (p) => p.email },
         { id: 'st', label: 'Status', val: (p) => STATUS_P[p.status][0], html: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]) + (p.dup && p.status === 'ceka' ? ' ' + chip('Moguća dvostruka', 'danger') : '') }] })}`,
