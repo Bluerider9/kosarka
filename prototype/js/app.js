@@ -146,7 +146,7 @@ const PROTIVNICI = [
   { id: 3, naziv: 'ŽKK Primjer 3', grad: 'Velika Gorica', logo: null, dvorane: ['Dvorana Velika Gorica', 'Dvorana Mraclin', 'Dvorana Kurilovec'] }, { id: 4, naziv: 'ŽKK Primjer 4', grad: 'Karlovac', logo: null, dvorane: ['', '', ''] },
 ];
 const protLogo = (naziv, cls = '') => { const k = PROTIVNICI.find((x) => x.naziv === naziv); return k ? (k.logo ? `<img class="prot-logo ${cls}" src="${k.logo}" alt="${k.naziv}">` : `<span class="prot-logo ph ${cls}">${ini(k.naziv.replace('ŽKK ', ''))}</span>`) : ''; };
-const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', protivnik: 'ŽKK Primjer 3', gost: false, zamjena: false, datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
+const UTAKMICA = { kolo: { liga: 'u14', k: 3 }, grupa: 'U14', natjecanje: 'Prvenstvo U14', protivnik: 'ŽKK Primjer 3', gost: false, zamjena: false, datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
 const UTK_DVORANE = ['Dvorana A', 'Dvorana B', 'OŠ Ante Kovačića'];
 const DANI_HR = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
 const utkDanIz = (dat) => { const m = /^(\d{2})\.(\d{2})\.(\d{4})\.?$/.exec(dat.trim()); if (!m) return null; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] ? `${DANI_HR[d.getDay()]} ${m[1]}.${m[2]}.${m[3]}.` : null; };
@@ -816,7 +816,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['protivnici', 'Protivnici', 'cup'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -828,17 +828,25 @@ const MJESECI = ['Siječanj', 'Veljača', 'Ožujak', 'Travanj', 'Svibanj', 'Lipa
 const MJ_GEN = ['siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnja', 'srpnja', 'kolovoza', 'rujna', 'listopada', 'studenoga', 'prosinca'];
 const pad2 = (n) => String(n).padStart(2, '0');
 const dKey = (y, m, d) => `${y}-${pad2(m + 1)}-${pad2(d)}`;
-const ADM_UTAKMICE = [
-  { d: '2026-11-15', vr: '11:00', opis: 'Prvenstvo U14 · ŽKK Primjer 1', rez: '41 : 47' },
-  { d: '2026-11-22', vr: '11:00', opis: 'Prvenstvo U14 · ŽKK Primjer 2', rez: '54 : 48' },
-  { d: '2026-11-28', vr: '11:00', opis: 'Prvenstvo U14', glavna: true },
-  { d: '2026-12-05', vr: '10:00', opis: 'Prvenstvo U16 · ŽKK Primjer 3', nepotvrdeno: true },
-  { d: '2026-12-12', vr: '12:00', opis: 'Prvenstvo U14 · ŽKK Primjer 4', nepotvrdeno: true },
+// Lige (kategorije utakmica): cijela liga po kolima (subota/nedjelja), protivnik je zadan jednom po kolu
+const LIGE = [
+  { id: 'u14', naziv: 'Prvenstvo U14', grupa: 'U14', kola: [
+    { k: 1, d: '2026-11-15', prot: 'ŽKK Primjer 1', gost: false, rez: '41 : 47' },
+    { k: 2, d: '2026-11-22', prot: 'ŽKK Primjer 2', gost: true, rez: '54 : 48' },
+    { k: 3, d: '2026-11-28', prot: 'ŽKK Primjer 3', gost: false },
+    { k: 4, d: '2026-12-12', prot: 'ŽKK Primjer 4', gost: true, vr: '12:00' } ] },
+  { id: 'u16', naziv: 'Prvenstvo U16', grupa: 'U16', kola: [{ k: 1, d: '2026-12-05', prot: 'ŽKK Primjer 3', gost: false, vr: '10:00' }] },
 ];
+const isoDat = (iso) => { const [y, m, d] = iso.split('-'); return `${d}.${m}.${y}.`; };
+const isoDan = (iso) => { const [y, m, d] = iso.split('-').map(Number); const wd = new Date(y, m - 1, d).getDay(); return `${DANI_HR[wd]} ${isoDat(iso)}`; };
+const jeVikend = (iso) => { const [y, m, d] = iso.split('-').map(Number); return [0, 6].includes(new Date(y, m - 1, d).getDay()); };
+const glavnoKolo = () => { const l = LIGE.find((x) => x.id === UTAKMICA.kolo.liga); return { liga: l, kolo: l.kola.find((x) => x.k === UTAKMICA.kolo.k) }; };
+const admUtakmice = () => LIGE.flatMap((l) => l.kola.map((k) => { const glavna = UTAKMICA.kolo.liga === l.id && UTAKMICA.kolo.k === k.k;
+  return { d: k.d, vr: glavna ? UTAKMICA.vrijeme : (k.vr || '11:00'), opis: `${l.naziv} · ${k.k}. kolo · ${k.gost ? 'gostovanje kod ' : ''}${k.prot}`, rez: k.rez, glavna, nepotvrdeno: !k.rez && !glavna }; }));
 const danStavke = (y, m, d) => {
   const dt = new Date(y, m, d); const wd = (dt.getDay() + 6) % 7; const key = dKey(y, m, d); const st = [];
   (TRENINZI[wd] || []).forEach((t) => st.push({ t: 'tr', vr: t.v, label: grupaLabel(t.g), det: `${t.v}–${t.do} · ${t.d}` }));
-  ADM_UTAKMICE.filter((u) => u.d === key).forEach((u) => st.push({ t: 'ut', vr: u.vr, label: 'Utakmica', det: `${u.vr} · ${u.opis}`, u }));
+  admUtakmice().filter((u) => u.d === key).forEach((u) => st.push({ t: 'ut', vr: u.vr, label: 'Utakmica', det: `${u.vr} · ${u.opis}`, u }));
   const wk = Math.floor((dt - new Date(2026, 10, 23)) / 604800000);
   if (wk >= 0 && wk < IZ_PLAN.length && IZ_PLAN[wk]) { if (wd === 0) st.push({ t: 'iz', vr: '', label: IZ_PLAN[wk].naslov, det: `Tjedni zadatak · ${({ video: 'video zadatak', foto: 'fotografija' })[IZ_PLAN[wk].vrsta] || 'dolasci'}`, wk }); if (wd === 6) st.push({ t: 'iz', vr: '', label: 'Rok zadatka', det: `Rok: ${IZ_PLAN[wk].naslov}`, wk, rok: true }); }
   if (wk >= 0 && wk < IZ_PLAN_SKOLE.length && IZ_PLAN_SKOLE[wk]) { if (wd === 0) st.push({ t: 'iz', vr: '', label: `Škole: ${IZ_PLAN_SKOLE[wk].naslov}`, det: `Tjedni zadatak (škole košarke) · ${({ video: 'video zadatak', foto: 'fotografija' })[IZ_PLAN_SKOLE[wk].vrsta] || 'dolasci'}`, wk }); if (wd === 6) st.push({ t: 'iz', vr: '', label: 'Rok zadatka (škole)', det: `Rok: ${IZ_PLAN_SKOLE[wk].naslov}`, wk, rok: true }); }
@@ -866,16 +874,28 @@ function adminKalendar() {
     <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div></div>${detalj}</div>`;
 }
 const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PROTIVNICI.find((x) => x.naziv === prot); return k ? k.dvorane.filter(Boolean) : []; };
+function ligeScreen() {
+  const l = LIGE.find((x) => x.id === (state.ligaTab || 'u14')) || LIGE[0];
+  return `<div class="page-head"><div><h1>Lige</h1><div class="sub">Cijela liga po kolima (subota/nedjelja); protivnik se zadaje jednom, u kalendaru se više ne bira</div></div><div class="grow"></div>
+    <button class="btn ghost" data-ligasnova>${ic('plus', 18)} Nova liga</button><button class="btn" data-ligakolo>${ic('plus', 18)} Dodaj kolo</button></div>
+    <div class="baza-tabs" role="tablist">${LIGE.map((x) => `<button type="button" role="tab" class="${x.id === l.id ? 'on' : ''}" data-ligatab="${x.id}">${x.naziv}<span>${x.kola.length}</span></button>`).join('')}</div>
+    <div class="baza-wrap"><table class="baza liga"><thead><tr><th class="rn">Kolo</th><th>Datum (dd.mm.gggg)</th><th>Dan</th><th>Protivnik</th><th>Igra se</th><th>Rezultat</th><th></th></tr></thead>
+    <tbody>${l.kola.map((k) => `<tr><td class="rn">${k.k}</td>
+      <td><input class="input" data-kolodat="${l.id}-${k.k}" inputmode="numeric" value="${isoDat(k.d)}"></td>
+      <td>${isoDan(k.d).split(' ')[0]}${jeVikend(k.d) ? '' : ' <span class="chip warn">nije vikend</span>'}</td>
+      <td><select class="input" data-koloprot="${l.id}-${k.k}">${PROTIVNICI.map((p) => `<option ${p.naziv === k.prot ? 'selected' : ''}>${p.naziv}</option>`).join('')}</select></td>
+      <td><select class="input" data-kologost="${l.id}-${k.k}"><option value="0" ${!k.gost ? 'selected' : ''}>Doma</option><option value="1" ${k.gost ? 'selected' : ''}>Gostujemo</option></select></td>
+      <td>${k.rez || '—'}</td><td><button class="btn ghost sm" data-kolouk="${l.id}-${k.k}" aria-label="Ukloni kolo">${ic('trash', 16)}</button></td></tr>`).join('') || '<tr><td colspan="7" class="meta">Još nema kola.</td></tr>'}</tbody></table></div>`;
+}
 function adminUtakmica() {
-  const u = UTAKMICA, d = state.utkDraft || (state.utkDraft = { dat: u.dat, vr: u.vrijeme, gost: u.gost, prot: u.protivnik, dv: u.dvoranaUnos });
-  const efGost = d.gost !== !!d.zamjena, dv = utkDvorane(efGost, d.prot);
-  return `<div class="card adm-utk" style="margin-top:12px;box-shadow:none;border:1px solid var(--silver-100)"><h3>Utakmica · ${u.natjecanje}</h3>
-    ${u.potvrdeno ? `<div class="adm-utk-row"><div><b>Potvrđeno</b><div class="meta">${u.zamjena ? 'Zamjena domaćinstva · ' : ''}${u.gost ? 'Gostovanje: ' : ''}${u.protivnik} · ${u.datum} u ${u.vrijeme} · ${u.dvorana}</div></div>${chip('Potvrđeno', 'ok')}<button class="btn ghost sm" data-admutk-ponisti>Uredi</button></div>`
-    : `<div class="meta">Upiši datum, vrijeme i dvoranu pa potvrdi. Igračicama i roditeljima tada nestaje poruka "nije potvrđeno" i vide termin i dvoranu.</div>
-    <div class="field"><label>Protivnik</label><select class="input" id="utkProt" data-utkdraft>${PROTIVNICI.map((k) => `<option ${k.naziv === d.prot ? 'selected' : ''}>${k.naziv}</option>`).join('')}</select></div>
-    <div class="field"><label>Igramo</label><div class="pub-tabs"><button type="button" class="pp-chip pub${!d.gost ? ' on' : ''}" data-utkgost="0">Doma</button><button type="button" class="pp-chip pub${d.gost ? ' on' : ''}" data-utkgost="1">Gostujemo</button></div></div>
- <label class="zamjena"><input type="checkbox" data-utkzam data-utkdraft ${d.zamjena ? 'checked' : ''}><span><b>Zamjena domaćinstva</b><small>${d.gost ? 'Po rasporedu gostujemo, ali igramo u našoj dvorani.' : 'Po rasporedu smo domaćini, ali igramo u dvorani protivnika.'}</small></span></label>
-    <div class="field"><label>Datum (dd.mm.gggg)</label><input class="input" id="utkDat" inputmode="numeric" placeholder="28.11.2026." value="${d.dat}" data-utkdraft></div>
+  const u = UTAKMICA, { liga, kolo } = glavnoKolo();
+  const d = state.utkDraft || (state.utkDraft = { vr: u.vrijeme, zamjena: u.zamjena, dv: u.dvoranaUnos });
+  const efGost = kolo.gost !== !!d.zamjena, dv = utkDvorane(efGost, kolo.prot);
+  return `<div class="card adm-utk" style="margin-top:12px;box-shadow:none;border:1px solid var(--silver-100)"><h3>${liga.naziv} · ${kolo.k}. kolo</h3>
+    <div class="utk-kolo">${protLogo(kolo.prot)}<div><b>${kolo.gost ? 'Gostujemo kod' : 'Doma protiv'} ${kolo.prot}</b><div class="meta">${isoDan(kolo.d)} · zadano u ligi (mijenja se u Ligama)</div></div></div>
+    ${u.potvrdeno ? `<div class="adm-utk-row"><div><b>Potvrđeno</b><div class="meta">${u.zamjena ? 'Zamjena domaćinstva · ' : ''}${u.datum} u ${u.vrijeme} · ${u.dvorana}</div></div>${chip('Potvrđeno', 'ok')}<button class="btn ghost sm" data-admutk-ponisti>Uredi</button></div>`
+    : `<div class="meta">Upiši vrijeme i dvoranu pa potvrdi. Igračicama i roditeljima tada nestaje poruka "nije potvrđeno" i vide termin i dvoranu.</div>
+    <label class="zamjena"><input type="checkbox" data-utkzam data-utkdraft ${d.zamjena ? 'checked' : ''}><span><b>Zamjena domaćinstva</b><small>${kolo.gost ? 'Po rasporedu gostujemo, ali igramo u našoj dvorani.' : 'Po rasporedu smo domaćini, ali igramo u dvorani protivnika.'}</small></span></label>
     <div class="two"><div class="field"><label>Vrijeme (hh:mm)</label><input class="input" id="utkVr" inputmode="numeric" placeholder="11:00" value="${d.vr}" data-utkdraft></div>
     <div class="field"><label>Dvorana${efGost ? ' (protivnika)' : ''}</label><select class="input" id="utkDv" data-utkdraft>${dv.map((x) => `<option ${x === d.dv ? 'selected' : ''}>${x}</option>`).join('') || '<option value="">— protivnik nema upisanu dvoranu —</option>'}</select></div></div>
     <div class="err" id="utkErr" style="color:var(--red);font-size:var(--fs-sm)"></div>
@@ -906,6 +926,7 @@ function bazaScreen() {
 }
 const ADMIN = {
   baza: () => bazaScreen(),
+  lige: () => ligeScreen(),
   protivnici: () => `<div class="page-head"><div><h1>Protivnici</h1><div class="sub">Klubovi i njihovi logotipi (prikazuju se uz utakmice)</div></div><div class="grow"></div>
     <button class="btn" data-protnovi>${ic('plus', 18)} Novi klub</button></div>
     <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
@@ -1120,9 +1141,13 @@ document.addEventListener('submit', (e) => {
 });
 document.addEventListener('input', (e) => { const t = e.target; if (t.dataset && t.dataset.protdv) { const [id, i] = t.dataset.protdv.split('-'); PROTIVNICI.find((k) => k.id === +id).dvorane[+i] = t.value.trim(); } });
 document.addEventListener('change', (e) => { const t = e.target, d = state.utkDraft; if (!t.hasAttribute || !t.hasAttribute('data-utkdraft') || !d) return;
-  d.dat = $('#utkDat').value; d.vr = $('#utkVr').value; d.prot = $('#utkProt').value; d.dv = $('#utkDv').value;
-  if (t.id === 'utkProt') { d.dv = utkDvorane(d.gost !== !!d.zamjena, d.prot)[0] || ''; render(); }
-  if (t.hasAttribute('data-utkzam')) { d.zamjena = t.checked; d.dv = utkDvorane(d.gost !== d.zamjena, d.prot)[0] || ''; render(); } });
+  const { kolo } = glavnoKolo(); d.vr = $('#utkVr').value; d.dv = $('#utkDv').value;
+  if (t.hasAttribute('data-utkzam')) { d.zamjena = t.checked; d.dv = utkDvorane(kolo.gost !== d.zamjena, kolo.prot)[0] || ''; render(); } });
+document.addEventListener('change', (e) => { const t = e.target; if (!t.dataset) return;
+  const f = (a) => { const [li, ki] = a.split('-'); return LIGE.find((x) => x.id === li).kola.find((x) => x.k === +ki); };
+  if (t.dataset.kolodat) { const k = f(t.dataset.kolodat), m = /^(\d{2})\.(\d{2})\.(\d{4})\.?$/.exec(t.value.trim()); if (!m || !utkDanIz(t.value)) { toastIn('Upiši datum u obliku dd.mm.gggg'); render(); return; } k.d = `${m[3]}-${m[2]}-${m[1]}`; render(); if (!jeVikend(k.d)) toastIn('Pažnja: to nije subota ni nedjelja'); }
+  if (t.dataset.koloprot) { f(t.dataset.koloprot).prot = t.value; render(); }
+  if (t.dataset.kologost) { f(t.dataset.kologost).gost = t.value === '1'; render(); } });
 const citajSliku = (f, cb) => { if (!f) return; const r = new FileReader(); r.onload = () => cb(r.result); r.readAsDataURL(f); };
 document.addEventListener('change', (e) => {
   const t = e.target;
@@ -1208,7 +1233,13 @@ document.addEventListener('click', (e) => {
     <div class="prot-up"><div id="protPrev"><span class="prot-logo ph lg">?</span></div><label class="btn ghost sm">${ic('upload', 16)} Učitaj logotip<input type="file" accept="image/*" hidden data-protnovilogo></label></div>
     <button class="btn block" data-protspremi>Spremi klub</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
   if (e.target.closest('[data-protspremi]')) { const n = $('#protNaziv').value.trim(); if (!n) { toastIn('Upiši naziv kluba'); return; } PROTIVNICI.push({ id: Date.now(), naziv: n, grad: $('#protGrad').value.trim() || '—', logo: state.protNoviLogo || null, dvorane: [...document.querySelectorAll('.protdvn')].map((x) => x.value.trim()) }); closeModal(); render(); toastIn('Klub dodan'); return; }
-  const ugo = e.target.closest('[data-utkgost]'); if (ugo) { const d = state.utkDraft; d.gost = ugo.dataset.utkgost === '1'; d.dv = utkDvorane(d.gost !== !!d.zamjena, d.prot)[0] || ''; render(); return; }
+  const ltab = e.target.closest('[data-ligatab]'); if (ltab) { state.ligaTab = ltab.dataset.ligatab; render(); return; }
+  const lkb = e.target.closest('[data-kolouk]'); if (lkb) { const [li, ki] = lkb.dataset.kolouk.split('-'); const L = LIGE.find((x) => x.id === li); if (L.id === UTAKMICA.kolo.liga && +ki === UTAKMICA.kolo.k) { toastIn('Ovo kolo je povezano s idućom utakmicom'); return; } L.kola = L.kola.filter((x) => x.k !== +ki); render(); return; }
+  if (e.target.closest('[data-ligakolo]')) { const L = LIGE.find((x) => x.id === (state.ligaTab || 'u14')) || LIGE[0]; const zad = L.kola[L.kola.length - 1]; const [y, m, d] = (zad ? zad.d : '2026-12-05').split('-').map(Number); const n = new Date(y, m - 1, d + 7);
+    L.kola.push({ k: (zad ? zad.k : 0) + 1, d: `${n.getFullYear()}-${pad2(n.getMonth() + 1)}-${pad2(n.getDate())}`, prot: PROTIVNICI[0].naziv, gost: false }); render(); toastIn('Dodano kolo, odaberi protivnika'); return; }
+  if (e.target.closest('[data-ligasnova]')) { modal(`<h3>Nova liga</h3><div class="field"><label>Naziv (npr. Prvenstvo U12)</label><input class="input" id="ligaNaziv"></div><div class="field"><label>Grupa</label><select class="input" id="ligaGrupa">${GROUPS.map((g) => `<option>${g.ime}</option>`).join('')}</select></div>
+    <button class="btn block" data-ligaspremi>Spremi ligu</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
+  if (e.target.closest('[data-ligaspremi]')) { const n = $('#ligaNaziv').value.trim(); if (!n) { toastIn('Upiši naziv lige'); return; } const id = 'l' + Date.now(); LIGE.push({ id, naziv: n, grupa: $('#ligaGrupa').value, kola: [] }); state.ligaTab = id; closeModal(); render(); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
@@ -1325,9 +1356,9 @@ document.addEventListener('click', (e) => {
   }
   const rs = e.target.closest('[data-rsvp]');
   if (e.target.closest('[data-admutk-ponisti]')) { UTAKMICA.potvrdeno = UTAKMICA.termin = false; UTAKMICA.dvorana = false; state.utkDraft = null; render(); return; }
-  if (e.target.closest('[data-admutk-spremi]')) { const dat = $('#utkDat').value.trim(), vr = $('#utkVr').value.trim(), dv = $('#utkDv').value, err = $('#utkErr'), dr = state.utkDraft; const dan = utkDanIz(dat);
-    if (!dan) { err.textContent = 'Upiši ispravan datum (dd.mm.gggg).'; return; } if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(vr)) { err.textContent = 'Upiši vrijeme u obliku hh:mm.'; return; } if (!dv) { err.textContent = 'Odaberi dvoranu (protivnik je nema upisanu: dodaj je u Protivnici).'; return; }
-    Object.assign(UTAKMICA, { protivnik: dr.prot, gost: dr.gost !== !!dr.zamjena, zamjena: !!dr.zamjena, datum: dan, dat: dat.endsWith('.') ? dat : dat + '.', vrijeme: vr, dvorana: dv, dvoranaUnos: dv, termin: true, potvrdeno: true });
+  if (e.target.closest('[data-admutk-spremi]')) { const { liga, kolo } = glavnoKolo(); const vr = $('#utkVr').value.trim(), dv = $('#utkDv').value, err = $('#utkErr'), dr = state.utkDraft;
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(vr)) { err.textContent = 'Upiši vrijeme u obliku hh:mm.'; return; } if (!dv) { err.textContent = 'Odaberi dvoranu (protivnik je nema upisanu: dodaj je u Protivnici).'; return; }
+    Object.assign(UTAKMICA, { natjecanje: liga.naziv, protivnik: kolo.prot, gost: kolo.gost !== !!dr.zamjena, zamjena: !!dr.zamjena, datum: isoDan(kolo.d), dat: isoDat(kolo.d), vrijeme: vr, dvorana: dv, dvoranaUnos: dv, termin: true, potvrdeno: true });
     const t = `${UTAKMICA.natjecanje}${UTAKMICA.zamjena ? ' (zamjena domaćinstva)' : UTAKMICA.gost ? ' (gostovanje)' : ''}: ${UTAKMICA.datum} u ${UTAKMICA.vrijeme}, ${UTAKMICA.dvorana}.`; notify('igracica', 'Utakmica potvrđena', t); notify('roditelj', 'Utakmica potvrđena', t); notify('trener', 'Utakmica potvrđena', t);
     render(); toastIn('Termin i dvorana su potvrđeni'); return; }
   const uo = e.target.closest('[data-utkotkaz]');

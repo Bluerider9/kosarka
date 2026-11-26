@@ -1067,3 +1067,7 @@ table.baza .rn { color: #8a97a6; background: #f6f8fa; text-align: right; width: 
 .zamjena span { display: flex; flex-direction: column; font-size: var(--fs-sm); color: var(--navy); }
 .zamjena small { font-size: var(--fs-xs); color: #6b7a8c; }
 .utk-zam { font-size: var(--fs-xs); font-weight: 800; color: #8a5a00; background: #fff4de; border-radius: 8px; padding: 3px 8px; align-self: flex-start; margin-top: 4px; }
+
+.utk-kolo { display: flex; gap: 10px; align-items: center; padding: 8px 0 10px; }
+table.baza.liga td { padding: 6px 8px; }
+table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 120px; }
