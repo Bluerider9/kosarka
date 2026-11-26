@@ -406,9 +406,9 @@ IZ_PLAN = [IZAZOV, null, null, { vrsta: 'video', naslov: 'Snimi kako zabijaš tr
 const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
 function zeljaKartica() {
   const a = zeljaArtikl();
-  if (!a) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>Moja želja</h3><div class="meta">Označi srcem artikl u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
+  if (!a) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>My favorites</h3><div class="meta">Označi srcem artikl u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
   const fali = r2(Math.max(0, a.cijena - saldo())); const pct = Math.min(100, Math.round(saldo() / a.cijena * 100));
-  return `<div class="card wish"><div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><div class="meta">Moja želja</div><h3>${a.ime}</h3>
+  return `<div class="card wish"><div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><div class="meta">My favorites</div><h3>${a.ime}</h3>
     <div class="wish-line">${fali > 0 ? `Još ti fali <b>${fmt(fali)} ${FLC}</b>` : `<b class="ok">Imaš dovoljno ${FLC}!</b>`}</div></div>
     <button type="button" class="wish-x" data-zelja="${a.id}" aria-label="Makni želju">×</button></div>
     <div class="progress" style="margin-top:12px"><i style="width:${pct}%"></i></div>
@@ -442,7 +442,7 @@ const MF_TABOVI = [['izazov', 'Izazov'], ['zelja', 'Želja'], ['mile', 'Mileston
 const mfMenu = () => `<div class="mf-menu" role="tablist">${MF_TABOVI.map(([k, l]) => `<button type="button" role="tab" class="${state.mfTab === k ? 'on' : ''}" data-mftab="${k}">${l}${k === 'mile' ? `<small>${MILESTONES.filter((m) => m.dat).length}/${MILESTONES.length}</small>` : ''}</button>`).join('')}</div>`;
 const mfSadrzaj = () => ({ izazov: izazovKartica, zelja: zeljaKartica, mile: milestoneKartica, povijest: falcoiniHistory })[state.mfTab]();
 function izazovKartica() {
-  const z = IZAZOV; const head = `<div class="row spread"><div><div class="meta">Izazov tjedna · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
+  const z = IZAZOV; const head = `<div class="row spread"><div><div class="meta">Ovotjedni izazov · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
   if (z.vrsta === 'video') {
     const v = state.video;
     const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic('upload', 18)} Snimi ili dodaj video</button>`
@@ -471,7 +471,7 @@ function ormarGrid() {
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
-    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}"><button type="button" class="heart ${state.zelja === a.id ? 'on' : ''}" data-zelja="${a.id}" aria-label="Moja želja">${state.zelja === a.id ? '♥' : '♡'}</button>${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}"><button type="button" class="heart ${state.zelja === a.id ? 'on' : ''}" data-zelja="${a.id}" aria-label="My favorites">${state.zelja === a.id ? '♥' : '♡'}</button>${moja ? `<span class="mine-badge">${jedna ? 'Odgovara ti' : 'Tvoja veličina'}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="stock">${jedna ? (ima ? `na stanju ${v.n}` : 'predbilježba') : moja ? `Tvoja veličina ${v.v} · na stanju ${v.n}` : ima ? 'dostupno · izaberi veličinu' : 'nema tvoje veličine · predbilježba'}</div>
       <button class="btn ${ima ? 'red' : 'ghost'} sm block" data-redeem="${a.id}">Izaberi</button></div>`; }).join('')}</div>`;
 }
@@ -681,7 +681,8 @@ const SCREENS = {
     body: `<div class="card fc-hero compact"><button type="button" class="fc-help" data-flchelp aria-label="Što je FLC?">?</button><div class="fc-top">${coinSvg(36)}<div class="fc-main"><div class="fc-line"><div class="fc-num">${fmt(saldo())}</div><span class="fc-cur">${FLC}</span></div><small class="fc-eur2">= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
       <button class="card row spread ormar-entry" data-go="igracica-ormar"><span class="row" style="gap:12px"><span class="pin">${ic('bag', 18)}</span><span><b>Uđi u klupski Ormar</b><span class="meta" style="display:block">Zamijeni Falcoine za artikle</span></span></span>${ic('chev', 18)}</button>
-      ${mfMenu()}${mfSadrzaj()}`,
+      ${izazovKartica()}${zeljaKartica()}
+      <div class="section-title">Povijest</div>${falcoiniHistory()}`,
   }),
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
@@ -1028,7 +1029,7 @@ document.addEventListener('click', (e) => {
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
-  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u Moju želju'); return; }
+  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u My favorites'); return; }
   if (e.target.closest('[data-vidopen]')) { videoSheet(); return; }
   if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : 'trica_ana.mp4', st: 'čeka', ana: true };
     if (state.video) VIDEA.splice(VIDEA.indexOf(state.video), 1); VIDEA.unshift(v); state.video = v; closeOverlay(); render(); toastIn('Video poslan treneru');
@@ -1036,7 +1037,7 @@ document.addEventListener('click', (e) => {
   const vk = e.target.closest('[data-vidok],[data-vidno]');
   if (vk) { const ok = vk.dataset.vidok !== undefined; const v = VIDEA[+(ok ? vk.dataset.vidok : vk.dataset.vidno)]; v.st = ok ? 'odobreno' : 'odbijeno';
     const pl = PLAYERS.find((p) => p.ime === v.igr);
-    if (ok && pl) { const n = pravilo('izazov'); FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { odkrij('izazov'); FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Izazov tjedna: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Izazov odobren', `Dobila si +${fmt(n)} ${FLC} za izazov tjedna.`); notify('roditelj', 'Izazov odobren', `Ana je ispunila izazov tjedna (+${fmt(n)} ${FLC}).`); } }
+    if (ok && pl) { const n = pravilo('izazov'); FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Izazov tjedna: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Izazov odobren', `Dobila si +${fmt(n)} ${FLC} za izazov tjedna.`); notify('roditelj', 'Izazov odobren', `Ana je ispunila izazov tjedna (+${fmt(n)} ${FLC}).`); } }
     else if (v.ana) notify('igracica', 'Video nije prihvaćen', 'Probaj snimiti ponovno.');
     render(); return; }
   const am = e.target.closest('[data-admmj]');
