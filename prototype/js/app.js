@@ -123,7 +123,7 @@ const closeModal = () => { const m = document.querySelector('.modal'); if (m) m.
 /* ---------- obavijesti (zvono) ---------- */
 const OBAVIJESTI = {
   igracica: [{ naslov: 'Falcoini za dolazak', tekst: 'Dobila si +1,00 Falcoin za dolazak na trening U14 (20.11.).', vr: '20.11. 19:05', nova: false }],
-  roditelj: [], trener: [],
+  roditelj: [{ naslov: 'Ana je ispunila tjedni zadatak', tekst: 'Trener je odobrio video. Ana je osvojila 2,00 FLC.', vr: '8.11. 18:00', nova: false, rad: { datoteka: 'sut_ana.mp4', tip: 'video', naslov: 'Snimi svoj šut', nagrada: 2, ok: true, dani: 18 } }], trener: [],
   admin: [{ naslov: 'Tjedni zadatak', tekst: 'Planiraj tjedni zadatak za idući tjedan najkasnije do nedjelje u 12:00.', vr: 'Danas 08:00', nova: true }, { naslov: 'Nove prijave', tekst: '2 nove prijave čekaju potvrdu.', vr: '23.11. 18:40', nova: true }],
 };
 const uloga = () => location.hash.slice(1).split('-')[0];
@@ -1202,8 +1202,10 @@ document.addEventListener('click', (e) => {
   const nr = e.target.closest('[data-notrad]');
   if (nr) { const r = (OBAVIJESTI[uloga()] || [])[+nr.dataset.notrad].rad; const foto = r.tip === 'foto';
     overlay(`${r.ok ? `<div style="display:flex;justify-content:center">${coinSvg(48)}</div><h2>Zadatak ispunjen!</h2><div class="meta" style="text-align:center">${r.naslov} · Ana je osvojila ${fmt(r.nagrada)} ${FLC}</div>` : `<h2>Zadatak nije ispunjen</h2><div class="meta" style="text-align:center">${r.naslov} · trener nije odobrio ${foto ? 'fotografiju' : 'video'}</div>`}
-      <button class="btn red block" data-roddl="${r.datoteka}">${ic('download', 18)} Preuzmi ${foto ? 'fotografiju' : 'video'}</button><button class="btn ghost block" data-fxclose>Zatvori</button>`); return; }
-  const rdl = e.target.closest('[data-roddl]'); if (rdl) { toastIn(`Preuzimanje: ${rdl.dataset.roddl} — u prototipu se ne preuzima`); return; }
+      <button class="btn red block" data-roddl="${r.datoteka}" data-dani="${r.dani || 0}" data-tip="${r.tip}">${ic('download', 18)} Preuzmi ${foto ? 'fotografiju' : 'video'}</button><button class="btn ghost block" data-fxclose>Zatvori</button>`); return; }
+  const rdl = e.target.closest('[data-roddl]'); if (rdl && +rdl.dataset.dani > 14) { const foto = rdl.dataset.tip === 'foto';
+    overlay(`<h2>Datoteka je izbrisana</h2><p style="text-align:center">${foto ? 'Ova fotografija je izbrisana' : 'Ovaj video je izbrisan'} iz Arhive nakon isteka 14 dana od uploada.</p><button class="btn block" data-fxclose>Razumijem</button>`); return; }
+  if (rdl) { toastIn(`Preuzimanje: ${rdl.dataset.roddl} — u prototipu se ne preuzima`); return; }
   const no = e.target.closest('[data-notord]');
   if (no) { const nt = (OBAVIJESTI[uloga()] || [])[+no.dataset.notord]; const o = nt && nt.narudzba; const i = NARUDZBE.indexOf(o);
     overlay(`<h2>Narudžba iz Ormara</h2>${o.st === 'čeka roditelja' ? narudzbaKartica({ n: o, i }, true) : `${narudzbaKartica({ n: o, i }, false).replace(/<div class="vid-state[\s\S]*$/, '')}<div class="vid-state ${o.st === 'odbijeno' ? 'no' : 'ok'}"><span class="vs-t">${o.st === 'odbijeno' ? 'Odbijeno' : 'Već odobreno'}</span></div></div>`}<button class="btn ghost block" data-fxclose>Zatvori</button>`); return; }
