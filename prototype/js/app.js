@@ -464,11 +464,11 @@ function zadatakPovijestSheet() {
 }
 function izazovKartica() {
   const z = IZAZOV; const faza = state.zadFaza; const sat = `<button type="button" class="zhist-btn" data-zhist aria-label="Povijest zadataka">${ic('clock', 18)}</button>`;
-  const nagr = `<div class="row" style="gap:8px">${fc(z.nagrada, 16)}${sat}</div>`;
+  const nagr = `<div class="row" style="gap:8px;margin-right:34px">${fc(z.nagrada, 16)}${sat}</div>`; const zq = '<button type="button" class="fc-help zq" data-zhelp aria-label="Što je tjedni zadatak?">?</button>';
   const proto = (k, t) => `<button type="button" class="proto-link" data-zfaza="${k}">Prototip: ${t}</button>`;
   if (faza === 'cekanje') {  // nedjelja 12:01 → ponedjeljak 00:01: zadatak je završen, novi još nije otkriven, priključivanje je otvoreno
     const prosli = ovajTjedanRez();
-    return `<div class="card challenge mystery"><div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[1]} · otkriva se u ponedjeljak u 00:01</div></div>${sat}</div><h3 class="mys" style="margin-top:6px">??? ???</h3>
+    return `<div class="card challenge mystery">${zq}<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[1]} · otkriva se u ponedjeljak u 00:01</div></div><span style="margin-right:34px">${sat}</span></div>
       <div class="prosli ${prosli}">${prosliTekst(prosli, prosli === 'uspješno' ? z.nagrada : 0)}</div>
       ${state.izPriklIduci ? `<div class="joined" style="margin-top:12px">${ic('check', 14)} Priključena — zadatak se otkriva u ponedjeljak u 00:01</div>` : `<div class="join-note">Priključivanje je otvoreno. Priključi se već sada pa u ponedjeljak u 00:01 odmah vidiš zadatak.</div><button class="btn red block" style="margin-top:10px" data-izprikl2>Priključi se idućem zadatku</button>`}
       ${proto('aktivan', 'vrati na utorak')}</div>`;
@@ -476,7 +476,7 @@ function izazovKartica() {
   const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:6px">${z.naslov}</h3><div class="meta" style="margin-top:4px">${z.opis}</div>`;
   const prosliRed = `<div class="prosli ${ZADACI_POVIJEST[0].st}">${prosliTekst(ZADACI_POVIJEST[0].st, ZADACI_POVIJEST[0].nagrada)}</div>`;
   const kraj = proto('cekanje', 'pogledaj nedjelju 12:01');
-  if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery"><div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 class="mys" style="margin-top:6px">??? ???</h3>
+  if (z.prikljuci && !state.izPrikl) return `<div class="card challenge mystery">${zq}<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div>
     <div class="join-note">Zadatak je tajna. Priključi se i otkrij što te ovaj tjedan čeka. Napredak se računa od trenutka priključivanja.</div><button class="btn red block" style="margin-top:10px" data-izprikl>Priključi se i otkrij zadatak</button>${prosliRed}${kraj}</div>`;
   if (jeRad(z)) {
     const v = state.video; const foto = z.vrsta === 'foto';
@@ -484,10 +484,10 @@ function izazovKartica() {
       : v.st === 'čeka' ? `<div class="vid-state wait">${ic('check', 16)} ${foto ? 'Fotografija poslana' : 'Video poslan'}: ${v.datoteka}<small>Čeka odobrenje trenera</small></div>`
       : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Bonus ${fmt(z.nagrada)} ${FLC} je tvoj.</div>`
       : `<div class="vid-state no">${foto ? 'Fotografija' : 'Video'} nije prihvaćen${foto ? 'a' : ''}. Probaj ponovno.</div><button class="btn red block" style="margin-top:8px" data-vidopen>${foto ? 'Pošalji novu fotografiju' : 'Pošalji novi video'}</button>`;
-    return `<div class="card challenge">${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${prosliRed}${kraj}</div>`;
+    return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>${dno}${prosliRed}${kraj}</div>`;
   }
   const gotovo = z.odradeno >= z.cilj;
-  return `<div class="card challenge">${head}<div class="joined">${ic('check', 14)} Priključena</div>
+  return `<div class="card challenge">${zq}${head}<div class="joined">${ic('check', 14)} Priključena</div>
     <div class="streak-dots">${Array.from({ length: z.cilj }, (_, i) => `<span class="${i < z.odradeno ? 'on' : ''}">${i < z.odradeno ? '✓' : i + 1}</span>`).join('')}</div>
     <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Zadatak ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div>${prosliRed}${kraj}</div>`;
 }
@@ -1094,6 +1094,11 @@ document.addEventListener('click', (e) => {
     if (i === 0) { Object.assign(IZAZOV, z); state.video = null; state.izPrikl = false; notify('igracica', 'Novi tjedni zadatak', 'Priključi se i otkrij što te čeka.'); notify('roditelj', 'Novi tjedni zadatak', 'Za tvoju igračicu je objavljen novi tjedni zadatak.'); } else IZ_PLAN[i] = z;
     toastIn(i === 0 ? 'Zadatak je objavljen' : 'Zadatak je planiran'); render(); return; }
   const ib = e.target.closest('[data-izbrisi]'); if (ib) { IZ_PLAN[+ib.dataset.izbrisi] = null; state.izTjedan = null; render(); return; }
+  if (e.target.closest('[data-zhelp]')) { overlay(`<h2>Što je tjedni zadatak?</h2>
+    <p>Svaki tjedan, od <b>ponedjeljka u 00:01 do nedjelje u 12:00</b>, klub igračicama zadaje jedan izazov: dolasci na treninge, video ili fotografija.</p>
+    <p><b>Zadatak je tajna</b> dok se ne priključiš: kad se priključiš, otkriva se što treba napraviti, a napredak se računa od tog trenutka. Priključiti se možeš već u nedjelju od 12:01 za idući tjedan.</p>
+    <p>Za ispunjen zadatak dobivaš <b>bonus u FLC</b> (iznos piše na kartici i svaki je zadatak drukčiji). Sat otvara povijest tvojih zadataka.</p>
+    <button class="btn block" data-fxclose>Razumijem</button>`); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
     <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
     <p><b>1 FLC = 1 €.</b> Ako ti Falcoina nema dovoljno za artikl, ostatak doplaćuješ gotovinom pri preuzimanju kod trenera.</p>
