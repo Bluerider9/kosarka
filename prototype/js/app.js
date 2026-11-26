@@ -492,7 +492,7 @@ function izazovKartica() {
       ${state.izPriklIduci ? `<div class="joined" style="margin-top:12px">${ic('check', 14)} Priključena — zadatak se otkriva u ponedjeljak u 00:01</div>` : `<div class="join-note">Priključivanje je otvoreno. Priključi se već sada pa u ponedjeljak u 00:01 odmah vidiš zadatak.</div><button class="btn red block" style="margin-top:10px" data-izprikl2>Priključi se idućem zadatku</button>`}
       ${proto('aktivan', 'vrati na utorak')}</div>`;
   }
-  const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:6px">${z.naslov}</h3><div class="meta" style="margin-top:4px">${z.opis}</div>`;
+  const head = `<div class="row spread"><div><h3>Tjedni zadatak</h3><div class="meta">${IZ_RASPON[0]}</div></div>${nagr}</div><h3 style="margin-top:20px;text-align:center">${z.naslov}</h3><div class="meta" style="margin-top:4px;text-align:center">${z.opis}</div>`;
   const pc = (g, v, t, on) => `<button type="button" class="pp-chip${on ? ' on' : ''}" data-zproto="${g}:${v}">${t}</button>`;
   const stV = state.video ? state.video.st : 'nista';
   const prek = state.izPrikl ? `<div class="proto-sw"><div><span>Prototip · vrsta</span>${pc('vrsta', 'dolasci', 'Dolasci', z.vrsta === 'dolasci')}${pc('vrsta', 'video', 'Video', z.vrsta === 'video')}${pc('vrsta', 'foto', 'Foto', z.vrsta === 'foto')}</div>${z.vrsta !== 'dolasci' ? `<div><span>Prototip · ishod</span>${pc('ishod', 'nista', 'Nije poslano', stV === 'nista')}${pc('ishod', 'čeka', 'Čeka', stV === 'čeka')}${pc('ishod', 'odobreno', 'Odobreno', stV === 'odobreno')}${pc('ishod', 'odbijeno', 'Odbijeno', stV === 'odbijeno')}</div>` : ''}</div>` : '';
