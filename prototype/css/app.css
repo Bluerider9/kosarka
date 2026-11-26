@@ -977,3 +977,4 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .fc-hero.compact .fc-ormar { margin-top: 14px; width: 54px; height: 54px; border-radius: 14px; }
 .fc-hero.compact .fc-top { align-items: center; }
 .fc-hero.compact .fc-ormar { margin-top: 0; margin-right: 44px; }
+.card.mystery { border: 2px solid var(--navy); }
