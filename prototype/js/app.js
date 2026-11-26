@@ -43,8 +43,9 @@ const BLUERIDER = 'assets/bluerider-lockup-light.svg';
 const EMBLEM = 'assets/falcons-emblem.svg';
 const badge = (cls = '') => `<div class="logo-badge ${cls}"><img src="${EMBLEM}" alt="ŽKK Falcons Zagreb"></div>`;
 const FOTO = 'assets/primjer-igracica.png'; // u pravoj aplikaciji: fotografija svake igračice
-const av = (p, cls = '') => p.foto
-  ? `<div class="avatar ${cls} photo"><img src="${FOTO}" alt="${p.ime}"></div>`
+const fotoIgr = (p) => (typeof state !== 'undefined' && state.fotoIgr && state.fotoIgr[p.id]) || (p.foto ? FOTO : null);
+const av = (p, cls = '') => fotoIgr(p)
+  ? `<div class="avatar ${cls} photo"><img src="${fotoIgr(p)}" alt="${p.ime}"></div>`
   : `<div class="avatar ${cls}">${ini(p.ime)}</div>`;
 const chip = (t, c = '') => `<span class="chip ${c}">${t}</span>`;
 const clan = (k) => chip(CLANARINA[k].label, CLANARINA[k].cls);
@@ -140,7 +141,12 @@ const PROTO_SADA = '12:10'; // "trenutno vrijeme" u prototipu
 const minuta = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60 + m; };
 const rsvpRok = () => { const m = minuta(DANAS_TRENING.vrijeme) - 180; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
 const rsvpOtvoren = () => minuta(PROTO_SADA) <= minuta(rsvpRok());
-const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
+const PROTIVNICI = [
+  { id: 1, naziv: 'ŽKK Primjer 1', grad: 'Zagreb', logo: null }, { id: 2, naziv: 'ŽKK Primjer 2', grad: 'Samobor', logo: null },
+  { id: 3, naziv: 'ŽKK Primjer 3', grad: 'Velika Gorica', logo: null }, { id: 4, naziv: 'ŽKK Primjer 4', grad: 'Karlovac', logo: null },
+];
+const protLogo = (naziv, cls = '') => { const k = PROTIVNICI.find((x) => x.naziv === naziv); return k ? (k.logo ? `<img class="prot-logo ${cls}" src="${k.logo}" alt="${k.naziv}">` : `<span class="prot-logo ph ${cls}">${ini(k.naziv.replace('ŽKK ', ''))}</span>`) : ''; };
+const UTAKMICA = { grupa: 'U14', natjecanje: 'Prvenstvo U14', protivnik: 'ŽKK Primjer 3', datum: 'Subota 28.11.2026.', dat: '28.11.2026.', vrijeme: '11:00', termin: false, dvorana: false, potvrdeno: false, dvoranaUnos: 'Dvorana A' };
 const UTK_DVORANE = ['Dvorana A', 'Dvorana B', 'OŠ Ante Kovačića'];
 const DANI_HR = ['Nedjelja', 'Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota'];
 const utkDanIz = (dat) => { const m = /^(\d{2})\.(\d{2})\.(\d{4})\.?$/.exec(dat.trim()); if (!m) return null; const d = new Date(+m[3], +m[2] - 1, +m[1]); return d.getMonth() === +m[2] - 1 && d.getDate() === +m[1] ? `${DANI_HR[d.getDay()]} ${m[1]}.${m[2]}.${m[3]}.` : null; };
@@ -235,7 +241,7 @@ function utkTrenerKartica() {
     ${b.ceka ? `<button class="btn ghost block sm" data-utkpodsjeti>${ic('bell', 16)} Podsjeti one koje čekaju (${b.ceka})</button>` : ''}</div>`;
 }
 const utkFlags = () => UTAKMICA.potvrdeno
-  ? `<div class="utk-info"><b>${UTAKMICA.natjecanje}</b><div>${UTAKMICA.datum} u ${UTAKMICA.vrijeme}</div><div>${UTAKMICA.dvorana}</div></div>`
+  ? `<div class="utk-info">${UTAKMICA.protivnik ? `<div class="utk-vs">${protLogo(UTAKMICA.protivnik)}<span>protiv <b>${UTAKMICA.protivnik}</b></span></div>` : ''}<b>${UTAKMICA.natjecanje}</b><div>${UTAKMICA.datum} u ${UTAKMICA.vrijeme}</div><div>${UTAKMICA.dvorana}</div></div>`
   : `<div class="match-flags"><span>${ic('cal', 14)} Datum i vrijeme još nisu potvrđeni</span><span>${ic('pin', 14)} Dvorana još nije potvrđena</span></div>`;
 function utakmicaKartica() {
   const u = UTAKMICA;
@@ -277,7 +283,7 @@ const UTAKMICE_IGR = [
   { dat: 'Sub 15.11.', vr: '', opis: 'Prvenstvo U14 · ŽKK Primjer 1', st: 'igrala', rez: '41 : 47' },
 ];
 const utakmiceIgr = () => `<div class="card sched-matches"><h3>Utakmice</h3>${UTAKMICE_IGR.map((u) => `<div class="mt"><div class="mt-d"><b>${u.st === 'pozvana' && UTAKMICA.potvrdeno ? UTAKMICA.datum.split(' ')[0].slice(0, 3) + ' ' + UTAKMICA.dat.slice(0, 6) : u.dat}</b><span>${u.st === 'pozvana' && UTAKMICA.potvrdeno ? UTAKMICA.vrijeme : (u.vr || 'odigrano')}</span></div>
-  <div class="mt-o"><b>${u.opis}</b>${u.st === 'pozvana' ? (UTAKMICA.potvrdeno ? `<small>${UTAKMICA.dvorana}</small>` : `<small>${u.nap}</small>`) : ''}</div>
+  <div class="mt-o"><b>${protLogo((u.opis.split(' · ')[1]) || UTAKMICA.protivnik, 'sm')} ${u.opis}</b>${u.st === 'pozvana' ? (UTAKMICA.potvrdeno ? `<small>${UTAKMICA.dvorana}</small>` : `<small>${u.nap}</small>`) : ''}</div>
   ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Nije u sastavu', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>`}</div>`).join('')}</div>`;
 function rasporedScreen(filterGrupe, tocke = false, tockeGrupe = []) {
   const redovi = DANI_PUNO.map((ime, i) => {
@@ -305,7 +311,7 @@ function profilBody(p, uloga) {
   const d = detalji(p); const vl = velOd(p); const admin = uloga === 'admin', trener = uloga === 'trener', roditelj = uloga === 'roditelj';
   const natrag = { admin: ['admin-clanovi', 'Članovi'], trener: ['trener-dolasci', 'Dolasci'], roditelj: ['roditelj-pocetna', 'Početna'] }[uloga];
   const hero = `${natrag ? `<a class="link back pf-back" data-go="${natrag[0]}">← ${natrag[1]}</a>` : ''}
-    <div class="card pf-hero">${av(p, 'xl')}<h2>${p.ime}</h2>
+    <div class="card pf-hero">${av(p, 'xl')}${admin ? `<div class="foto-act"><label class="btn ghost sm">${ic('image', 16)} ${fotoIgr(p) ? 'Promijeni fotografiju' : 'Dodaj fotografiju'}<input type="file" accept="image/*" hidden data-fotoigr="${p.id}"></label>${state.fotoIgr && state.fotoIgr[p.id] ? `<button class="btn ghost sm" data-fotoukloni="${p.id}">Ukloni</button>` : ''}</div>` : ''}<h2>${p.ime}</h2>
       <div class="row" style="justify-content:center;flex-wrap:wrap;gap:6px">${p.grupe.map((x) => chip(x, 'navy')).join('')}</div>
       <div class="meta">Članica od ${d.od} · kategorija ${kategorija(p)}</div></div>
     <div class="pf-stats"><div class="card"><b>${d.dolaznost}%</b><span>Dolaznost</span></div><div class="card"><b>${d.treninga}</b><span>Treninga</span></div><div class="card">${clan(p.clanarina)}<span>Članarina</span></div></div>`;
@@ -810,7 +816,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['protivnici', 'Protivnici', 'cup'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -895,6 +901,10 @@ function bazaScreen() {
 }
 const ADMIN = {
   baza: () => bazaScreen(),
+  protivnici: () => `<div class="page-head"><div><h1>Protivnici</h1><div class="sub">Klubovi i njihovi logotipi (prikazuju se uz utakmice)</div></div><div class="grow"></div>
+    <button class="btn" data-protnovi>${ic('plus', 18)} Novi klub</button></div>
+    <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
+      <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
   prijave: () => `<div class="page-head"><div><h1>Prijave</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
       <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
     <table><thead><tr><th>Datum</th><th>Djevojčica</th><th>Godište</th><th>Zatražena grupa</th><th>Kontakt roditelja</th><th>Status</th></tr></thead><tbody>${prijave.map((p) =>
@@ -1102,6 +1112,13 @@ document.addEventListener('submit', (e) => {
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
+const citajSliku = (f, cb) => { if (!f) return; const r = new FileReader(); r.onload = () => cb(r.result); r.readAsDataURL(f); };
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.dataset && t.dataset.fotoigr) citajSliku(t.files[0], (u) => { state.fotoIgr = state.fotoIgr || {}; state.fotoIgr[t.dataset.fotoigr] = u; render(); toastIn('Fotografija spremljena'); });
+  if (t.dataset && t.dataset.protlogo) citajSliku(t.files[0], (u) => { PROTIVNICI.find((k) => k.id === +t.dataset.protlogo).logo = u; render(); toastIn('Logotip spremljen'); });
+  if (t.dataset && t.dataset.protnovilogo !== undefined) citajSliku(t.files[0], (u) => { state.protNoviLogo = u; const pv = $('#protPrev'); if (pv) pv.innerHTML = `<img class="prot-logo lg" src="${u}">`; });
+});
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
 document.addEventListener('click', (e) => {
@@ -1173,6 +1190,12 @@ document.addEventListener('click', (e) => {
   const bt = e.target.closest('[data-bazatab]'); if (bt) { state.bazaTab = bt.dataset.bazatab; state.bazaQ = ''; render(); return; }
   if (e.target.closest('[data-bazacsv]')) { const t = BAZA.find((x) => x[0] === (state.bazaTab || 'igracice')) || BAZA[0]; const csv = [t[2], ...t[3]()].map((r) => r.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' })); a.download = t[0] + '.csv'; a.click(); toastIn('Preuzeta tablica ' + t[1]); return; }
+  const fu = e.target.closest('[data-fotoukloni]'); if (fu) { delete state.fotoIgr[fu.dataset.fotoukloni]; render(); return; }
+  const pu = e.target.closest('[data-protukloni]'); if (pu) { PROTIVNICI.find((k) => k.id === +pu.dataset.protukloni).logo = null; render(); return; }
+  if (e.target.closest('[data-protnovi]')) { state.protNoviLogo = null; modal(`<h3>Novi klub</h3><div class="field"><label>Naziv kluba</label><input class="input" id="protNaziv" placeholder="ŽKK …"></div><div class="field"><label>Grad</label><input class="input" id="protGrad"></div>
+    <div class="prot-up"><div id="protPrev"><span class="prot-logo ph lg">?</span></div><label class="btn ghost sm">${ic('upload', 16)} Učitaj logotip<input type="file" accept="image/*" hidden data-protnovilogo></label></div>
+    <button class="btn block" data-protspremi>Spremi klub</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
+  if (e.target.closest('[data-protspremi]')) { const n = $('#protNaziv').value.trim(); if (!n) { toastIn('Upiši naziv kluba'); return; } PROTIVNICI.push({ id: Date.now(), naziv: n, grad: $('#protGrad').value.trim() || '—', logo: state.protNoviLogo || null }); closeModal(); render(); toastIn('Klub dodan'); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }

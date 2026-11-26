@@ -180,3 +180,8 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 ## Baza (admin)
 
 - Admin izbornik ima stavku **Baza**: jedna tablica (izgled kao proračunska) s tabovima, svaki tab je jedna tablica buduće MySQL baze: Igračice, Grupe, Uplate, Falcoini, Ormar, Narudžbe, Novosti, Tjedni zadaci (broj redaka na tabu). Nazivi stupaca su nazivi polja u bazi (npr. `ime_prezime`), sticky zaglavlje, brojevi redaka, pretraga po tablici, **Izvezi CSV** za aktivni tab. U prototipu je samo za čitanje ("Novi redak" još nije u prototipu). Prava aplikacija: ista pregledna tablica nad stvarnim tablicama (uređivanje ćelija, uvoz iz Relaga).
+
+## Fotografije igračica i logotipi protivnika (admin)
+
+- **Fotografija igračice:** admin na profilu igračice (gumb "Dodaj / Promijeni fotografiju", "Ukloni") učitava sliku s računala ili mobitela (`accept=image/*`); prikazuje se svugdje gdje je avatar. U prototipu se slika drži samo u memoriji; prava aplikacija: upload na poslužitelj (veličina, format, smanjivanje). Privola za fotografiju pamti se uz igračicu.
+- **Protivnici (admin izbornik):** popis klubova (naziv, grad) s karticom po klubu: "Učitaj / Promijeni logotip", "Ukloni", i "Novi klub" (naziv, grad, logotip). Dok logotipa nema, prikazuju se inicijali. Logotip se vidi uz utakmicu (blok s terminom: "protiv ŽKK …") i u popisu utakmica igračice. Utakmica ima polje `protivnik`; povezivanje s klubom iz popisa i odabir protivnika pri unosu termina još nisu u prototipu.
