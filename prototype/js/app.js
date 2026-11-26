@@ -22,6 +22,7 @@ const ICON = {
   image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
   lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -407,7 +408,23 @@ const IZ_TJEDNI = [['23.–29.11.', '29.11.'], ['30.11.–6.12.', '6.12.'], ['7.
 let IZ_PLAN = [];
 const VRSTE_ZADATKA = { dolasci: 'Dolasci na treninge', video: 'Video zadatak', foto: 'Fotografija' };
 const jeRad = (z) => z.vrsta === 'video' || z.vrsta === 'foto';
+const MAPE_STARE = [
+  { naziv: 'Tjedni - 16.11 - 22.11', radovi: [{ igr: 'Ana Horvat', datoteka: 'dres_ana.jpg', st: 'odobreno', tip: 'foto', dani: 9 }, { igr: 'Lea Kovač', datoteka: 'dres_lea.jpg', st: 'odobreno', tip: 'foto', dani: 9 }, { igr: 'Ema Jurić', datoteka: 'dres_ema.heic', st: 'odbijeno', tip: 'foto', dani: 9 }] },
+  { naziv: 'Tjedni - 09.11 - 15.11', radovi: [{ igr: 'Mia Babić', datoteka: 'sut_mia.mp4', st: 'odobreno', tip: 'video', dani: 13 }, { igr: 'Nika Pavlić', datoteka: 'sut_nika.mov', st: 'odobreno', tip: 'video', dani: 13 }] },
+];
 const VIDEA = [{ igr: 'Lea Kovač', datoteka: 'trica_lea.mp4', st: 'čeka', tip: 'video' }, { igr: 'Mia Babić', datoteka: 'zabijanje_mia.mov', st: 'čeka', tip: 'video' }, { igr: 'Nika Pavlić', datoteka: 'dres_nika.jpg', st: 'čeka', tip: 'foto' }]; // prototip: predani videi
+const mapeSve = () => [{ naziv: `Tjedni - ${IZ_RASPON[0].replace(/\.( |$)/g, '$1')}`, radovi: VIDEA, aktivna: true }, ...MAPE_STARE];
+function radoviMape() {
+  const m = mapeSve(); if (state.admMapa === undefined) state.admMapa = 0;
+  return `<div class="meta" style="margin-bottom:8px">Mape se automatski brišu nakon 14 dana ili ih admin briše ručno.</div>` + m.map((f, mi) => {
+    const open = state.admMapa === mi, cek = f.radovi.filter((r) => r.st === 'čeka').length;
+    return `<div class="mapa${open ? ' open' : ''}"><button type="button" class="mapa-h" data-mapa="${mi}"><span class="mapa-ic">${ic('folder', 18)}</span><span class="grow"><b>${f.naziv}</b><span class="meta">${f.radovi.length} ${f.radovi.length === 1 ? 'rad' : 'radova'}${cek ? ` · ${cek} čeka odobrenje` : ''}</span></span><span class="mapa-chev">${open ? '▾' : '▸'}</span></button>
+      ${open ? `<div class="mapa-b">${f.radovi.length ? f.radovi.map((v, i) => `<div class="rad-row"><span class="rad-ic">${ic(v.tip === 'foto' ? 'image' : 'play', 18)}</span><span class="rad-t"><b>${v.igr}</b><span class="meta">${v.datoteka} · briše se za ${14 - (v.dani || 2)} dana</span></span>
+        <span class="rad-st">${v.st === 'čeka' ? `<button class="btn sm" data-vidok="${i}">Odobri</button><button class="btn ghost sm" data-vidno="${i}">Odbij</button>` : chip(v.st, v.st === 'odobreno' ? 'ok' : 'danger')}</span>
+        <button class="btn ghost sm rad-b" data-vidskini="${mi}:${i}" aria-label="Preuzmi rad">${ic('download', 16)}</button><button class="btn ghost sm rad-b" data-vidbrisi="${mi}:${i}" aria-label="Obriši rad">${ic('trash', 16)}</button></div>`).join('') : '<div class="meta" style="padding:8px">Mapa je prazna.</div>'}
+        <button class="btn ghost block sm" style="margin-top:8px" data-vidskini="${mi}:sve">${ic('download', 16)} Preuzmi cijelu mapu (ZIP)</button></div>` : ''}</div>`;
+  }).join('');
+}
 const IZAZOV = { nagrada: 3.0, prikljuci: true, vrsta: 'dolasci', naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11. u 12:00' }; // prototip: admin postavlja izazov tjedna
 IZ_PLAN = [IZAZOV, null, { nagrada: 2.0, prikljuci: true, vrsta: 'foto', naslov: 'Fotografiraj svoj Falcons dres', opis: 'Pošalji fotografiju sebe u dresu ispred koša.', cilj: 3, odradeno: 0, do: 'nedjelje 13.12. u 12:00' },  { nagrada: 5.0, prikljuci: true, vrsta: 'video', naslov: 'Snimi kako zabijaš tricu', opis: 'Snimi 3 pokušaja trice i pošalji najbolji.', cilj: 3, odradeno: 0, do: 'nedjelje 20.12. u 12:00' }, null, null];
 const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
@@ -848,8 +865,7 @@ const ADMIN = {
         <div class="field"><label>Nagrada za ovaj zadatak (FLC)</label><input class="input" id="izNagrada" type="number" min="0" step="0.01" inputmode="decimal" value="${(z.nagrada ?? 3).toFixed(2)}"></div>
         <div class="meta">Nagrada se upisuje za svaki zadatak posebno. Zadatak se otkriva priključenim igračicama u <b>ponedjeljak u 00:01</b> i traje do <b>nedjelje u 12:00</b>. Priključivanje se otvara u nedjelju u 12:01 (prije otkrivanja novog zadatka).</div>
         <div class="row" style="gap:10px"><button class="btn grow" data-izspremi="${i}">Spremi zadatak</button>${IZ_PLAN[i] && i > 0 ? `<button class="btn ghost" data-izbrisi="${i}">Obriši</button>` : ''}</div></div>`; })()}</div>
-      <div class="card pf-sec"><h4>Predani radovi (video i fotografije)</h4><div class="vid-folder">${ic('upload', 16)}<div class="grow"><b>Mapa: Tjedni - ${IZ_RASPON[0].replace(/\.( |$)/g, '$1')}</b><div class="meta">Radovi se automatski brišu nakon 14 dana ili ih admin briše ručno.</div></div><button class="btn ghost sm" data-vidskini="sve">${ic('download', 16)} Preuzmi sve</button></div>${VIDEA.length ? VIDEA.map((v, i) => `<div class="pf-kv vid-row"><span class="row" style="gap:10px">${ic(v.tip === 'foto' ? 'image' : 'play', 18)}<span><b>${v.igr}</b><div class="meta">${v.datoteka} · briše se za ${14 - (v.dani || 2)} dana</div></span></span>
-        <span class="row" style="gap:6px">${v.st === 'čeka' ? `<button class="btn sm" data-vidok="${i}">Odobri</button><button class="btn ghost sm" data-vidno="${i}">Odbij</button>` : chip(v.st, v.st === 'odobreno' ? 'ok' : 'danger')}<button class="btn ghost sm" data-vidskini="${i}" aria-label="Preuzmi rad">${ic('download', 16)}</button><button class="btn ghost sm" data-vidbrisi="${i}" aria-label="Obriši rad">${ic('trash', 16)}</button></span></div>`).join('') : '<div class="meta">Još nema predanih videa.</div>'}</div>
+      <div class="card pf-sec"><h4>Predani radovi (video i fotografije)</h4>${radoviMape()}</div>
     </div>`,
   falcoini: () => `<div class="page-head"><div><h1>${SEKCIJA_FALCOIN}</h1><div class="sub">Pravila bodovanja i ljestvica</div></div></div>
     <div class="pf-grid">
@@ -1088,8 +1104,9 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : (IZAZOV.vrsta === 'foto' ? 'dres_ana.jpg' : 'trica_ana.mp4'), st: 'čeka', ana: true, tip: IZAZOV.vrsta };
     if (state.video) VIDEA.splice(VIDEA.indexOf(state.video), 1); VIDEA.unshift(v); state.video = v; closeOverlay(); render(); toastIn(IZAZOV.vrsta === 'foto' ? 'Fotografija poslana treneru' : 'Video poslan treneru');
     notify('admin', 'Novi rad za zadatak', `Ana Horvat: ${v.datoteka}`); notify('trener', 'Novi rad za zadatak', `Ana Horvat je poslala ${IZAZOV.vrsta === 'foto' ? 'fotografiju' : 'video'}: ${IZAZOV.naslov}`); return; }
-  const vsk = e.target.closest('[data-vidskini]'); if (vsk) { const sve = vsk.dataset.vidskini === 'sve'; toastIn(sve ? 'Preuzimanje mape (ZIP) — u prototipu se ne preuzima' : `Preuzimanje: ${VIDEA[+vsk.dataset.vidskini].datoteka} — u prototipu se ne preuzima`); return; }
-  const vb = e.target.closest('[data-vidbrisi]'); if (vb) { VIDEA.splice(+vb.dataset.vidbrisi, 1); toastIn('Rad je obrisan iz mape'); render(); return; }
+  const mp = e.target.closest('[data-mapa]'); if (mp) { const k = +mp.dataset.mapa; state.admMapa = state.admMapa === k ? -1 : k; render(); return; }
+  const vsk = e.target.closest('[data-vidskini]'); if (vsk) { const [mi, ri] = vsk.dataset.vidskini.split(':'); const f = mapeSve()[+mi]; toastIn(ri === 'sve' ? `Preuzimanje mape "${f.naziv}" (ZIP) — u prototipu se ne preuzima` : `Preuzimanje: ${f.radovi[+ri].datoteka} — u prototipu se ne preuzima`); return; }
+  const vb = e.target.closest('[data-vidbrisi]'); if (vb) { const [mi, ri] = vb.dataset.vidbrisi.split(':'); mapeSve()[+mi].radovi.splice(+ri, 1); toastIn('Rad je obrisan iz mape'); render(); return; }
   const vk = e.target.closest('[data-vidok],[data-vidno]');
   if (vk) { const ok = vk.dataset.vidok !== undefined; const v = VIDEA[+(ok ? vk.dataset.vidok : vk.dataset.vidno)]; v.st = ok ? 'odobreno' : 'odbijeno';
     const pl = PLAYERS.find((p) => p.ime === v.igr);

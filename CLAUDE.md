@@ -164,5 +164,6 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 
 - Uploadi (video/fotografije) tjednih zadataka spremaju se u **mapu kojoj admin može pristupiti**, organiziranu po tjednu: **"Tjedni - dd.mm - dd.mm"** (npr. "Tjedni - 23.11 - 29.11").
 - **Brisanje:** radovi se iz baze/mape **automatski brišu nakon 14 dana**, ili **ručno** kad admin sam odabere brisanje (u prototipu: kanta uz svaki rad u rubrici Tjedni zadatak → Predani radovi; uz svaki rad piše "briše se za N dana").
+- **Prikaz u adminu (Tjedni zadatak → Predani radovi):** radovi su složeni **po mapama tjedana** (zaglavlje s ikonom mape, nazivom, brojem radova i brojem onih koji čekaju); klik na mapu otvara popis radova s poravnatim stupcima (ikona vrste · igračica i datoteka · Odobri/Odbij ili status · preuzmi · obriši) i gumb "Preuzmi cijelu mapu (ZIP)". Otvorena je jedna mapa odjednom.
 - **Preuzimanje:** admin može **preuzeti pojedini rad** (ikona preuzimanja uz rad) ili **cijelu mapu tjedna** (gumb "Preuzmi sve", ZIP) na računalo, da ih kasnije može koristiti za objave. Prije objave provjeriti privolu za fotografiju/snimke (privola se pamti uz igračicu); radovi se brišu nakon 14 dana, pa ih treba preuzeti prije toga.
 - Pravna provjera: privola za snimke maloljetnica, rok čuvanja, veličina i format datoteka.
