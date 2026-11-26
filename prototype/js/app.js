@@ -813,7 +813,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -905,6 +905,24 @@ function pogled(key, cfg) {
     ${grupe.map(([g, rs]) => `${gc ? `<div class="pog-gh"><b>${g || '—'}</b><span>${rs.length}</span></div>` : ''}${prikaz(rs)}`).join('')}`;
 }
 
+/* ---------- Klub (admin): dvorane, osoblje, inventar ---------- */
+const KLUB_TABOVI = [['dvorane', 'Dvorane kluba', () => DVORANE_KLUB.length], ['osoblje', 'Osoblje kluba', () => KLUB_OSOBLJE.length], ['inventar', 'Inventar kluba', () => KLUB_INVENTAR.length]];
+const STANJE_INV = { dobro: ['dobro', 'ok'], istrošeno: ['istrošeno', 'warn'], 'za zamjenu': ['za zamjenu', 'danger'] };
+function klubScreen() {
+  const t = state.klubTab || 'dvorane', nov = { dvorane: 'Nova dvorana', osoblje: 'Nova osoba', inventar: 'Nova stavka' }[t];
+  const tijelo = t === 'dvorane' ? pogled('klub-dvorane', { lnaslov: 'Dvorane', title: 'naziv', empty: 'Nema dvorana.', lsub: (r) => r.vrsta, rows: DVORANE_KLUB.map((n) => ({ naziv: n, vrsta: /^OŠ/.test(n) ? 'Školska dvorana' : 'Klupska dvorana', adresa: '—', cijena: '—', kontakt: '—' })),
+      cols: [{ id: 'naziv', label: 'Dvorana', val: (r) => r.naziv, html: (r) => `<b>${r.naziv}</b>` }, { id: 'vrsta', label: 'Vrsta', val: (r) => r.vrsta, html: (r) => chip(r.vrsta, 'navy') }, { id: 'adresa', label: 'Adresa', val: (r) => r.adresa },
+        { id: 'cijena', label: 'Cijena najma / sat', val: (r) => r.cijena }, { id: 'kontakt', label: 'Kontakt dvorane', val: (r) => r.kontakt }] })
+    : t === 'osoblje' ? pogled('klub-osoblje', { lnaslov: 'Osoblje', title: 'ime', empty: 'Nema osoblja.', lav: (r) => `<span class="lep-ini">${ini(r.ime)}</span>`, lsub: (r) => r.uloga, lchip: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn'), rows: KLUB_OSOBLJE,
+      cols: [{ id: 'ime', label: 'Ime', val: (r) => r.ime, html: (r) => `<div class="who"><span class="lep-ini sm">${ini(r.ime)}</span><b>${r.ime}</b></div>` }, { id: 'uloga', label: 'Uloga', val: (r) => r.uloga }, { id: 'grupe', label: 'Grupe', val: (r) => r.grupe.join(', ') || '—', html: (r) => r.grupe.map((x) => chip(x, 'navy')).join(' ') || '—' },
+        { id: 'kontakt', label: 'Kontakt', val: (r) => r.kontakt }, { id: 'status', label: 'Status', val: (r) => r.status, html: (r) => chip(r.status, r.status === 'aktivan' ? 'ok' : 'warn') }] })
+    : pogled('klub-inventar', { lnaslov: 'Inventar', title: 'naziv', empty: 'Nema stavki.', lsub: (r) => r.kol + ' kom · ' + r.lok, lchip: (r) => chip(...STANJE_INV[r.stanje]), rows: KLUB_INVENTAR,
+      cols: [{ id: 'naziv', label: 'Stavka', val: (r) => r.naziv, html: (r) => `<b>${r.naziv}</b>` }, { id: 'kat', label: 'Kategorija', val: (r) => r.kat, html: (r) => chip(r.kat, 'navy') }, { id: 'kol', label: 'Količina', val: (r) => r.kol, html: (r) => r.kol + ' kom' },
+        { id: 'lok', label: 'Lokacija', val: (r) => r.lok }, { id: 'stanje', label: 'Stanje', val: (r) => r.stanje, html: (r) => chip(...STANJE_INV[r.stanje]) }] });
+  return `<div class="page-head"><div><h1>Klub</h1><div class="sub">Dvorane, osoblje i inventar kluba</div></div><div class="grow"></div><button class="btn" data-toast="${nov} — sljedeći korak">${ic('plus', 18)} ${nov}</button></div>
+    <div class="baza-tabs" role="tablist">${KLUB_TABOVI.map(([k, l, n]) => `<button type="button" role="tab" class="${k === t ? 'on' : ''}" data-klubtab="${k}">${l}<span>${n()}</span></button>`).join('')}</div>${tijelo}`;
+}
+
 function ligeScreen() {
   const l = LIGE.find((x) => x.id === (state.ligaTab || LIGE[0].id)) || LIGE[0];
   return `<div class="page-head"><div><h1>Lige</h1><div class="sub">Cijela liga po kolima (subota/nedjelja); protivnik se zadaje jednom, u kalendaru se više ne bira</div></div><div class="grow"></div>
@@ -955,6 +973,7 @@ function bazaScreen() {
 const ADMIN = {
   baza: () => bazaScreen(),
   lige: () => ligeScreen(),
+  klub: () => klubScreen(),
   protivnici: () => `<div class="page-head"><div><h1>Protivnici</h1><div class="sub">Klubovi i njihovi logotipi (prikazuju se uz utakmice)</div></div><div class="grow"></div>
     <button class="btn" data-protnovi>${ic('plus', 18)} Novi klub</button></div>
     ${lepezaHtml(PROTIVNICI.map((k) => ({ av: protLogo(k.naziv, 'lg'), t: k.naziv, s: k.grad + ' · ' + (k.dvorane || []).filter(Boolean).length + ' dvorana' })), 'Klubovi', 'prot')}
@@ -1283,6 +1302,7 @@ document.addEventListener('click', (e) => {
     <div class="prot-up"><div id="protPrev"><span class="prot-logo ph lg">?</span></div><label class="btn ghost sm">${ic('upload', 16)} Učitaj logotip<input type="file" accept="image/*" hidden data-protnovilogo></label></div>
     <button class="btn block" data-protspremi>Spremi klub</button><button class="btn ghost block" data-close>Odustani</button>`); return; }
   if (e.target.closest('[data-protspremi]')) { const n = $('#protNaziv').value.trim(); if (!n) { toastIn('Upiši naziv kluba'); return; } PROTIVNICI.push({ id: Date.now(), naziv: n, grad: $('#protGrad').value.trim() || '—', logo: state.protNoviLogo || null, dvorane: [...document.querySelectorAll('.protdvn')].map((x) => x.value.trim()) }); closeModal(); render(); toastIn('Klub dodan'); return; }
+  const ktab = e.target.closest('[data-klubtab]'); if (ktab) { state.klubTab = ktab.dataset.klubtab; render(); return; }
   const ltab = e.target.closest('[data-ligatab]'); if (ltab) { state.ligaTab = ltab.dataset.ligatab; render(); return; }
   const lkb = e.target.closest('[data-kolouk]'); if (lkb) { const [li, ki] = lkb.dataset.kolouk.split('-'); const L = LIGE.find((x) => x.id === li); if (L.id === UTAKMICA.kolo.liga && +ki === UTAKMICA.kolo.k) { toastIn('Ovo kolo je povezano s idućom utakmicom'); return; } L.kola = L.kola.filter((x) => x.k !== +ki); render(); return; }
   if (e.target.closest('[data-ligakolo]')) { const L = LIGE.find((x) => x.id === (state.ligaTab || LIGE[0].id)) || LIGE[0]; const zad = L.kola[L.kola.length - 1]; const [y, m, d] = (zad ? zad.d : '2026-12-05').split('-').map(Number); const n = new Date(y, m - 1, d + 7);

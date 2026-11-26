@@ -106,3 +106,25 @@ const NARUDZBE = [
   { igr: 'Lana Babić', artikl: 'T-shirt "Logo" crvena', velicina: 'M', pre: true, cijena: 17.0, f: 9.5, gotovina: 7.5, dat: '21.11.2026.', st: 'čeka' },
   { igr: 'Ana Horvat', artikl: 'Čarape "FLCN" bijele', velicina: '37–41', pre: false, cijena: 10.0, f: 10.0, gotovina: 0, dat: '14.11.2026.', st: 'izdano' },
 ];
+
+// Klub (admin): osoblje i inventar — IZMIŠLJENI PODACI za prototip
+const KLUB_OSOBLJE = [
+  { ime: 'Mislav', uloga: 'Predsjednik i glavni trener', grupe: ['SEN'], kontakt: 'mislav@zkkfalcons.hr', status: 'aktivan' },
+  { ime: 'Ivan Petrović', uloga: 'Trener', grupe: ['U12', 'U14'], kontakt: 'ivan.petrovic@zkkfalcons.hr', status: 'aktivan' },
+  { ime: 'Maja Šimić', uloga: 'Trenerica', grupe: ['U16', 'SEN'], kontakt: 'maja.simic@zkkfalcons.hr', status: 'aktivan' },
+  { ime: 'Luka Barić', uloga: 'Voditelj škole košarke', grupe: ['Škola košarke'], kontakt: 'luka.baric@zkkfalcons.hr', status: 'aktivan' },
+  { ime: 'Petra Horvat', uloga: 'Tajnica / blagajna', grupe: [], kontakt: 'tajnistvo@zkkfalcons.hr', status: 'aktivan' },
+  { ime: 'Dino Kralj', uloga: 'Pomoćni trener', grupe: ['U14'], kontakt: 'dino.kralj@zkkfalcons.hr', status: 'na pauzi' },
+];
+const KLUB_INVENTAR = [
+  { naziv: 'Lopte, veličina 6', kat: 'Lopte', kol: 24, lok: 'Dom košarke', stanje: 'dobro' },
+  { naziv: 'Lopte, veličina 5', kat: 'Lopte', kol: 18, lok: 'OŠ Ante Kovačića', stanje: 'dobro' },
+  { naziv: 'Lopte, veličina 3', kat: 'Lopte', kol: 12, lok: 'OŠ Otona Ivekovića', stanje: 'istrošeno' },
+  { naziv: 'Prsluci za trening (set)', kat: 'Oprema', kol: 30, lok: 'Dom košarke', stanje: 'dobro' },
+  { naziv: 'Čunjevi i markeri', kat: 'Oprema', kol: 60, lok: 'OŠ Ante Kovačića', stanje: 'dobro' },
+  { naziv: 'Ljestve za koordinaciju', kat: 'Oprema', kol: 6, lok: 'Dom košarke', stanje: 'dobro' },
+  { naziv: 'Dresovi — domaći komplet', kat: 'Dresovi', kol: 20, lok: 'Dom košarke', stanje: 'dobro' },
+  { naziv: 'Dresovi — gostujući komplet', kat: 'Dresovi', kol: 20, lok: 'Dom košarke', stanje: 'za zamjenu' },
+  { naziv: 'Torba prve pomoći', kat: 'Zdravlje', kol: 4, lok: 'OŠ Malešnica', stanje: 'dobro' },
+  { naziv: 'Taktička ploča', kat: 'Oprema', kol: 3, lok: 'OŠ Nikole Tesle', stanje: 'dobro' },
+];

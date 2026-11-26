@@ -200,6 +200,11 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - Uz tablicu ostaje izbor **Tablica (zadano) / Popis / Kartice**, **Prikaži:** kapsule polja, **Sortiraj** i **Grupiraj** (`state.pog[ključ]`, `pogled()` u `app.js`).
 - Primijenjeno na: **Članovi, Prijave, Grupe (+ zaseban popis Treneri), Članarine (uplate), Novosti, Ormar (narudžbe i artikli)** i sve tabove **Baze**; **Protivnici** imaju lepezu klubova iznad kartica za uređivanje; **Lige** su kartice po kolu s izravnim izmjenama.
 
+## Klub (admin)
+
+- Admin izbornik ima kategoriju **Klub** s tri taba (isti obrazac: tablica + lepeza + "Novi …"): **Dvorane kluba** (6 klupskih dvorana iz Trackera: naziv, vrsta, adresa, cijena najma/sat, kontakt dvorane; adresa/cijena/kontakt još prazni "—" jer ih dump nema), **Osoblje kluba** (ime, uloga, grupe, kontakt, status; izmišljeni podaci, trener-grupe usklađene s Grupama) i **Inventar kluba** (stavka, kategorija, količina, lokacija = dvorana, stanje dobro/istrošeno/za zamjenu; izmišljeni podaci). Podaci u `KLUB_OSOBLJE`/`KLUB_INVENTAR` (`data.js`), dvorane iz `DVORANE_KLUB`. Ekran `klubScreen()`.
+- **Članovi** (admin) ostaju kao baza kojom se bavimo tek kasnije: za sada se ne mijenjaju.
+
 ## Migracija iz Falcons Trackera
 
 - Dump stare baze (`bluerder_portalwebapp`) je analiziran: opis tablica, mapiranje i otvorene odluke su u `migracija/README.md`. **Sam dump i osobni podaci nisu u gitu** (`.gitignore`). Prototip koristi samo neosobne podatke iz dumpa: **lige s kolima, protivnike, dvorane** (`prototype/js/lige-podaci.js`, generira `migracija/lige_iz_dumpa.py`). Igračice u prototipu ostaju izmišljene.
