@@ -373,7 +373,8 @@ function scanResult() {
   overlay(`<div class="scan-res">${coinSvg(64)}</div><h2>Dolazak spremljen!</h2><div class="scan-plus">+${fmt(n)} ${FLC}</div>
     <p>U14 · OŠ Ante Kovačića · 17:30<br>Novo stanje: <b>${fmt(saldo())} ${FLC}</b></p><button class="btn red block" data-fxclose>Super</button>`);
 }
-const notifyRodZadatak = (n, v) => notify('roditelj', 'Ana je ispunila tjedni zadatak', `${jeRad(IZAZOV) ? `Trener je odobrio ${IZAZOV.vrsta === 'foto' ? 'fotografiju' : 'video'}. ` : ''}Ana je osvojila ${fmt(n)} ${FLC}.`, null, jeRad(IZAZOV) && v ? { datoteka: v.datoteka, tip: IZAZOV.vrsta, naslov: IZAZOV.naslov, nagrada: n } : null);
+const notifyRodZadatak = (n, v) => notify('roditelj', 'Ana je ispunila tjedni zadatak', `${jeRad(IZAZOV) ? `Trener je odobrio ${IZAZOV.vrsta === 'foto' ? 'fotografiju' : 'video'}. ` : ''}Ana je osvojila ${fmt(n)} ${FLC}.`, null, jeRad(IZAZOV) && v ? { datoteka: v.datoteka, tip: IZAZOV.vrsta, naslov: IZAZOV.naslov, nagrada: n, ok: true } : null);
+const notifyRodNeuspjeh = (v) => notify('roditelj', 'Ana nije ispunila tjedni zadatak', `Trener nije odobrio ${IZAZOV.vrsta === 'foto' ? 'fotografiju' : 'video'}, pa je zadatak zaključan do idućeg tjedna.`, null, v ? { datoteka: v.datoteka, tip: IZAZOV.vrsta, naslov: IZAZOV.naslov, ok: false } : null);
 const cekaRoditelja = () => NARUDZBE.map((n, i) => ({ n, i })).filter(({ n }) => n.st === 'čeka roditelja');
 function narudzbaKartica({ n, i }, rod) {
   const a = ORMAR.find((x) => x.ime === n.artikl);
@@ -1129,6 +1130,7 @@ document.addEventListener('click', (e) => {
       IZAZOV.vrsta = v; IZAZOV.naslov = def[0]; IZAZOV.opis = def[1]; state.video = null;
     } else state.video = v === 'nista' ? null : { igr: 'Ana', datoteka: IZAZOV.vrsta === 'foto' ? 'dres.jpg' : 'trica.mp4', st: v, tip: IZAZOV.vrsta };
     if (g === 'ishod' && v === 'odobreno') notifyRodZadatak(IZAZOV.nagrada, state.video);
+    if (g === 'ishod' && v === 'odbijeno') notifyRodNeuspjeh(state.video);
     render(); return; }
   const zf = e.target.closest('[data-zfaza]'); if (zf) { state.zadFaza = zf.dataset.zfaza;
     if (state.zadFaza === 'cekanje' && !state.notifPrikl) { state.notifPrikl = true; notify('igracica', 'Novi tjedni zadatak kreće uskoro!', `Priključi se i ti u ${SEKCIJA_FALCOIN} appu.`); }
@@ -1149,7 +1151,7 @@ document.addEventListener('click', (e) => {
   if (vk) { const ok = vk.dataset.vidok !== undefined; const v = VIDEA[+(ok ? vk.dataset.vidok : vk.dataset.vidno)]; v.st = ok ? 'odobreno' : 'odbijeno';
     const pl = PLAYERS.find((p) => p.ime === v.igr);
     if (ok && pl) { const n = IZAZOV.nagrada; FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Tjedni zadatak: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Zadatak odobren', `Dobila si +${fmt(n)} ${FLC} za tjedni zadatak.`); notifyRodZadatak(n, v); } }
-    else if (v.ana) notify('igracica', 'Rad nije prihvaćen', 'Probaj ponovno.');
+    else if (v.ana) { notify('igracica', 'Rad nije prihvaćen', 'Trener nije odobrio rad, pa je zadatak zaključan do idućeg tjedna.'); notifyRodNeuspjeh(v); }
     render(); return; }
   const am = e.target.closest('[data-admmj]');
   if (am) { const v = +am.dataset.admmj; if (v === 0) { state.admMj = { y: 2026, m: 10 }; state.admDan = '2026-11-24'; } else { let { y, m } = state.admMj; m += v; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } state.admMj = { y, m }; } render(); return; }
@@ -1199,10 +1201,8 @@ document.addEventListener('click', (e) => {
     closeOverlay(); render(); toastIn('Poslano roditelju na odobrenje'); return; }
   const nr = e.target.closest('[data-notrad]');
   if (nr) { const r = (OBAVIJESTI[uloga()] || [])[+nr.dataset.notrad].rad; const foto = r.tip === 'foto';
-    overlay(`<div style="display:flex;justify-content:center">${coinSvg(48)}</div><h2>Zadatak ispunjen!</h2><div class="meta" style="text-align:center">${r.naslov} · Ana je osvojila ${fmt(r.nagrada)} ${FLC}</div>
-      <div class="card rad-pregled"><span class="rad-ic">${ic(foto ? 'image' : 'play', 28)}</span><div class="grow"><b>${foto ? 'Fotografija' : 'Video'} koju je Ana poslala</b><div class="meta">${r.datoteka}</div></div></div>
-      <button class="btn red block" data-roddl="${r.datoteka}">${ic('download', 18)} Preuzmi ${foto ? 'fotografiju' : 'video'}</button><button class="btn ghost block" data-fxclose>Zatvori</button>
-      <small>Datoteka se čuva 14 dana, pa je preuzmi ako je želiš zadržati.</small>`); return; }
+    overlay(`${r.ok ? `<div style="display:flex;justify-content:center">${coinSvg(48)}</div><h2>Zadatak ispunjen!</h2><div class="meta" style="text-align:center">${r.naslov} · Ana je osvojila ${fmt(r.nagrada)} ${FLC}</div>` : `<h2>Zadatak nije ispunjen</h2><div class="meta" style="text-align:center">${r.naslov} · trener nije odobrio ${foto ? 'fotografiju' : 'video'}</div>`}
+      <button class="btn red block" data-roddl="${r.datoteka}">${ic('download', 18)} Preuzmi ${foto ? 'fotografiju' : 'video'}</button><button class="btn ghost block" data-fxclose>Zatvori</button>`); return; }
   const rdl = e.target.closest('[data-roddl]'); if (rdl) { toastIn(`Preuzimanje: ${rdl.dataset.roddl} — u prototipu se ne preuzima`); return; }
   const no = e.target.closest('[data-notord]');
   if (no) { const nt = (OBAVIJESTI[uloga()] || [])[+no.dataset.notord]; const o = nt && nt.narudzba; const i = NARUDZBE.indexOf(o);
