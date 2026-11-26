@@ -421,7 +421,7 @@ function falcoiniHistory() {
 }
 const zaliha = (a) => a.velicine.reduce((s, v) => s + (v.n || 0), 0);
 const imaPre = (a) => a.velicine.some((v) => v.n === null);
-const itemTile = (a, cls = '', nota = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img src="${a.slika}" alt="" loading="lazy" onerror="this.remove()">${nota ? `<span class="tile-note">${nota}</span>` : ''}</div>`;
+const itemTile = (a, cls = '', nota = '') => `<div class="item-tile ${cls}">${a.ime.replace(/[^A-Za-zČĆŠŽĐčćšžđ]/g, '').charAt(0)}<img class="tile-main" src="${a.slika}" alt="" loading="lazy" onerror="this.remove()">${a.novo && cls !== 'sm' ? '<span class="tile-flag">Novo</span>' : ''}${a.oznaka && cls === 'big' ? `<span class="tile-flag b2">${a.oznaka}</span>` : ''}${nota ? `<span class="tile-note">${nota}</span>` : ''}${cls === 'big' && a.slike && a.slike.length > 1 ? `<span class="tile-thumbs">${a.slike.map((u, i) => `<img src="${u}" alt="" class="${i ? '' : 'on'}" onclick="var t=this.closest('.item-tile');t.querySelector('.tile-main').src=this.src;t.querySelectorAll('.tile-thumbs img').forEach(function(x){x.classList.toggle('on',x===this)}.bind(this))">`).join('')}</span>` : ''}</div>`;
 const cijenaHtml = (a, s = 16) => `<span class="price">${a.staraCijena ? `<s>${fmt(a.staraCijena)}</s>` : ''}${fc(a.cijena, s)}</span>`;
 /* moja veličina iz profila → veličina u Ormaru (dječje brojeve mapiramo na Kids veličine) */
 const KIDS = { '116': 'Kids XS', '128': 'Kids XS', '140': 'Kids M', '152': 'Kids L', '164': 'Kids XL' };
@@ -1038,7 +1038,7 @@ const ADMIN = {
 /* ---------- usmjeravanje i prikaz ---------- */
 const ROLES = [['start', 'Početna'], ['trener', 'Trener'], ['roditelj', 'Roditelj'], ['igracica', 'Igračica'], ['prijava', 'Javna prijava'], ['admin', 'Admin (desktop)']];
 const DEFAULT_SCREEN = { start: 'login', trener: 'danas', roditelj: 'pocetna', igracica: 'pocetna', prijava: 'forma', admin: 'pregled' };
-const state = { dan: TODAY, bio: false, citanoPo: {}, zelje: [7], izPrikl: false, izPriklIduci: false, zadFaza: 'aktivan', izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
+const state = { dan: TODAY, bio: false, citanoPo: {}, zelje: [(ORMAR.find((a) => a.ime.startsWith('Ruksak')) || {}).id].filter(Boolean), izPrikl: false, izPriklIduci: false, zadFaza: 'aktivan', izTjedan: null, mfTab: 'izazov', admMj: { y: 2026, m: 10 }, admDan: '2026-11-24', skenirano: false, qrTip: 'trening' };
 let toastT;
 
 function toast(msg) {
@@ -1300,6 +1300,7 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
     <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
     <p><b>1 FLC = 1 €.</b> Ako ti Falcoina nema dovoljno za artikl, ostatak doplaćuješ gotovinom pri preuzimanju kod trenera.</p>
+    <p>Falcoine možeš dobiti i <b>donacijom klubu</b> kod bilo kojeg trenera ili trenerice te osvajanjem u našim nagradnim igrama, online, na utakmicama i na događanjima.</p>
     <div class="section-title small" style="margin:6px 0 4px">Kako zarađuješ</div>
     <div class="card earn" style="box-shadow:none;border:1px solid var(--silver-100)"><div class="list">${FALCOIN_PRAVILA.map((r) => `<div class="row spread"><span style="font-size:var(--fs-sm)">${r.label}</span>${fc(r.iznos)}</div>`).join('')}</div></div>
     <button class="btn block" data-fxclose>Razumijem</button>`); return; }
