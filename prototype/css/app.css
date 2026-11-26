@@ -958,3 +958,6 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .join-note { margin-top: 10px; padding: 10px 12px; border-radius: var(--r-md); background: var(--silver-100); font-size: var(--fs-sm); color: var(--muted); }
 .joined { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 3px 10px; border-radius: 999px; background: #e3f5ea; color: #1f6b3c; font-size: 11px; font-weight: 800; }
 .check-line { display: flex; gap: 10px; align-items: flex-start; font-size: var(--fs-sm); line-height: 1.4; } .check-line input { margin-top: 3px; }
+
+.mys { letter-spacing: .12em; color: var(--muted); }
+.card.mystery { border: 2px dashed var(--gold); }
