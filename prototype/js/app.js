@@ -903,9 +903,11 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-hdrqr]')) { const u = uloga(); if (u === 'igracica') scanSheet(); else if (u === 'trener') location.hash = 'trener-qr'; return; }
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
-  if (e.target.closest('[data-flchelp]')) { overlay(`<div style="text-align:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
+  if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
     <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
     <p><b>1 FLC = 1 €.</b> Ako ti Falcoina nema dovoljno za artikl, ostatak doplaćuješ gotovinom pri preuzimanju kod trenera.</p>
+    <div class="section-title small" style="margin:6px 0 4px">Kako zarađuješ</div>
+    <div class="card earn" style="box-shadow:none;border:1px solid var(--silver-100)"><div class="list">${FALCOIN_PRAVILA.map((r) => `<div class="row spread"><span style="font-size:var(--fs-sm)">${r.label}</span>${fc(r.iznos)}</div>`).join('')}</div></div>
     <button class="btn block" data-fxclose>Razumijem</button>`); return; }
   const rd = e.target.closest('[data-redeem]'); if (rd) { redeemSheet(+rd.dataset.redeem); return; }
   const sz = e.target.closest('[data-size]');
