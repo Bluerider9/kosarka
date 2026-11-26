@@ -18,6 +18,7 @@ const ICON = {
   search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  play: '<path d="M8 5l11 7-11 7z"/>',
   download: '<path d="M12 4v12M7 11l5 5 5-5M4 20h16"/>',
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   cog: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
@@ -396,7 +397,8 @@ const mojaVel = (a) => { const vl = velOd(PLAYERS[0]); const noga = +vl.noga;
 const jednaVel = (a) => a.velicine.length === 1 && a.velicine[0].v === 'Jedna veličina';
 const mojaNaStanju = (a) => jednaVel(a) || (() => { const v = mojaVel(a); return !!v && v.n > 0; })();
 const velOdabrana = (a) => (state.ormarVel && state.ormarVel[a.id]) || (mojaVel(a) || a.velicine.find((v) => v.n > 0) || a.velicine[0]).v;
-const IZAZOV = { naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11.' }; // prototip: admin postavlja izazov tjedna
+const VIDEA = [{ igr: 'Lea Kovač', datoteka: 'trica_lea.mp4', st: 'čeka' }, { igr: 'Mia Babić', datoteka: 'zabijanje_mia.mov', st: 'čeka' }]; // prototip: predani videi
+const IZAZOV = { vrsta: 'dolasci', naslov: 'Tjedan bez izostanka', opis: 'Dođi na sva 3 treninga ovaj tjedan.', cilj: 3, odradeno: 1, do: 'nedjelje 29.11.' }; // prototip: admin postavlja izazov tjedna
 const zeljaArtikl = () => ORMAR.find((a) => a.id === state.zelja);
 function zeljaKartica() {
   const a = zeljaArtikl();
@@ -410,11 +412,25 @@ function zeljaKartica() {
     ${fali > 0 ? '' : `<button class="btn red block sm" style="margin-top:10px" data-redeem="${a.id}">Zamijeni</button>`}</div>`;
 }
 function izazovKartica() {
-  const z = IZAZOV; const gotovo = z.odradeno >= z.cilj;
-  return `<div class="card challenge"><div class="row spread"><div><div class="meta">Izazov tjedna · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div>
-    <div class="meta" style="margin-top:4px">${z.opis}</div>
+  const z = IZAZOV; const head = `<div class="row spread"><div><div class="meta">Izazov tjedna · do ${z.do}</div><h3>${z.naslov}</h3></div>${fc(pravilo('izazov'), 16)}</div><div class="meta" style="margin-top:4px">${z.opis}</div>`;
+  if (z.vrsta === 'video') {
+    const v = state.video;
+    const dno = !v ? `<button class="btn red block" style="margin-top:12px" data-vidopen>${ic('upload', 18)} Snimi ili dodaj video</button>`
+      : v.st === 'čeka' ? `<div class="vid-state wait">${ic('check', 16)} Video poslan: ${v.datoteka}<small>Čeka odobrenje trenera</small></div>`
+      : v.st === 'odobreno' ? `<div class="vid-state ok">${ic('check', 16)} Odobreno! Bonus ${fmt(pravilo('izazov'))} ${FLC} je tvoj.</div>`
+      : `<div class="vid-state no">Video nije prihvaćen. Probaj ponovno.</div><button class="btn red block" style="margin-top:8px" data-vidopen>Pošalji novi video</button>`;
+    return `<div class="card challenge">${head}${dno}</div>`;
+  }
+  const gotovo = z.odradeno >= z.cilj;
+  return `<div class="card challenge">${head}
     <div class="streak-dots">${Array.from({ length: z.cilj }, (_, i) => `<span class="${i < z.odradeno ? 'on' : ''}">${i < z.odradeno ? '✓' : i + 1}</span>`).join('')}</div>
     <div class="meta" style="margin-top:8px;text-align:center">${gotovo ? 'Izazov ispunjen — bonus je tvoj!' : `${z.odradeno} od ${z.cilj} · još ${z.cilj - z.odradeno} do bonusa`}</div></div>`;
+}
+function videoSheet() {
+  overlay(`<div style="display:flex;justify-content:center">${coinSvg(48)}</div><h2>${IZAZOV.naslov}</h2><p>${IZAZOV.opis}</p>
+    <label class="btn ghost block vid-pick">${ic('upload', 18)} <span id="vidName">Odaberi ili snimi video</span><input type="file" id="vidFile" accept="video/*" capture="environment" hidden></label>
+    <button class="btn red block" data-vidsend>Pošalji video</button><button class="btn ghost block" data-fxclose>Odustani</button>
+    <small>Video vidi samo trener. Bonus dobivaš kad ga odobri. (Prototip: datoteka se ne učitava stvarno.)</small>`);
 }
 function ormarVelStrip() { const vl = velOd(PLAYERS[0]); const nema = !vl.majica || !vl.noga;
   return `<div class="card row spread ormar-vel ${nema ? 'missing' : ''}"><div class="grow"><div class="meta">Moje veličine</div><div class="ov-vals"><span>Majica <b class="${vl.majica ? '' : 'vel-empty'}">${vl.majica || '??'}</b></span><span>Noga <b class="${vl.noga ? '' : 'vel-empty'}">${vl.noga || '??'}</b></span></div></div>
@@ -714,6 +730,15 @@ const ADMIN = {
         <div class="two"><div class="field"><label>Razlog</label><input class="input" id="fcWhy" placeholder="npr. pomoć na turniru"></div><div class="field"><label>Iznos</label><input class="input" id="fcAmt" type="number" min="0" step="0.01" inputmode="decimal" value="1.50"></div></div>
         <div class="row" style="gap:10px"><button class="btn grow" data-fcgive="1">Dodijeli</button><button class="btn ghost grow" data-fcgive="-1">Oduzmi</button></div>
         <small class="err" id="fcErr" style="color:var(--navy)">${(() => { const m = state.fcMsg || ''; state.fcMsg = ''; return m; })()}</small></div>
+      <div class="card pf-sec"><h4>Izazov tjedna</h4>
+        <div class="field"><label>Vrsta</label><select class="input" id="izVrsta"><option value="dolasci" ${IZAZOV.vrsta === 'dolasci' ? 'selected' : ''}>Dolasci na treninge</option><option value="video" ${IZAZOV.vrsta === 'video' ? 'selected' : ''}>Video zadatak (igračica šalje video)</option></select></div>
+        <div class="field"><label>Naslov</label><input class="input" id="izNaslov" value="${IZAZOV.naslov}"></div>
+        <div class="field"><label>Opis zadatka</label><input class="input" id="izOpis" value="${IZAZOV.opis}"></div>
+        <div class="two"><div class="field"><label>Rok</label><input class="input" id="izRok" value="${IZAZOV.do}"></div><div class="field"><label>Broj treninga (za dolaske)</label><input class="input" id="izCilj" type="number" min="1" max="7" value="${IZAZOV.cilj}"></div></div>
+        <div class="meta">Nagrada je iznos "Izazov tjedna (bonus)" iz pravila bodovanja.</div>
+        <button class="btn" data-izobjavi>Objavi izazov</button></div>
+      <div class="card pf-sec"><h4>Predani videi</h4>${VIDEA.length ? VIDEA.map((v, i) => `<div class="pf-kv vid-row"><span class="row" style="gap:10px">${ic('play', 18)}<span><b>${v.igr}</b><div class="meta">${v.datoteka}</div></span></span>
+        ${v.st === 'čeka' ? `<span class="row" style="gap:6px"><button class="btn sm" data-vidok="${i}">Odobri</button><button class="btn ghost sm" data-vidno="${i}">Odbij</button></span>` : chip(v.st, v.st === 'odobreno' ? 'ok' : 'danger')}</div>`).join('') : '<div class="meta">Još nema predanih videa.</div>'}</div>
       <div class="card pf-sec"><h4>Kako se bilježi dolazak</h4>
         <div class="meta" style="line-height:1.6">Trener otvori QR za termin u svojoj aplikaciji, igračice ga skeniraju u svojoj. Kod vrijedi samo za taj termin, a igračica po terminu dobije bodove jednom. Trener može dolazak označiti i ručno.</div></div>
     </div>`,
@@ -873,6 +898,7 @@ document.addEventListener('submit', (e) => {
   const p = { id: Date.now(), dat: '24.11.2026.', ...d, rod: datIso(d.rod), foto: false, status: 'ceka', dup };
   prijave.unshift(p); state.zadnja = p; location.hash = 'prijava-poslano';
 });
+document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
 document.addEventListener('click', (e) => {
   const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
@@ -926,6 +952,19 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-scanok]')) { scanResult(); return; }
   if (e.target.closest('[data-fxclose]')) { closeOverlay(); render(); return; }
   const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja; state.zelja = state.zelja === id ? null : id; render(); if (state.zelja) toastIn('Dodano u Moju želju'); return; }
+  if (e.target.closest('[data-vidopen]')) { videoSheet(); return; }
+  if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : 'trica_ana.mp4', st: 'čeka', ana: true };
+    if (state.video) VIDEA.splice(VIDEA.indexOf(state.video), 1); VIDEA.unshift(v); state.video = v; closeOverlay(); render(); toastIn('Video poslan treneru');
+    notify('admin', 'Novi video za izazov', `Ana Horvat: ${v.datoteka}`); notify('trener', 'Novi video za izazov', `Ana Horvat je poslala video: ${IZAZOV.naslov}`); return; }
+  const vk = e.target.closest('[data-vidok],[data-vidno]');
+  if (vk) { const ok = vk.dataset.vidok !== undefined; const v = VIDEA[+(ok ? vk.dataset.vidok : vk.dataset.vidno)]; v.st = ok ? 'odobreno' : 'odbijeno';
+    const pl = PLAYERS.find((p) => p.ime === v.igr);
+    if (ok && pl) { const n = pravilo('izazov'); FALCOINI[pl.id] = r2(FALCOINI[pl.id] + n); if (pl.id === IGR_ID) { FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Izazov tjedna: ${IZAZOV.naslov}`, iznos: n }); notify('igracica', 'Izazov odobren', `Dobila si +${fmt(n)} ${FLC} za izazov tjedna.`); notify('roditelj', 'Izazov odobren', `Ana je ispunila izazov tjedna (+${fmt(n)} ${FLC}).`); } }
+    else if (v.ana) notify('igracica', 'Video nije prihvaćen', 'Probaj snimiti ponovno.');
+    render(); return; }
+  const io = e.target.closest('[data-izobjavi]');
+  if (io) { IZAZOV.vrsta = $('#izVrsta').value; IZAZOV.naslov = $('#izNaslov').value.trim() || IZAZOV.naslov; IZAZOV.opis = $('#izOpis').value.trim() || IZAZOV.opis; IZAZOV.do = $('#izRok').value.trim() || IZAZOV.do; IZAZOV.cilj = Math.max(1, Math.min(7, +$('#izCilj').value || 3)); IZAZOV.odradeno = 0; state.video = null;
+    notify('igracica', 'Novi izazov tjedna', IZAZOV.naslov); notify('roditelj', 'Novi izazov tjedna', IZAZOV.naslov); render(); toastIn('Izazov objavljen'); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
     <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
     <p><b>1 FLC = 1 €.</b> Ako ti Falcoina nema dovoljno za artikl, ostatak doplaćuješ gotovinom pri preuzimanju kod trenera.</p>

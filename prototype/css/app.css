@@ -909,3 +909,8 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .streak-dots { display: flex; justify-content: space-around; margin-top: 12px; }
 .streak-dots span { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--silver-100); color: #8a93a6; font-weight: 800; }
 .streak-dots span.on { background: var(--gold); color: var(--navy); }
+
+.vid-state { margin-top: 12px; padding: 12px; border-radius: var(--r-md); font-weight: 700; font-size: var(--fs-sm); display: flex; flex-direction: column; gap: 2px; }
+.vid-state small { font-weight: 600; opacity: .7; }
+.vid-state.wait { background: #fff4d9; color: #7a5a10; } .vid-state.ok { background: #e3f5ea; color: #1f6b3c; } .vid-state.no { background: #fbe6e6; color: #9a2f2f; }
+.vid-row { align-items: center; gap: 8px; }
