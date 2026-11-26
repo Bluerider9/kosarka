@@ -867,12 +867,19 @@ const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PR
 /* ---------- Pogled (admin): kartice / popis / tablica + polja, sortiranje, grupiranje ---------- */
 // cfg: { cols:[{id,label,val(r),html?(r)}], rows, title: colId, attr?(r), hidden?:[ids], empty }
 const pogSt = (key, cfg) => { state.pog = state.pog || {}; return state.pog[key] || (state.pog[key] = { v: 'tablica', skriveno: cfg.hidden || [], sort: '', dir: 1, grupa: '' }); };
-/* Lepeza: vodoravna traka preklopljenih kartica iznad tablice (pregled na prvi pogled) */
-function lepezaHtml(items, naslov) {
+/* Lepeza (coverflow): jedna glavna kartica u sredini, po 2 sa svake strane izlaze iz zamućenja prema sredini / odlaze u zamućenje */
+const lepSt = (key, n) => { state.lep = state.lep || {}; const c = state.lep[key] || 0; return (state.lep[key] = Math.max(0, Math.min(n - 1, c))); };
+function lepPostavi(box, c) {
+  const cards = box.querySelectorAll('.lep-card'); c = Math.max(0, Math.min(cards.length - 1, c)); state.lep = state.lep || {}; state.lep[box.dataset.lep] = c;
+  cards.forEach((el, i) => { const d = i - c, a = Math.abs(d); el.style.setProperty('--d', d); el.style.setProperty('--a', a); el.classList.toggle('far', a > 2); el.classList.toggle('main', a === 0); });
+  const pos = box.closest('.lepeza-wrap').querySelector('.lepeza-pos'); if (pos) pos.textContent = (c + 1) + ' / ' + cards.length;
+}
+function lepezaHtml(items, naslov, key) {
   if (!items.length) return '';
-  const n = items.length;
-  return `<div class="lepeza-wrap"><div class="lepeza-h"><b>${naslov || 'Pregled'}</b><span>${n}</span></div><div class="lepeza">${items.map((it, i) => { const rot = ((i % 7) - 3) * 1.4, dy = Math.abs((i % 7) - 3) * 2;
-    return `<div class="lep-card ${it.attr ? 'click' : ''}" ${it.attr || ''} style="--r:${rot}deg;--dy:${dy}px;z-index:${i + 1}">${it.av || ''}<b>${it.t}</b>${it.s ? `<small>${it.s}</small>` : ''}${it.chip || ''}</div>`; }).join('')}</div></div>`;
+  key = key || naslov || 'lep'; const n = items.length, c = lepSt(key, n);
+  return `<div class="lepeza-wrap"><div class="lepeza-h"><b>${naslov || 'Pregled'}</b><span class="lepeza-pos">${c + 1} / ${n}</span></div>
+    <div class="lepeza-cf"><button type="button" class="lep-nav l" data-lepnav="${key}|-1" aria-label="Prethodna">‹</button><div class="lepeza" data-lep="${key}">${items.map((it, i) => { const d = i - c, a = Math.abs(d);
+    return `<div class="lep-card ${it.attr ? 'click' : ''} ${a > 2 ? 'far' : ''} ${a === 0 ? 'main' : ''}" data-lepi="${key}|${i}" ${it.attr || ''} style="--d:${d};--a:${a}">${it.av || ''}<b>${it.t}</b>${it.s ? `<small>${it.s}</small>` : ''}${it.chip || ''}</div>`; }).join('')}</div><button type="button" class="lep-nav r" data-lepnav="${key}|1" aria-label="Sljedeća">›</button></div></div>`;
 }
 function pogled(key, cfg) {
   const st = pogSt(key, cfg), cols = cfg.cols, vis = cols.filter((c) => !st.skriveno.includes(c.id)), tit = cols.find((c) => c.id === cfg.title) || cols[0];
@@ -889,7 +896,7 @@ function pogled(key, cfg) {
     if (st.v === 'popis') return `<div class="pog-list">${rs.map((r) => `<div class="pog-row ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div><div class="pog-vals">${vis.filter((c) => c !== tit).map((c) => `<span><small>${c.label}</small>${cell(c, r)}</span>`).join('')}</div></div>`).join('')}</div>`;
     return `<div class="pog-cards">${rs.map((r) => `<div class="card pog-card ${cfg.attr ? 'click' : ''}" ${at(r)}><div class="pog-t">${cell(tit, r)}</div>${vis.filter((c) => c !== tit).map((c) => `<div class="pog-f"><small>${c.label}</small><div>${cell(c, r)}</div></div>`).join('')}</div>`).join('')}</div>`;
   };
-  const lep = cfg.lepeza === false ? '' : lepezaHtml(rows.map((r) => { const o = vis.find((c) => c !== tit); return { attr: at(r), av: cfg.lav ? cfg.lav(r) : '', t: bazaVal(tit.val(r)), s: cfg.lsub ? cfg.lsub(r) : (o ? bazaVal(o.val(r)) : ''), chip: cfg.lchip ? cfg.lchip(r) : '' }; }), cfg.lnaslov);
+  const lep = cfg.lepeza === false ? '' : lepezaHtml(rows.map((r) => { const o = vis.find((c) => c !== tit); return { attr: at(r), av: cfg.lav ? cfg.lav(r) : '', t: bazaVal(tit.val(r)), s: cfg.lsub ? cfg.lsub(r) : (o ? bazaVal(o.val(r)) : ''), chip: cfg.lchip ? cfg.lchip(r) : '' }; }), cfg.lnaslov, key);
   return `${lep}<div class="pog-bar"><div class="seg" role="tablist">${[['tablica', 'Tablica'], ['popis', 'Popis'], ['kartice', 'Kartice']].map(([v, t]) => `<button type="button" class="${st.v === v ? 'on' : ''}" data-pogv="${key}|${v}">${t}</button>`).join('')}</div>
     <label class="pog-sel">Sortiraj<select data-pogsort="${key}"><option value="">—</option>${cols.map((c) => `<option value="${c.id}" ${st.sort === c.id ? 'selected' : ''}>${c.label}</option>`).join('')}</select></label>
     ${st.sort ? `<button type="button" class="btn ghost sm" data-pogdir="${key}">${st.dir > 0 ? '↑ uzlazno' : '↓ silazno'}</button>` : ''}
@@ -950,7 +957,7 @@ const ADMIN = {
   lige: () => ligeScreen(),
   protivnici: () => `<div class="page-head"><div><h1>Protivnici</h1><div class="sub">Klubovi i njihovi logotipi (prikazuju se uz utakmice)</div></div><div class="grow"></div>
     <button class="btn" data-protnovi>${ic('plus', 18)} Novi klub</button></div>
-    ${lepezaHtml(PROTIVNICI.map((k) => ({ av: protLogo(k.naziv, 'lg'), t: k.naziv, s: k.grad + ' · ' + (k.dvorane || []).filter(Boolean).length + ' dvorana' })), 'Klubovi')}
+    ${lepezaHtml(PROTIVNICI.map((k) => ({ av: protLogo(k.naziv, 'lg'), t: k.naziv, s: k.grad + ' · ' + (k.dvorane || []).filter(Boolean).length + ' dvorana' })), 'Klubovi', 'prot')}
     <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
       <div class="prot-dv"><span>Dvorane (do 3)</span>${[0, 1, 2].map((i) => `<input class="input" data-protdv="${k.id}-${i}" placeholder="Dvorana ${i + 1}" value="${(k.dvorane && k.dvorane[i]) || ''}">`).join('')}</div>
       <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
@@ -1196,7 +1203,10 @@ document.addEventListener('change', (e) => {
 });
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
 document.addEventListener('input', (e) => { if (e.target.id === 'kasnMin') e.target.style.background = kasnBoja(parseInt(e.target.value, 10) || 0); });
+document.addEventListener('wheel', (e) => { const b = e.target.closest && e.target.closest('.lepeza'); if (!b || Math.abs(e.deltaX) < Math.abs(e.deltaY) && !e.shiftKey) return; e.preventDefault(); const now = Date.now(); if (now - (b._w || 0) < 160) return; b._w = now; lepPostavi(b, (state.lep[b.dataset.lep] || 0) + ((e.deltaX || e.deltaY) > 0 ? 1 : -1)); }, { passive: false });
 document.addEventListener('click', (e) => {
+  const ln = e.target.closest('[data-lepnav]'); if (ln) { const [k, dd] = ln.dataset.lepnav.split('|'); const b = document.querySelector(`.lepeza[data-lep="${k}"]`); if (b) lepPostavi(b, (state.lep[k] || 0) + +dd); return; }
+  const lc = e.target.closest('.lep-card'); if (lc) { const [k, ix] = lc.dataset.lepi.split('|'); if (+ix !== (state.lep[k] || 0)) { e.preventDefault(); lepPostavi(lc.parentNode, +ix); return; } }
   const nx = e.target.closest('[data-next]'); if (nx) { const f = nx.closest('form'); if (validate(f, 1)) goStep(f, 2); else { const b = f.querySelector('.bad'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); } return; }
   const pv = e.target.closest('[data-prev]'); if (pv) { goStep(pv.closest('form'), 1); return; }
   if (e.target.closest('[data-privacy]')) { e.preventDefault(); privacySheet(); return; }

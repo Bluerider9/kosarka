@@ -1110,21 +1110,24 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .tile-thumbs img { position: static; width: 38px; height: 38px; object-fit: cover; border-radius: 8px; border: 2px solid #fff; opacity: .75; cursor: pointer; }
 .tile-thumbs img.on { opacity: 1; border-color: var(--gold); }
 
-/* Lepeza (pregled iznad tablice) */
-.lepeza-wrap { margin: 0 0 18px; }
-.lepeza-h { display: flex; align-items: center; gap: 8px; margin: 0 0 6px 2px; font-size: var(--fs-sm); color: var(--muted); }
+/* Lepeza (coverflow): glavna kartica u sredini, po 2 sa svake strane u zamućenju */
+.lepeza-wrap { margin: 0 0 18px; max-width: 100%; min-width: 0; }
+.lepeza-h { display: flex; align-items: center; gap: 8px; margin: 0 0 4px 2px; font-size: var(--fs-sm); color: var(--muted); }
 .lepeza-h b { color: var(--navy); font-weight: 800; } .lepeza-h span { background: var(--silver-100); border-radius: 10px; padding: 1px 8px; font-weight: 700; }
-.lepeza { display: flex; align-items: flex-end; overflow-x: auto; padding: 14px 24px 18px 34px; background: linear-gradient(180deg, #f3f6fa, #e9eef5); border-radius: 16px; scrollbar-width: thin; }
-.lep-card { flex: 0 0 148px; margin-left: -30px; min-height: 118px; padding: 12px 12px 10px; background: #fff; border: 1px solid var(--silver-100); border-radius: 14px; box-shadow: 0 4px 12px rgba(24,36,84,.14); display: flex; flex-direction: column; gap: 4px; align-items: flex-start; position: relative;
-  transform: translateY(var(--dy)) rotate(var(--r)); transform-origin: 50% 120%; transition: transform .18s, box-shadow .18s, margin .18s; }
-.lep-card:first-child { margin-left: 0; }
-.lep-card.click { cursor: pointer; }
-.lep-card:hover { transform: translateY(-14px) rotate(0deg) scale(1.04); box-shadow: 0 12px 24px rgba(24,36,84,.28); z-index: 999 !important; }
-.lep-card b { font-size: 13px; font-weight: 800; color: var(--navy); line-height: 1.2; }
-.lep-card small { font-size: 11px; color: var(--muted); line-height: 1.25; }
+.lepeza-cf { position: relative; background: linear-gradient(180deg, #f3f6fa, #e9eef5); border-radius: 16px; }
+.lepeza { position: relative; height: 158px; overflow: hidden; border-radius: 16px; perspective: 700px; }
+.lep-card { position: absolute; left: 50%; top: 14px; width: 118px; height: 118px; margin-left: -59px; padding: 10px; box-sizing: border-box; background: #fff; border: 1px solid var(--silver-100); border-radius: 14px; box-shadow: 0 6px 16px rgba(24,36,84,.16);
+  display: flex; flex-direction: column; gap: 3px; align-items: flex-start; overflow: hidden;
+  transform: translateX(calc(var(--d) * 104px)) scale(calc(1 - var(--a) * .13)); filter: blur(calc(var(--a) * 1.7px)); opacity: calc(1 - var(--a) * .27); z-index: calc(10 - var(--a));
+  transition: transform .35s cubic-bezier(.3,.7,.3,1), filter .35s, opacity .35s; cursor: pointer; }
+.lep-card.main { transform: translateX(0) scale(1.1); box-shadow: 0 12px 26px rgba(24,36,84,.3); border-color: var(--gold); }
+.lep-card.far { opacity: 0; pointer-events: none; }
+.lep-card b { font-size: 12.5px; font-weight: 800; color: var(--navy); line-height: 1.15; }
+.lep-card small { font-size: 10.5px; color: var(--muted); line-height: 1.2; }
 .lep-card .chip { font-size: 10px; margin-top: auto; }
-.lep-card .item-tile { width: 44px; height: 44px; } .lep-card .prot-logo { width: 44px; height: 44px; }
-.lep-ini { width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 15px; }
+.lep-card .avatar, .lep-card .item-tile, .lep-card .prot-logo { width: 38px; height: 38px; flex: none; }
+.lep-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; width: 30px; height: 30px; border-radius: 50%; border: 0; background: #fff; box-shadow: 0 2px 8px rgba(24,36,84,.25); color: var(--navy); font-size: 18px; font-weight: 800; cursor: pointer; }
+.lep-nav.l { left: 8px; } .lep-nav.r { right: 8px; }
+.lep-ini { width: 38px; height: 38px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; flex: none; }
 .lep-ini.sm { width: 32px; height: 32px; font-size: 12px; margin-right: 8px; }
 .admin .main { min-width: 0; }
-.lepeza-wrap { max-width: 100%; min-width: 0; }
