@@ -978,3 +978,7 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .fc-hero.compact .fc-top { align-items: center; }
 .fc-hero.compact .fc-ormar { margin-top: 0; margin-right: 44px; }
 .card.mystery { border: 2px solid var(--navy); }
+.card.mystery { background: var(--navy); border-color: var(--navy); color: #fff; }
+.card.mystery .meta, .card.mystery .mys { color: #fff; }
+.card.mystery .mys { color: var(--gold); }
+.card.mystery .join-note { background: rgba(255,255,255,.12); color: #fff; }
