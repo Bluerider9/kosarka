@@ -31,6 +31,7 @@ const ICON = {
 };
 const ic = (n, s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
 const LOGO = 'assets/falcons-logo.png';
+const SEKCIJA_FALCOIN = 'MyFalko'; // naziv kategorije/taba s Falcoinima (valuta ostaje "Falcoin") — mijenja se samo ovdje
 const APP_NAME = 'Oko Soko'; // radni naziv aplikacije — mijenja se samo ovdje
 const BLUERIDER = 'assets/bluerider-lockup-light.svg';
 const EMBLEM = 'assets/falcons-emblem.svg';
@@ -604,7 +605,7 @@ const SCREENS = {
     body: tjedanKartica() + treningKartica() + utakmicaKartica() + ``,
   }),
   'igracica-falcoini': () => ({
-    header: mHeader('Falcoini', 'Skupljaj i mijenjaj u Ormaru'),
+    header: mHeader(SEKCIJA_FALCOIN, 'Skupljaj Falcoine i mijenjaj ih u Ormaru'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
     body: `<div class="card fc-hero compact"><div class="fc-top">${coinSvg(36)}<div class="fc-num">${fmt(saldo())}</div><div class="fc-side"><span>Falcoina</span><small>= ${fmt(saldo())} € u Ormaru</small></div></div>
         <button class="btn red block sm" data-scan>${ic('qr', 18)} Skeniraj QR za dolazak</button></div>
@@ -616,7 +617,7 @@ const SCREENS = {
   'igracica-ormar': () => ({
     header: mHeader('Ormar', 'Zamijeni Falcoine za artikle'),
     tabs: tabbar('igracica', IGRACICA_TABS, 'falcoini'),
-    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ Falcoini</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarGrid()}`,
+    body: `<button class="btn ghost block sm" data-go="igracica-falcoini">‹ ${SEKCIJA_FALCOIN}</button><div class="card row spread"><span class="meta">Tvoje stanje</span>${fc(saldo(), 20)}</div>${ormarGrid()}`,
   }),
   'igracica-profil': () => ({
     header: mHeader('Moj profil', 'Ana Horvat'),
@@ -640,11 +641,11 @@ const SCREENS = {
   }),
 };
 const RODITELJ_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['clanarina', 'Članarina', 'wallet'], ['potvrde', 'Potvrde', 'file']];
-const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['profil', 'Profil', 'user']];
+const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored', 'cal'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['profil', 'Profil', 'user']];
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', 'Falcoini', 'coin'], ['ormar', 'Ormar', 'bag']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['ormar', 'Ormar', 'bag']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -680,7 +681,7 @@ const ADMIN = {
       <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f, i) => `<span class="chip ${i ? '' : 'on'}" data-f="${f}">${f}</span>`).join('')}</div></div>
     <table><thead><tr><th>Ime</th><th>Godište</th><th>Grupe</th><th>Roditelj</th><th>Članarina</th></tr></thead><tbody id="rows">${memberRows()}</tbody></table>`,
   profil: () => profilBody(profilIgr(), 'admin'),
-  falcoini: () => `<div class="page-head"><div><h1>Falcoini</h1><div class="sub">Pravila bodovanja i ljestvica</div></div></div>
+  falcoini: () => `<div class="page-head"><div><h1>${SEKCIJA_FALCOIN}</h1><div class="sub">Pravila bodovanja i ljestvica</div></div></div>
     <div class="pf-grid">
       <div class="card pf-sec"><h4>Pravila bodovanja</h4>${FALCOIN_PRAVILA.map((r) => `<div class="pf-kv"><span>${r.label}</span><span class="row" style="gap:8px">${coinSvg(18)}<input class="input fc-in" type="number" min="0" step="0.01" inputmode="decimal" value="${r.iznos.toFixed(2)}" data-rule="${r.k}"></span></div>`).join('')}
         <button class="btn ghost" data-toast="Pravila spremljena (prototip)">Spremi pravila</button></div>
