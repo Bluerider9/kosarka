@@ -810,7 +810,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Prijave', 'file'], ['clanovi', 'Članovi', 'users'], ['grupe', 'Grupe', 'user'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -871,7 +871,30 @@ function adminUtakmica() {
     <button class="btn block" data-admutk-spremi>Potvrdi termin i dvoranu</button>`}
     <div class="meta" style="margin-top:10px">Igračice i roditelji potvrđuju dolazak kad trener objavi popis (ne čeka se potvrda termina).</div></div>`;
 }
+// Baza (admin): jedna tablica s više tabova; svaki tab = jedna tablica u pravoj MySQL bazi
+const BAZA = [
+  ['igracice', 'Igračice', ['id', 'ime_prezime', 'godina_rodenja', 'grupe', 'roditelj', 'clanarina', 'falcoini'], () => PLAYERS.map((p) => [p.id, p.ime, p.god, p.grupe.join(', '), p.roditelj, { ok: 'plaćeno', due: 'dospjela', late: 'kasni' }[p.clanarina] || p.clanarina, FALCOINI[p.id] ?? 0])],
+  ['grupe', 'Grupe', ['id', 'naziv', 'trener', 'clanova', 'raspored'], () => GROUPS.map((g) => [g.id, g.ime, g.trener, g.cl, g.raspored])],
+  ['uplate', 'Uplate', ['datum', 'platitelj', 'opis', 'iznos_eur', 'status', 'clan'], () => UPLATE.map((u) => [u.dat, u.platitelj, u.opis, u.iznos, { ok: 'sparena', review: 'za pregled', none: 'nije članarina' }[u.st] || u.st, u.clan])],
+  ['falcoini', 'Falcoini', ['datum', 'opis', 'iznos_flc'], () => FALCOIN_POVIJEST.map((f) => [f.dat, f.opis, f.iznos])],
+  ['ormar', 'Ormar', ['id', 'naziv', 'kategorija', 'cijena_flc', 'zaliha_ukupno'], () => ORMAR.map((o) => [o.id, o.ime, o.kat, o.cijena, o.velicine.reduce((t, v) => t + (v.n || 0), 0)])],
+  ['narudzbe', 'Narudžbe', ['datum', 'igracica', 'artikl', 'velicina', 'cijena', 'flc', 'gotovina', 'status'], () => NARUDZBE.map((n) => [n.dat, n.igr, n.artikl, n.velicina, n.cijena, n.f, n.gotovina, n.st])],
+  ['novosti', 'Novosti', ['id', 'datum', 'naslov', 'oznaka', 'publika', 'procitalo', 'od'], () => NOVOSTI.map((n) => [n.id, n.dat, n.naslov, n.oznaka, n.grupa, n.citalo, n.od])],
+  ['zadaci', 'Tjedni zadaci', ['tjedan', 'publika', 'vrsta', 'naslov', 'nagrada_flc'], () => IZ_PUBLIKE.flatMap(([k, pl]) => (k === 'skole' ? IZ_PLAN_SKOLE : IZ_PLAN).map((z, i) => z && [IZ_TJEDNI[i][0], pl, z.vrsta, z.naslov, z.nagrada]).filter(Boolean))],
+];
+const bazaVal = (v) => (typeof v === 'number' && !Number.isInteger(v) ? fmt(v) : v ?? '');
+function bazaScreen() {
+  const t = BAZA.find((x) => x[0] === (state.bazaTab || 'igracice')) || BAZA[0], q = (state.bazaQ || '').toLowerCase();
+  const rows = t[3]().filter((r) => !q || r.join(' ').toLowerCase().includes(q));
+  return `<div class="page-head"><div><h1>Baza</h1><div class="sub">Sve tablice na jednom mjestu — svaki tab je jedna tablica u bazi</div></div><div class="grow"></div>
+    <button class="btn ghost" data-bazacsv>${ic('file', 18)} Izvezi CSV</button><button class="btn" data-toast="Novi redak — sljedeći korak">${ic('plus', 18)} Novi redak</button></div>
+    <div class="baza-tabs" role="tablist">${BAZA.map((x) => `<button type="button" role="tab" class="${x[0] === t[0] ? 'on' : ''}" data-bazatab="${x[0]}">${x[1]}<span>${x[3]().length}</span></button>`).join('')}</div>
+    <div class="baza-bar"><input class="input" id="bazaQ" placeholder="Traži u tablici ${t[1]}…" value="${state.bazaQ || ''}"><span class="meta">${rows.length} redaka · tablica <b>${t[0]}</b></span></div>
+    <div class="baza-wrap"><table class="baza"><thead><tr><th class="rn">#</th>${t[2].map((c) => `<th>${c}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map((r, i) => `<tr><td class="rn">${i + 1}</td>${r.map((v) => `<td>${bazaVal(v)}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${t[2].length + 1}" class="meta">Nema redaka.</td></tr>`}</tbody></table></div>`;
+}
 const ADMIN = {
+  baza: () => bazaScreen(),
   prijave: () => `<div class="page-head"><div><h1>Prijave</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
       <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
     <table><thead><tr><th>Datum</th><th>Djevojčica</th><th>Godište</th><th>Zatražena grupa</th><th>Kontakt roditelja</th><th>Status</th></tr></thead><tbody>${prijave.map((p) =>
@@ -1147,6 +1170,9 @@ document.addEventListener('click', (e) => {
     if (state.zadFaza === 'cekanje' && !state.notifPrikl) { state.notifPrikl = true; notify('igracica', 'Novi tjedni zadatak kreće uskoro!', `Priključi se i ti u ${SEKCIJA_FALCOIN} appu.`); }
     render(); return; }
   if (e.target.closest('[data-izprikl2]')) { state.izPriklIduci = true; render(); toastIn('Priključena si idućem zadatku'); return; }
+  const bt = e.target.closest('[data-bazatab]'); if (bt) { state.bazaTab = bt.dataset.bazatab; state.bazaQ = ''; render(); return; }
+  if (e.target.closest('[data-bazacsv]')) { const t = BAZA.find((x) => x[0] === (state.bazaTab || 'igracice')) || BAZA[0]; const csv = [t[2], ...t[3]()].map((r) => r.map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' })); a.download = t[0] + '.csv'; a.click(); toastIn('Preuzeta tablica ' + t[1]); return; }
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
@@ -1333,3 +1359,5 @@ document.addEventListener('change', (e) => {
   if (!e.target.matches('[data-rule]')) return;
   const r = FALCOIN_PRAVILA.find((x) => x.k === e.target.dataset.rule); r.iznos = r2(Math.max(0, +e.target.value || 0)); e.target.value = r.iznos.toFixed(2);
 });
+
+document.addEventListener('input', (e) => { if (e.target.id === 'bazaQ') { state.bazaQ = e.target.value; const p = e.target.selectionStart; render(); const n = document.getElementById('bazaQ'); if (n) { n.focus(); n.setSelectionRange(p, p); } } });

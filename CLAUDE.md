@@ -176,3 +176,7 @@ Veliki klupski sustav koji zamjenjuje Falcons Tracker (portal.zkkfalcons.hr) i R
 - **Prikaz u adminu (Tjedni zadatak → Predani radovi):** radovi su složeni **po mapama tjedana** (zaglavlje s ikonom mape, nazivom, brojem radova i brojem onih koji čekaju); klik na mapu otvara popis radova s poravnatim stupcima (ikona vrste · igračica i datoteka · Odobri/Odbij ili status · preuzmi · obriši) i gumb "Preuzmi cijelu mapu (ZIP)". Otvorena je jedna mapa odjednom.
 - **Preuzimanje:** admin može **preuzeti pojedini rad** (ikona preuzimanja uz rad) ili **cijelu mapu tjedna** (gumb "Preuzmi sve", ZIP) na računalo, da ih kasnije može koristiti za objave. Prije objave provjeriti privolu za fotografiju/snimke (privola se pamti uz igračicu); radovi se brišu nakon 14 dana, pa ih treba preuzeti prije toga.
 - Pravna provjera: privola za snimke maloljetnica, rok čuvanja, veličina i format datoteka.
+
+## Baza (admin)
+
+- Admin izbornik ima stavku **Baza**: jedna tablica (izgled kao proračunska) s tabovima, svaki tab je jedna tablica buduće MySQL baze: Igračice, Grupe, Uplate, Falcoini, Ormar, Narudžbe, Novosti, Tjedni zadaci (broj redaka na tabu). Nazivi stupaca su nazivi polja u bazi (npr. `ime_prezime`), sticky zaglavlje, brojevi redaka, pretraga po tablici, **Izvezi CSV** za aktivni tab. U prototipu je samo za čitanje ("Novi redak" još nije u prototipu). Prava aplikacija: ista pregledna tablica nad stvarnim tablicama (uređivanje ćelija, uvoz iz Relaga).

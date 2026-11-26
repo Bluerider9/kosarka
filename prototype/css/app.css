@@ -1032,3 +1032,16 @@ i.big { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-to
 .card.rad-pregled { display: flex; align-items: center; gap: 12px; background: #eef2f7; box-shadow: none; }
 .utk-info { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--silver-100); color: var(--navy); font-size: var(--fs-sm); }
 .utk-info b { font-weight: 800; }
+
+.baza-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.baza-tabs button { border: 1px solid var(--silver-100); background: #fff; border-radius: 10px 10px 0 0; padding: 8px 12px; font: 700 var(--fs-sm) Montserrat, sans-serif; color: var(--navy); cursor: pointer; display: flex; gap: 8px; align-items: center; }
+.baza-tabs button span { font-size: var(--fs-xs); background: var(--silver-100); border-radius: 8px; padding: 1px 6px; }
+.baza-tabs button.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+.baza-tabs button.on span { background: rgba(255,255,255,.2); }
+.baza-bar { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; }
+.baza-bar .input { max-width: 320px; }
+.baza-wrap { overflow: auto; max-height: 62vh; border: 1px solid var(--silver-100); border-radius: 12px; background: #fff; }
+table.baza { box-shadow: none; border-radius: 0; font-size: var(--fs-xs); }
+table.baza th { position: sticky; top: 0; background: var(--silver-100); color: var(--navy); font-family: ui-monospace, monospace; text-align: left; padding: 8px 10px; white-space: nowrap; }
+table.baza td { padding: 7px 10px; border-top: 1px solid var(--silver-100); border-right: 1px solid #eef1f4; white-space: nowrap; }
+table.baza .rn { color: #8a97a6; background: #f6f8fa; text-align: right; width: 36px; }
