@@ -213,7 +213,7 @@ const utkGumbi = (attr, da, ne) => `<div class="rsvp"><button class="${state.utk
 function roditeljUtakmica(p) {
   const u = UTAKMICA; const ime = p.ime.split(' ')[0];
   let tijelo;
-  if (state.utkOtkaz) tijelo = `<div class="rsvp-msg no">Javio si da ${ime} ne može na utakmicu. Treneri je neće staviti na popis.</div><button class="btn ghost block sm" data-utkotkaz="0">Ipak može</button>`;
+  if (state.utkOtkaz) tijelo = `<div class="rsvp-msg no">Javio si da ${ime} ne može na utakmicu. Neće biti u sastavu.</div><button class="btn ghost block sm" data-utkotkaz="0">Ipak može</button>`;
   else if (!utkOtvoreno()) tijelo = `<div class="rsvp-msg warn">Popis još nije objavljen. Ako ${ime} ne može, javi odmah da je treneri ne stavljaju na popis.</div><button class="btn ghost block sm" data-utkotkaz="1">${ic('x', 16)} ${ime} ne može na utakmicu</button>`;
   else tijelo = utkGumbi('data-utkr', 'Dolazi', 'Ne dolazi') + utkPoruka('roditelj');
   return `<div class="par-train"><div class="meta">Iduća utakmica · ${u.datum} ${u.vrijeme} · ${u.natjecanje}</div>${tijelo}</div>`;
@@ -221,13 +221,14 @@ function roditeljUtakmica(p) {
 function utkTrenerKartica() {
   const b = utkBrojevi(); const u = UTAKMICA;
   if (!utkOtvoreno()) return `<div class="card stack tight"><div class="row"><div class="time-block sm"><b>${u.vrijeme}</b><span>Sub</span></div><div class="grow"><div class="meta">Iduća utakmica · ${u.datum}</div><h3>${u.natjecanje}</h3></div></div>${utkFlags()}
-    <div class="utk-skip"><b>Ne mogu na utakmicu</b>${state.utkOtkaz ? `<div class="utk-p"><span>Ana Horvat</span><i class="utk-s no">roditelj javio</i></div><div class="meta">Ne stavljaj je na popis.</div>` : '<div class="meta">Za sada nitko nije javio da ne može.</div>'}</div>
+    <div class="utk-skip"><b>Ne mogu na utakmicu</b>${state.utkOtkaz ? `<div class="utk-p"><span>Ana Horvat</span><i class="utk-s no">Nije u sastavu · roditelj javio</i></div><div class="meta">Ne stavljaj je na popis.</div>` : '<div class="meta">Za sada nitko nije javio da ne može.</div>'}</div>
     <button class="btn red block sm" data-utkobjavi>Objavi popis (${utkPozvane().length} igračica)</button><div class="meta">Kad objaviš popis, pozvane igračice i roditelji potvrđuju dolazak.</div></div>`;
   const st = (id) => { const o = utkOdg(id); return o === 'da' ? ['Dolazi', 'ok'] : o === 'ne' ? ['Ne dolazi', 'no'] : ['Čeka', 'wait']; };
   return `<div class="card stack tight utk-tr"><div class="row"><div class="time-block sm"><b>${u.vrijeme}</b><span>Sub</span></div><div class="grow"><div class="meta">Iduća utakmica · ${u.datum}</div><h3>${u.natjecanje}</h3></div></div>
     <div class="utk-count"><div class="ok"><b>${b.da}</b><span>dolazi</span></div><div class="no"><b>${b.ne}</b><span>ne dolazi</span></div><div class="wait"><b>${b.ceka}</b><span>čeka</span></div></div>
     <div class="progress"><i style="width:${Math.round((b.da + b.ne) / b.ukupno * 100)}%"></i></div><div class="meta">Odgovorilo ${b.da + b.ne} od ${b.ukupno} pozvanih</div>
     <div class="utk-list">${utkPozvane().map((p) => { const [t, c] = st(p.id); return `<div class="utk-p"><span>${p.ime}</span><i class="utk-s ${c}">${t}${p.id === IGR_ID && state.utkOdg && state.utkTko === 'roditelj' ? ' · roditelj' : ''}</i></div>`; }).join('')}</div>
+    ${state.utkOtkaz ? `<div class="utk-skip"><b>Nije u sastavu</b><div class="utk-p"><span>Ana Horvat</span><i class="utk-s no">roditelj javio</i></div></div>` : ''}
     ${b.ceka ? `<button class="btn ghost block sm" data-utkpodsjeti>${ic('bell', 16)} Podsjeti one koje čekaju (${b.ceka})</button>` : ''}</div>`;
 }
 const utkFlags = () => `<div class="match-flags">${UTAKMICA.termin ? `<span class="okf">${ic('check', 14)} Datum i vrijeme potvrđeni</span>` : `<span>${ic('cal', 14)} Datum i vrijeme još nisu potvrđeni</span>`}${UTAKMICA.dvorana ? `<span class="okf">${ic('check', 14)} ${UTAKMICA.dvorana}</span>` : `<span>${ic('pin', 14)} Dvorana još nije potvrđena</span>`}</div>`;
@@ -235,7 +236,7 @@ function utakmicaKartica() {
   const u = UTAKMICA;
   return `<div class="card stack tight"><div class="row"><div class="time-block sm"><b>${u.vrijeme}</b><span>Sub</span></div><div class="grow"><div class="meta">Iduća utakmica</div><h3>${u.natjecanje}</h3><div class="meta">${u.datum} u ${u.vrijeme}</div></div></div>
     ${utkFlags()}
-    ${state.utkOtkaz ? `<div class="rsvp-msg no">Roditelj je javio da ne možeš na ovu utakmicu. Treneri te neće staviti na popis.</div>`
+    ${state.utkOtkaz ? `<div class="rsvp-msg no">Nisi u sastavu za ovu utakmicu: roditelj je javio da ne možeš.</div>`
       : utkOtvoreno() ? `<div class="meta"><b>Na popisu si.</b> Potvrdi dolazak što prije.</div>${utkGumbi('data-utk', 'Dolazim', 'Ne dolazim')}${utkPoruka('igracica')}` : UTK_NAPOMENA()}</div>`;
 }
 
@@ -272,7 +273,7 @@ const UTAKMICE_IGR = [
 ];
 const utakmiceIgr = () => `<div class="card sched-matches"><h3>Utakmice</h3>${UTAKMICE_IGR.map((u) => `<div class="mt"><div class="mt-d"><b>${u.dat}</b><span>${u.vr || 'odigrano'}</span></div>
   <div class="mt-o"><b>${u.opis}</b>${u.nap ? `<small>${u.nap}</small>` : ''}</div>
-  ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Ne možeš', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>`}</div>`).join('')}</div>`;
+  ${u.st === 'pozvana' ? (state.utkOtkaz ? chip('Nije u sastavu', 'danger') : !utkOtvoreno() ? chip('Čeka popis') : state.utkOdg ? chip(state.utkOdg === 'da' ? 'Dolaziš' : 'Ne dolaziš', state.utkOdg === 'da' ? 'ok' : 'danger') : chip('Potvrdi dolazak', 'warn')) : `<span class="mt-r ${+u.rez.split(' : ')[0] > +u.rez.split(' : ')[1] ? 'w' : 'l'}">${u.rez}</span>`}</div>`).join('')}</div>`;
 function rasporedScreen(filterGrupe, tocke = false, tockeGrupe = []) {
   const redovi = DANI_PUNO.map((ime, i) => {
     const lista = (TRENINZI[i] || []).filter((t) => !filterGrupe || filterGrupe.includes(t.g));
@@ -1258,7 +1259,7 @@ document.addEventListener('click', (e) => {
   const uo = e.target.closest('[data-utkotkaz]');
   if (uo) { state.utkOtkaz = uo.dataset.utkotkaz === '1'; if (state.utkOtkaz) state.utkOdg = null;
     notify('trener', state.utkOtkaz ? 'Ne stavljaj na popis: Ana Horvat' : 'Ana Horvat ipak može', state.utkOtkaz ? `Roditelj je javio da Ana Horvat ne može na utakmicu ${UTAKMICA.datum}. Ne stavljaj je na popis.` : `Roditelj je javio da Ana Horvat ipak može na utakmicu ${UTAKMICA.datum}.`);
-    notify('igracica', state.utkOtkaz ? 'Roditelj je javio da ne možeš na utakmicu' : 'Roditelj je javio da ipak možeš na utakmicu', `Utakmica ${UTAKMICA.datum}.`);
+    notify('igracica', state.utkOtkaz ? 'Nisi u sastavu za utakmicu' : 'Roditelj je javio da ipak možeš na utakmicu', state.utkOtkaz ? `Utakmica ${UTAKMICA.datum}: roditelj je javio da ne možeš, pa nisi u sastavu.` : `Utakmica ${UTAKMICA.datum}.`);
     render(); toastIn(state.utkOtkaz ? 'Javljeno treneru: Ana ne može na utakmicu' : 'Javljeno: Ana ipak može'); return; }
   if (e.target.closest('[data-utkobjavi]')) { state.utkPopis = true; const t = `Popis za utakmicu ${UTAKMICA.datum} je objavljen. Potvrdi dolazak što prije.`;
     if (utkNaPopisu()) { notify('igracica', 'Popis objavljen — potvrdi dolazak', t); notify('roditelj', 'Popis objavljen — potvrdite dolazak', t); }
