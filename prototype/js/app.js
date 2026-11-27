@@ -1208,7 +1208,7 @@ function render() {
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
       ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') || (a === 'grupe' && id === 'klub') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'clanovi' && pending() ? `<span class="badge">${pending()}</span>` : ''}${id === 'zadatak' && VIDEA.filter((v) => v.st === 'čeka').length ? `<span class="badge">${VIDEA.filter((v) => v.st === 'čeka').length}</span>` : ''}${id === 'ormar' && novihNarudzbi() ? `<span class="badge">${novihNarudzbi()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
-      <button>${ic('user', 20)}Mislav</button></aside><main class="main">${bellBtn('admin-bell', 'data-bell-admin')}<button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
+      <button>${ic('user', 20)}Mislav</button></aside><main class="main"><button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
   }
   stage.className = 'stage';
