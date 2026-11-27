@@ -265,7 +265,7 @@ function trenRow(t, extra = '') {
 }
 const grupaLabel = (g) => (g === 'U14' ? 'U14/U16/U18' : g); // zajednički trening
 const DANI_PUNO = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
-const RASPORED_NAPOMENA = `<div class="sched-note">${ic('cal', 16)}<span>Raspored za idući tjedan ažurira se <b>nedjeljom u podne</b>.</span></div>`;
+const RASPORED_NAPOMENA = `<div class="sched-note">${ic('cal', 16)}<span>Raspored za idući tjedan ažurira se <b>subotom</b>.</span></div>`;
 // status dolaska po terminu: 'da' | broj minuta kašnjenja (računa se kao dolazak) | 'ne'; bez zapisa = trening još nije bio
 const DOLAZAK_TJEDAN = { '0-U14-17:30': 'da' }; // prototip: Ana je bila na ponedjeljkovom treningu
 const dolazak = (i, t) => DOLAZAK_TJEDAN[`${i}-${t.g}-${t.v}`];
@@ -873,7 +873,10 @@ function adminKalendar() {
     ${sel === '2026-11-28' ? adminUtakmica() : ''}</div>`;
   return `<div class="page-head"><div><h1>Kalendar</h1><div class="sub">Utakmice, tjedni zadaci i treninzi · pritisni dan za detalje</div></div><div class="grow"></div>
       <button class="btn" data-toast="Novi termin — sljedeći korak">${ic('plus', 18)} Novi termin</button></div>
-    ${RASPORED_NAPOMENA}
+    <div class="cal-rokovi">${ic('cal', 16)}<ul>
+      <li><b>Subota:</b> objavi raspored treninga za idući tjedan</li>
+      <li><b>Nedjelja do 12:00:</b> zatvara se tjedni zadatak, a idući mora biti planiran</li>
+      <li><b>Ponedjeljak 00:01:</b> otvara se novi tjedni zadatak</li></ul></div>
     <div class="cal-bar"><button class="btn ghost sm" data-admmj="-1" aria-label="Prethodni mjesec">‹</button><h2>${MJESECI[m]} ${y}.</h2><button class="btn ghost sm" data-admmj="1" aria-label="Sljedeći mjesec">›</button>
       <button class="btn ghost sm" data-admmj="0">Danas</button></div>
     <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div>
