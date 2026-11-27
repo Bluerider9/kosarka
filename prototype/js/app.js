@@ -817,7 +817,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracije', 'file'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracije', 'file'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Webshop', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -1068,7 +1068,7 @@ const ADMIN = {
       <div class="card pf-sec"><h4>Kako se bilježi dolazak</h4>
         <div class="meta" style="line-height:1.6">Trener otvori QR za termin u svojoj aplikaciji, igračice ga skeniraju u svojoj. Kod vrijedi samo za taj termin, a igračica po terminu dobije bodove jednom. Trener može dolazak označiti i ručno.</div></div>
     </div>`,
-  ormar: () => `<div class="page-head"><div><h1>Ormar</h1><div class="sub">Artikli za zamjenu i narudžbe</div></div><div class="grow"></div>
+  ormar: () => `<div class="page-head"><div><h1>Webshop</h1><div class="sub">Artikli za zamjenu i narudžbe</div></div><div class="grow"></div>
       <button class="btn" data-toast="Novi artikl — sljedeći korak">${ic('plus', 18)} Novi artikl</button></div>
     <div class="card row spread" style="margin-bottom:16px"><div><h3>Za naplatiti gotovinom</h3><div class="meta">${NARUDZBE.filter((n) => n.st === 'čeka' && n.gotovina > 0).length} narudžbi čeka preuzimanje s doplatom</div></div>
       <b style="font-size:var(--fs-xl);font-weight:900">${fmt(NARUDZBE.filter((n) => n.st === 'čeka').reduce((s, n) => s + n.gotovina, 0))} €</b></div>
@@ -1407,7 +1407,7 @@ document.addEventListener('click', (e) => {
     const f = rod ? 0 : r2(Math.min(state.redeem.f || 0, saldo(), a.cijena)); const cash = r2(a.cijena - f); const pre = !(v.n > 0);
     if (!rod) FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] - f); if (!pre) v.n--;
     const nov = { igr: 'Ana Horvat', artikl: a.ime, velicina: v.v, pre, cijena: a.cijena, f, gotovina: cash, dat: '26.11.2026.', st: rod ? 'čeka' : 'čeka roditelja', izvor: rod ? 'roditelj' : 'igracica' }; NARUDZBE.unshift(nov);
-    if (rod) { notify('admin', 'Nova narudžba u Ormaru (roditelj)', `Ana Horvat: ${a.ime} (${v.v}) · iznenađenje, ne najavljivati igračici · naplatiti ${fmt(cash)} €`); closeOverlay(); render(); toastIn('Narudžba poslana — Ana ne zna'); return; }
+    if (rod) { notify('admin', 'Nova narudžba u Webshopu (roditelj)', `Ana Horvat: ${a.ime} (${v.v}) · iznenađenje, ne najavljivati igračici · naplatiti ${fmt(cash)} €`); closeOverlay(); render(); toastIn('Narudžba poslana — Ana ne zna'); return; }
     if (f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Rezervirano: ${a.ime} (${v.v})`, iznos: -f });
     notify('roditelj', 'Ana je izabrala artikl u Ormaru', `${a.ime} (${v.v}), ${fmt(a.cijena)}${cash > 0 ? ` · doplata ${fmt(cash)} €` : ''}. Pogledaj i odobri.`, nov);
     closeOverlay(); render(); toastIn('Poslano roditelju na odobrenje'); return; }
@@ -1423,7 +1423,7 @@ document.addEventListener('click', (e) => {
     overlay(`<h2>Narudžba iz Ormara</h2>${o.st === 'čeka roditelja' ? narudzbaKartica({ n: o, i }, true) : `${narudzbaKartica({ n: o, i }, false).replace(/<div class="vid-state[\s\S]*$/, '')}<div class="vid-state ${o.st === 'odbijeno' ? 'no' : 'ok'}"><span class="vs-t">${o.st === 'odbijeno' ? 'Odbijeno' : 'Već odobreno'}</span></div></div>`}<button class="btn ghost block" data-fxclose>Zatvori</button>`); return; }
   const ro = e.target.closest('[data-rodok],[data-rodno]');
   if (ro) { const ok = ro.dataset.rodok !== undefined; const n = NARUDZBE[+(ok ? ro.dataset.rodok : ro.dataset.rodno)];
-    if (ok) { n.st = 'čeka'; notify('admin', 'Nova narudžba u Ormaru', `Ana Horvat: ${n.artikl} (${n.velicina}), ${fmt(n.cijena)}${n.gotovina > 0 ? ` · naplatiti ${fmt(n.gotovina)} €` : ''} · odobrio roditelj`); notify('igracica', 'Roditelj je odobrio narudžbu', `${n.artikl} (${n.velicina}) — preuzmi na treningu kod trenera.`); toastIn('Odobreno — narudžba ide klubu'); }
+    if (ok) { n.st = 'čeka'; notify('admin', 'Nova narudžba u Webshopu', `Ana Horvat: ${n.artikl} (${n.velicina}), ${fmt(n.cijena)}${n.gotovina > 0 ? ` · naplatiti ${fmt(n.gotovina)} €` : ''} · odobrio roditelj`); notify('igracica', 'Roditelj je odobrio narudžbu', `${n.artikl} (${n.velicina}) — preuzmi na treningu kod trenera.`); toastIn('Odobreno — narudžba ide klubu'); }
     else { n.st = 'odbijeno'; const a = ORMAR.find((x) => x.ime === n.artikl); const vv = a && a.velicine.find((x) => x.v === n.velicina); if (vv && vv.n !== null && !n.pre) vv.n++;
       FALCOINI[IGR_ID] = r2(FALCOINI[IGR_ID] + n.f); if (n.f > 0) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: `Povrat: ${n.artikl} (roditelj nije odobrio)`, iznos: n.f }); notify('igracica', 'Roditelj nije odobrio narudžbu', `${n.artikl} (${n.velicina}) — Falcoini su vraćeni na stanje.`); toastIn('Odbijeno — Falcoini vraćeni Ani'); }
     closeOverlay(); render(); return; }
