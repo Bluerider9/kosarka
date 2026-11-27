@@ -817,7 +817,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracije', 'file'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadatak', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracije', 'file'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Ormar', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -1035,7 +1035,7 @@ const ADMIN = {
         { id: 'grupe', label: 'Grupe', val: (p) => p.grupe.join(', '), html: (p) => p.grupe.map((x) => chip(x, 'navy')).join(' ') }, { id: 'roditelj', label: 'Roditelj', val: (p) => p.roditelj },
         { id: 'clan', label: 'Članarina', val: (p) => CLANARINA[p.clanarina].label, html: (p) => clan(p.clanarina) }] })}`,
   profil: () => profilBody(profilIgr(), 'admin'),
-  zadatak: () => `<div class="page-head"><div><h1>Tjedni zadatak</h1><div class="sub">Planiranje zadataka i odobravanje videa i fotografija</div></div></div>${izazovPodsjetnik()}
+  zadatak: () => `<div class="page-head"><div><h1>Tjedni zadaci</h1><div class="sub">Planiranje zadataka i odobravanje videa i fotografija</div></div></div>${izazovPodsjetnik()}
     <div class="pf-grid">
       <div class="card pf-sec wide"><h4>Planer tjednih zadataka</h4>
         <div class="pub-tabs">${IZ_PUBLIKE.map(([k, t]) => `<button type="button" class="pp-chip pub${(state.izPubl || 'selekcija') === k ? ' on' : ''}" data-izpubl="${k}">${t}</button>`).join('')}</div>
