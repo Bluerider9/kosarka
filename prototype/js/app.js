@@ -834,7 +834,7 @@ const LIGE = LIGE_PODACI.map((l) => ({ ...l, kola: l.kola.map((k) => ({ ...k, vr
 // rezultat i strijelci (admin upisuje): k.nasi, k.njihovi, k.rez = 'nasi : njihovi', k.strijelci = [{ id: igračica, k: koševi }] — izmišljeni primjeri
 (() => { const l = LIGE.find((x) => x.id === 'l4'); const pod = (br, n, nj, str) => { const k = l.kola.find((x) => x.k === br); if (k) { k.nasi = n; k.njihovi = nj; k.rez = n + ' : ' + nj; k.strijelci = str; } };
   pod(2, 52, 38, [{ id: 1, k: 8 }, { id: 2, k: 14 }, { id: 3, k: 12 }, { id: 4, k: 10 }, { id: 5, k: 8 }]); pod(3, 41, 44, [{ id: 1, k: 6 }, { id: 2, k: 12 }, { id: 3, k: 9 }, { id: 4, k: 14 }]); })();
-const koloChip = (k) => (k.rez ? chip('Rezultat ' + k.rez, 'navy') : k.d < '2026-11-26' ? chip('Odigrano') : chip('Predstoji', 'warn'));
+const koloChip = (k) => (k.rez ? chip('Rezultat ' + k.rez + (+k.nasi > +k.njihovi ? ' · pobjeda' : +k.nasi < +k.njihovi ? ' · poraz' : ' · neriješeno'), +k.nasi > +k.njihovi ? 'ok' : +k.nasi < +k.njihovi ? 'danger' : 'navy') : k.d < '2026-11-26' ? chip('Odigrano · rezultat nije upisan', 'warn') : chip('Predstoji', 'warn'));
 const strChip = (k) => (k.nasi !== undefined ? chip(`Strijelci ${strZbroj(k)} od ${k.nasi}`, strZbroj(k) === +k.nasi ? 'ok' : 'warn') : '');
 const keloKolo = (key) => { const [lid, br] = key.split('-'); const l = LIGE.find((x) => x.id === lid); return l ? { l, k: l.kola.find((x) => x.k === +br) } : {}; };
 const igrOpt = (sel) => PLAYERS.map((p) => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${p.ime}</option>`).join('');
@@ -848,7 +848,7 @@ const isoDan = (iso) => { const [y, m, d] = iso.split('-').map(Number); const wd
 const jeVikend = (iso) => { const [y, m, d] = iso.split('-').map(Number); return [0, 6].includes(new Date(y, m - 1, d).getDay()); };
 const glavnoKolo = () => { const l = LIGE.find((x) => x.id === UTAKMICA.kolo.liga); return { liga: l, kolo: l.kola.find((x) => x.k === UTAKMICA.kolo.k) }; };
 const admUtakmice = () => LIGE.flatMap((l) => l.kola.map((k) => { const glavna = UTAKMICA.kolo.liga === l.id && UTAKMICA.kolo.k === k.k;
-  return { d: k.d, vr: glavna ? UTAKMICA.vrijeme : (k.vr || '11:00'), opis: `${l.naziv} · ${k.k}. kolo · ${k.gost ? 'gostovanje kod ' : ''}${k.prot}`, rez: k.rez, glavna, nepotvrdeno: !k.rez && !glavna }; }));
+  return { d: k.d, vr: glavna ? UTAKMICA.vrijeme : (k.vr || '11:00'), opis: `${l.naziv} · ${k.k}. kolo · ${k.gost ? 'gostovanje kod ' : ''}${k.prot}`, rez: k.rez, kolo: (k.rez || k.d < '2026-11-26') ? k : null, glavna, nepotvrdeno: !k.rez && !glavna }; }));
 const danStavke = (y, m, d) => {
   const dt = new Date(y, m, d); const wd = (dt.getDay() + 6) % 7; const key = dKey(y, m, d); const st = [];
   (TRENINZI[wd] || []).forEach((t) => st.push({ t: 'tr', vr: t.v, label: grupaLabel(t.g), det: `${t.v}–${t.do} · ${t.d}` }));
@@ -868,7 +868,7 @@ function adminKalendar() {
   const detalj = `<div class="cal-detail card"><h3>${DANI_PUNO[(sdt.getDay() + 6) % 7]}, ${sd}. ${MJ_GEN[sm - 1]}</h3>
     ${['tr', 'ut', 'iz'].map((tip) => { const l = sst.filter((x) => x.t === tip); if (!l.length) return ''; const nas = { tr: 'Treninzi', ut: 'Utakmice', iz: 'Tjedni zadatak' }[tip];
       return `<div class="section-title small">${nas}</div>${l.map((x) => `<div class="cal-row ${x.t}"><b>${x.t === 'iz' ? x.label : x.det.split(' · ')[0]}</b><span>${x.t === 'tr' ? `${x.label} · ${x.det.split(' · ')[1]}` : x.t === 'ut' ? x.u.opis : x.det}</span>
-        ${x.t === 'ut' ? (x.u.rez ? chip('Rezultat ' + x.u.rez, 'navy') : x.u.glavna ? (UTAKMICA.termin && UTAKMICA.dvorana ? chip('Potvrđeno', 'ok') : chip('Čeka potvrdu', 'warn')) : (x.u.d < '2026-11-26' ? chip('Odigrano') : chip('Nije potvrđeno', 'warn'))) : ''}
+        ${x.t === 'ut' ? (x.u.kolo ? koloChip(x.u.kolo) : x.u.glavna ? (UTAKMICA.termin && UTAKMICA.dvorana ? chip('Potvrđeno', 'ok') : chip('Čeka potvrdu', 'warn')) : (x.u.d < '2026-11-26' ? chip('Odigrano') : chip('Nije potvrđeno', 'warn'))) : ''}
         ${x.t === 'iz' ? `<button class="btn ghost sm" data-izuredi="${x.wk}">Uredi</button>` : ''}</div>`).join('')}`; }).join('') || '<div class="meta">Nema termina ovaj dan.</div>'}
     ${sel === '2026-11-28' ? adminUtakmica() : ''}</div>`;
   return `<div class="page-head"><div><h1>Kalendar</h1><div class="sub">Utakmice, tjedni zadaci i treninzi · pritisni dan za detalje</div></div><div class="grow"></div>
