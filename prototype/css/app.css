@@ -1216,3 +1216,20 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .cal-rokovi { display: flex; gap: 10px; align-items: flex-start; background: var(--navy-100); color: var(--navy); border-radius: 12px; padding: 10px 14px; font-size: 12px; max-width: 560px; margin-bottom: 16px; }
 .cal-rokovi svg { flex: none; margin-top: 2px; }
 .cal-rokovi ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+
+/* Novosti (admin): galerija */
+.nov-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.nov-card { display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; position: relative; text-align: left; background: #fff; border: 1px solid var(--line, #e3e7ee); border-radius: 16px; overflow: hidden; cursor: pointer; padding: 0; font: inherit; color: inherit; transition: transform .15s, box-shadow .15s; }
+.nov-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(24,36,84,.14); }
+.nov-cover { position: relative; aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.nov-ball { position: absolute; right: -28px; bottom: -34px; width: 120px; height: 120px; border-radius: 50%; border: 3px solid currentColor; opacity: .18; }
+.nov-ball::before, .nov-ball::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 3px solid currentColor; clip-path: inset(0 50% 0 0); transform: scaleX(.5); }
+.nov-ball::after { clip-path: none; border-width: 0 0 0 3px; border-radius: 0; left: 50%; }
+.nov-ic { opacity: .9; }
+.nov-tag { position: absolute; top: 10px; left: 10px; }
+.nov-pin { position: absolute; top: 10px; right: 10px; display: inline-flex; gap: 4px; align-items: center; background: rgba(255,255,255,.92); color: var(--navy); border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 700; }
+.nov-body { padding: 14px 16px 16px; display: grid; gap: 6px; }
+.nov-body b { font-size: 15px; line-height: 1.3; }
+.nov-read { height: 5px; border-radius: 3px; background: #e9edf3; overflow: hidden; margin-top: 4px; }
+.nov-read i { display: block; height: 100%; background: var(--gold, #F0B64E); }
+.nov-body small { color: var(--muted, #6b7585); font-size: 11px; }

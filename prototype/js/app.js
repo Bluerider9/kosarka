@@ -1008,6 +1008,15 @@ const regTraka = () => {
   return `<div class="reg-traka"><div class="row spread"><b>Nove registracije <span class="chip warn">${l.length}</span></b><button class="btn ghost sm" data-go="prijava-forma">Otvori javni obrazac</button></div>
     <div class="reg-list">${l.map((p) => `<button type="button" class="reg-kartica" data-open="${p.id}">${av(p, 'sm')}<div class="grow"><b>${p.ime} ${p.prezime}</b><small>${p.grupa} · ${p.rod.slice(0, 4)}. · ${p.dat}</small></div>${p.dup ? chip('Moguća dvostruka', 'danger') : ''}<span class="meta">Pregledaj ›</span></button>`).join('')}</div></div>`;
 };
+/* generička naslovnica novosti (po oznaci) — kasnije se može zamijeniti pravom fotografijom */
+const NOV_COVER = { 'Važno': ['#C04848', '#8e2f2f', 'bell', '#fff'], 'Klub': ['#182454', '#2a3a7a', 'home', '#F0B64E'], 'Trening': ['#2a3a7a', '#182454', 'check', '#F0B64E'], 'Članarina': ['#F0B64E', '#d9952a', 'wallet', '#182454'], 'Škola košarke': ['#B4C0CC', '#8fa0b2', 'users', '#182454'] };
+const novostCover = (n) => { const [a, b, ik, c] = NOV_COVER[n.oznaka] || NOV_COVER.Klub;
+  return `<div class="nov-cover" style="background:linear-gradient(135deg,${a},${b});color:${c}"><span class="nov-ball"></span><span class="nov-ic">${ic(ik, 44)}</span></div>`; };
+const novostKartica = (n) => `<button type="button" class="nov-card" data-novotv="${n.id}">${novostCover(n)}
+  <span class="nov-tag">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</span>${n.pin ? `<span class="nov-pin">${ic('bell', 14)} Prikvačeno</span>` : ''}
+  <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa}</div>
+  <div class="nov-read"><i style="width:${n.od ? Math.round(n.citalo / n.od * 100) : 0}%"></i></div><small>${n.citalo ? `Pročitalo ${n.citalo} / ${n.od}` : 'Još nitko nije pročitao'}</small></div></button>`;
+
 const ADMIN = {
   baza: () => bazaScreen(),
   lige: () => ligeScreen(),
@@ -1092,9 +1101,7 @@ const ADMIN = {
         { id: 'cij', label: 'Cijena (FLC = €)', val: (a) => a.cijena, html: (a) => cijenaHtml(a) }, { id: 'zal', label: 'Zaliha', val: (a) => zaliha(a), html: (a) => `${zaliha(a) ? `${zaliha(a)} kom` : '—'}${imaPre(a) ? ` ${chip('predbilježba', 'warn')}` : ''}` }] })}`,
   novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje, igračice i trenere</div></div><div class="grow"></div>
       <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
-    ${pogled('novosti', { lnaslov: 'Objave', title: 'naslov', empty: 'Nema objava.', rows: NOVOSTI, lsub: (n) => n.dat + ' · ' + (n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa), lchip: (n) => chip(n.oznaka, OZNAKE[n.oznaka] || 'navy'),
-      cols: [{ id: 'naslov', label: 'Objava', val: (n) => n.naslov, html: (n) => `<b>${n.pin ? '📌 ' : ''}${n.naslov}</b><div class="meta">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div>` }, { id: 'za', label: 'Za', val: (n) => (n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa), html: (n) => chip(n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa, 'navy') },
-        { id: 'dat', label: 'Datum', val: (n) => n.dat }, { id: 'cit', label: 'Pročitalo', val: (n) => n.citalo, html: (n) => (n.citalo ? `${n.citalo} / ${n.od}` : '—') }] })}`,
+    <div class="nov-gal">${NOVOSTI.slice().sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0)).map(novostKartica).join('') || '<div class="meta">Nema objava.</div>'}</div>`,
   grupe: () => { state.klubTab = 'grupe'; return klubScreen(); },
   __grupeTijelo: () => `${pogled('grupe', { lepeza: false, samoTablica: true, lnaslov: 'Grupe', title: 'ime', empty: 'Nema grupa.', rows: GROUPS, lsub: (g) => g.trener + ' · ' + g.cl + ' članica', lchip: (g) => chip(g.raspored, ''),
       cols: [{ id: 'ime', label: 'Grupa', val: (g) => g.ime, html: (g) => `<b>${g.ime}</b>` }, { id: 'trener', label: 'Trener', val: (g) => g.trener }, { id: 'cl', label: 'Članica', val: (g) => g.cl, html: (g) => chip(g.cl + ' članica', 'navy') }, { id: 'rasp', label: 'Raspored', val: (g) => g.raspored }] })}`,
@@ -1463,6 +1470,7 @@ document.addEventListener('click', (e) => {
     if (id === IGR_ID) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: why || 'Ručno dodijeljeno', iznos: sign * n });
     state.fcMsg = `${sign > 0 ? 'Dodijeljeno' : 'Oduzeto'} ${fmt(n)} — ${ime}, novo stanje ${fmt(FALCOINI[id])}`; render(); return; }
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
+  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p>`); return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';
     if (citanoSet().add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
