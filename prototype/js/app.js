@@ -817,7 +817,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Webshop', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Kalendar', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Webshop', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -862,8 +862,8 @@ function adminKalendar() {
   const { y, m } = state.admMj; const sel = state.admDan; const prvi = new Date(y, m, 1); const off = (prvi.getDay() + 6) % 7; const dani = new Date(y, m + 1, 0).getDate(); const danas = dKey(2026, 10, 24);
   const cells = []; for (let i = 0; i < off; i++) cells.push(null); for (let d = 1; d <= dani; d++) cells.push(d); while (cells.length % 7) cells.push(null);
   const grid = cells.map((d) => { if (!d) return '<div class="cal-cell empty"></div>'; const key = dKey(y, m, d); const st = danStavke(y, m, d); const wd = (new Date(y, m, d).getDay() + 6) % 7;
-    return `<div class="cal-cell ${key === danas ? 'today' : ''} ${key === sel ? 'sel' : ''} ${key < danas ? 'past' : ''} ${wd > 4 ? 'we' : ''}" data-admdan="${key}"><div class="cal-d">${d}</div>
-      ${st.slice(0, 4).map((x) => `<div class="cal-it ${x.t}">${x.vr ? `<b>${x.vr}</b> ` : ''}${x.label}</div>`).join('')}${st.length > 4 ? `<div class="cal-more">+${st.length - 4}</div>` : ''}</div>`; }).join('');
+    const tipovi = ['tr', 'ut', 'iz'].filter((t) => !(state.kalSkr || { tr: true })[t] && st.some((x) => x.t === t));
+    return `<button type="button" class="cal-cell ${key === danas ? 'today' : ''} ${key === sel ? 'sel' : ''} ${key < danas ? 'past' : ''} ${wd > 4 ? 'we' : ''}" data-admdan="${key}"><span class="cal-d">${d}</span><span class="cal-dots">${tipovi.map((t) => `<i class="${t}"></i>`).join('')}</span></button>`; }).join('');
   const [sy, sm, sd] = sel.split('-').map(Number); const sst = danStavke(sy, sm - 1, sd); const sdt = new Date(sy, sm - 1, sd);
   const detalj = `<div class="cal-detail card"><h3>${DANI_PUNO[(sdt.getDay() + 6) % 7]}, ${sd}. ${MJ_GEN[sm - 1]}</h3>
     ${['tr', 'ut', 'iz'].map((tip) => { const l = sst.filter((x) => x.t === tip); if (!l.length) return ''; const nas = { tr: 'Treninzi', ut: 'Utakmice', iz: 'Tjedni zadatak' }[tip];
@@ -871,13 +871,13 @@ function adminKalendar() {
         ${x.t === 'ut' ? (x.u.rez ? chip('Rezultat ' + x.u.rez, 'navy') : x.u.glavna ? (UTAKMICA.termin && UTAKMICA.dvorana ? chip('Potvrđeno', 'ok') : chip('Čeka potvrdu', 'warn')) : (x.u.d < '2026-11-26' ? chip('Odigrano') : chip('Nije potvrđeno', 'warn'))) : ''}
         ${x.t === 'iz' ? `<button class="btn ghost sm" data-izuredi="${x.wk}">Uredi</button>` : ''}</div>`).join('')}`; }).join('') || '<div class="meta">Nema termina ovaj dan.</div>'}
     ${sel === '2026-11-28' ? adminUtakmica() : ''}</div>`;
-  return `<div class="page-head"><div><h1>Raspored</h1><div class="sub">Treninzi, utakmice i tjedni zadaci</div></div><div class="grow"></div>
+  return `<div class="page-head"><div><h1>Kalendar</h1><div class="sub">Utakmice, tjedni zadaci i treninzi · pritisni dan za detalje</div></div><div class="grow"></div>
       <button class="btn" data-toast="Novi termin — sljedeći korak">${ic('plus', 18)} Novi termin</button></div>
     ${RASPORED_NAPOMENA}
     <div class="cal-bar"><button class="btn ghost sm" data-admmj="-1" aria-label="Prethodni mjesec">‹</button><h2>${MJESECI[m]} ${y}.</h2><button class="btn ghost sm" data-admmj="1" aria-label="Sljedeći mjesec">›</button>
-      <button class="btn ghost sm" data-admmj="0">Danas</button><div class="grow"></div>
-      <span class="cal-leg"><i class="tr"></i>Trening</span><span class="cal-leg"><i class="ut"></i>Utakmica</span><span class="cal-leg"><i class="iz"></i>Zadatak</span></div>
-    <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div></div>${detalj}</div>`;
+      <button class="btn ghost sm" data-admmj="0">Danas</button></div>
+    <div class="cal-wrap"><div class="cal-main"><div class="cal-head">${DANI.map((d) => `<div>${d}</div>`).join('')}</div><div class="cal-grid">${grid}</div>
+      <div class="cal-legs">${[['ut', 'Utakmice'], ['iz', 'Tjedni zadaci'], ['tr', 'Treninzi']].map(([t, l]) => `<button type="button" class="cal-leg ${(state.kalSkr || { tr: true })[t] ? 'off' : ''}" data-kaltip="${t}"><i class="${t}"></i>${l}</button>`).join('')}</div></div>${detalj}</div>`;
 }
 const utkDvorane = (gost, prot) => { if (!gost) return UTK_DVORANE; const k = PROTIVNICI.find((x) => x.naziv === prot); return k ? k.dvorane.filter(Boolean) : []; };
 /* ---------- Pogled (admin): kartice / popis / tablica + polja, sortiranje, grupiranje ---------- */
@@ -1384,6 +1384,7 @@ document.addEventListener('click', (e) => {
     render(); return; }
   const am = e.target.closest('[data-admmj]');
   if (am) { const v = +am.dataset.admmj; if (v === 0) { state.admMj = { y: 2026, m: 10 }; state.admDan = '2026-11-24'; } else { let { y, m } = state.admMj; m += v; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } state.admMj = { y, m }; } render(); return; }
+  const kt = e.target.closest('[data-kaltip]'); if (kt) { state.kalSkr = state.kalSkr || { tr: true }; state.kalSkr[kt.dataset.kaltip] = !state.kalSkr[kt.dataset.kaltip]; render(); return; }
   const ad = e.target.closest('[data-admdan]'); if (ad) { state.admDan = ad.dataset.admdan; render(); return; }
   const ipb = e.target.closest('[data-izpubl]'); if (ipb) { state.izPubl = ipb.dataset.izpubl; state.izTjedan = null; render(); return; }
   const iu = e.target.closest('[data-izuredi]');

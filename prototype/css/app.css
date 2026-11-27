@@ -1193,3 +1193,22 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .razlozi { display: flex; flex-wrap: wrap; gap: 6px; }
 .razlozi .chip { cursor: pointer; border: 1px solid var(--silver-100); background: #fff; }
 .razlozi .chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* Kalendar (admin): točke u boji, detalji sa strane */
+.cal-wrap { grid-template-columns: minmax(0, 560px) 1fr; }
+.cal-grid { gap: 4px; }
+.cal-cell { min-height: 0; aspect-ratio: 1 / 0.82; align-items: center; justify-content: center; padding: 4px; gap: 4px; border-radius: 14px; font: inherit; color: var(--text); }
+.cal-cell .cal-d { font-size: var(--fs-md); font-weight: 700; }
+.cal-dots { display: flex; gap: 4px; height: 8px; }
+.cal-dots i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+.cal-dots i.tr { background: #9aa6d6; } .cal-dots i.ut { background: var(--red); } .cal-dots i.iz { background: var(--gold); }
+.cal-cell.we { background: #fff; } .cal-cell.we .cal-d { color: var(--muted); }
+.cal-cell.past { opacity: .6; }
+.cal-cell.today { border-color: var(--gold); } .cal-cell.today .cal-d { color: var(--navy); }
+.cal-cell.sel { background: var(--navy); border-color: var(--navy); } .cal-cell.sel .cal-d { color: #fff; }
+.cal-cell.sel .cal-dots i.ut { background: #ff8a8a; } .cal-cell.sel .cal-dots i.tr { background: #c9d1f0; }
+.cal-legs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.cal-legs .cal-leg { margin: 0; border: 1px solid var(--silver-100); background: #fff; border-radius: 999px; padding: 6px 12px; cursor: pointer; font-family: inherit; }
+.cal-legs .cal-leg i { width: 10px; height: 10px; border-radius: 50%; }
+.cal-legs .cal-leg.off { opacity: .45; } .cal-legs .cal-leg.off i { background: var(--silver-200, #cfd6e2) !important; }
+.cal-detail { min-height: 280px; }
