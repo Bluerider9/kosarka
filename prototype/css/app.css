@@ -1266,3 +1266,6 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .poll-opts { display: flex; flex-direction: column; gap: 8px; }
 .card.news:not(.open) .news-poll { display: none; }
 .card.news .news-poll { background: rgba(255,255,255,.92); border-radius: 12px; padding: 8px 0; }
+/* zupčanik u adminu: središnja os kao naslov i gumbi u zaglavlju stranice */
+.main > .page-head:first-of-type { min-height: 64px; }
+.cog.admin-cog { top: calc(var(--s8) + 12px); }
