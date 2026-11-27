@@ -48,17 +48,17 @@ def wrap(inner):
 
 scene = {}
 # 1 promjena termina: sat u prvom planu, ekipa zamućena
-scene['termin'] = pozadina(f'<g filter="url(#b6)">{ekipa(8,215,3)}</g>') + f'''<g transform="translate(320 215)"><ellipse cy="118" rx="100" ry="10" fill="#000" opacity=".3"/><circle r="104" fill="{RED}"/><circle r="92" fill="#fff"/>
+scene['termin'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{ekipa(8,215,3)}</g></g>') + f'''<g transform="translate(455 215)"><ellipse cy="118" rx="100" ry="10" fill="#000" opacity=".3"/><circle r="104" fill="{RED}"/><circle r="92" fill="#fff"/>
 {''.join(f'<line x1="0" y1="-84" x2="0" y2="-72" stroke="{NAVY}" stroke-width="4" transform="rotate({a})"/>' for a in range(0,360,30))}
 <line x1="0" y1="0" x2="0" y2="-62" stroke="{NAVY}" stroke-width="7" stroke-linecap="round" transform="rotate(30)"/><line x1="0" y1="0" x2="0" y2="-44" stroke="{NAVY}" stroke-width="7" stroke-linecap="round" transform="rotate(-80)"/><circle r="7" fill="{RED}"/>
 <path d="M60 -96 l24 -24" stroke="{GOLD}" stroke-width="8" stroke-linecap="round"/><path d="M-60 -96 l-24 -24" stroke="{GOLD}" stroke-width="8" stroke-linecap="round"/></g>'''
 # 2 fotografiranje ekipa: fotoaparat u prvom planu, ekipa zamućena u daljini
-scene['fotografiranje'] = pozadina(f'<g filter="url(#b6)">{ekipa(9,200,5)}</g>') + kamera()
+scene['fotografiranje'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{ekipa(9,200,5)}</g></g>') + '<g transform="translate(190 40) scale(.8)">' + kamera() + '</g>'
 # 3 trening: lopta i čunjevi u prvom planu
-scene['trening'] = pozadina(f'<g filter="url(#b6)">{ekipa(7,205,9)}{osoba(300,205,.95,RED,True,True)}</g>') + ''.join(
-    f'<g transform="translate({x} 322)"><ellipse cy="6" rx="26" ry="6" fill="#000" opacity=".3"/><path d="M-22 4 L-8 -52 H8 L22 4 Z" fill="{GOLD}"/><rect x="-26" y="2" width="52" height="8" rx="3" fill="{GOLD}"/><rect x="-14" y="-30" width="28" height="9" fill="#fff"/></g>' for x in (90, 550)) + loptica(330, 280, 62)
+scene['trening'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{ekipa(7,205,9)}{osoba(300,205,.95,RED,True,True)}</g></g>') + ''.join(
+    f'<g transform="translate({x} 322)"><ellipse cy="6" rx="26" ry="6" fill="#000" opacity=".3"/><path d="M-22 4 L-8 -52 H8 L22 4 Z" fill="{GOLD}"/><rect x="-26" y="2" width="52" height="8" rx="3" fill="{GOLD}"/><rect x="-14" y="-30" width="28" height="9" fill="#fff"/></g>' for x in (360, 600)) + loptica(480, 280, 62)
 # 4 članarina: kovanice i novčanik u prvom planu, dvorana zamućena
-scene['clanarina'] = pozadina(f'<g filter="url(#b6)">{ekipa(8,215,11)}</g>') + f'''<g transform="translate(320 250)"><ellipse cy="86" rx="150" ry="12" fill="#000" opacity=".3"/>
+scene['clanarina'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{ekipa(8,215,11)}</g></g>') + f'''<g transform="translate(465 250)"><ellipse cy="86" rx="150" ry="12" fill="#000" opacity=".3"/>
 <rect x="-130" y="-30" width="260" height="110" rx="20" fill="{NAVY}"/><rect x="-130" y="-30" width="260" height="30" rx="14" fill="#232f66"/><rect x="60" y="10" width="86" height="44" rx="12" fill="{GOLD}"/><circle cx="86" cy="32" r="8" fill="{NAVY}"/>
 <g transform="translate(-60 -52)"><circle r="46" fill="{GOLD}"/><circle r="36" fill="none" stroke="#c98d1e" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" font-family="Montserrat,Arial" font-weight="900" fill="#c98d1e">F</text></g>
 <g transform="translate(30 -42)"><circle r="34" fill="{GOLD}"/><circle r="26" fill="none" stroke="#c98d1e" stroke-width="3"/><text y="11" font-size="30" text-anchor="middle" font-family="Montserrat,Arial" font-weight="900" fill="#c98d1e">€</text></g></g>'''
@@ -69,7 +69,7 @@ def djeca(seed):
         x = 50 + i * 54 + r.randint(-10, 10); y = 222 + r.randint(-12, 12); sc = 0.55 + r.random() * 0.15
         s += osoba(x, y, sc, (GOLD, '#fff', RED, SILV)[i % 4], ruka=r.random() < .3)
     return s
-scene['skola'] = pozadina(f'<g filter="url(#b6)">{djeca(4)}</g>') + loptica(320, 290, 56) + f'<path d="M250 340 Q320 312 390 340" stroke="#000" stroke-opacity=".25" stroke-width="10" fill="none" stroke-linecap="round"/>'
+scene['skola'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{djeca(4)}</g></g>') + loptica(470, 290, 56) + f'<path d="M400 340 Q470 312 540 340" stroke="#000" stroke-opacity=".25" stroke-width="10" fill="none" stroke-linecap="round"/>'
 for k, v in scene.items():
     open(os.path.join(OUT, k + '.svg'), 'w').write(wrap(v))
 print('ok', list(scene))
