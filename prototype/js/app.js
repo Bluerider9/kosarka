@@ -356,12 +356,12 @@ const novostiScreen = (ul, tabs) => ({
   tabs, body: novostiZa().map(novostCard).join(''),
 });
 function novostCard(n) {
-  const nova = !citanoSet().has(n.id);
+  const nova = !citanoSet().has(n.id), sl = novostSlika(n);
   return `<div class="card news ${nova ? 'unread' : ''}" data-news="${n.id}">
-    <div class="news-img"><img src="${novostSlika(n)}" alt=""></div>
-    <div class="row spread"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(n.grupa) : ''}</div>
-      <span class="meta">${n.dat}</span></div>
-    <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><p class="news-text">${n.tekst}</p><span class="more">Prikaži više</span></div>`;
+    <div class="news-img"><img src="${sl}" alt=""></div>
+    <div class="news-info"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(n.grupa) : ''}</div>
+      <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><span class="meta">${n.dat}</span>
+      <p class="news-text">${n.tekst}</p><span class="more">Prikaži manje</span></div></div>`;
 }
 /* ---------- FALCOINI I ORMAR ---------- */
 const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;

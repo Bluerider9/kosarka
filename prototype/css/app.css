@@ -1241,3 +1241,13 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .nov-prev img { width: 100%; height: 100%; object-fit: cover; display: block; margin: -6px; width: calc(100% + 12px); height: calc(100% + 12px); max-width: none; }
 .news-img { margin: -2px -2px 2px; border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 9; }
 .news-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Novosti (mobitel): slika u desnom kutu koja se blurom topi u bijelu podlogu s informacijama */
+.card.news { position: relative; overflow: hidden; display: block; min-height: 104px; padding: 0; }
+.card.news .news-img { position: absolute; inset: 0 0 0 auto; width: 66%; margin: 0; border-radius: 0; aspect-ratio: auto; pointer-events: none; }
+.card.news .news-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.card.news .news-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, #fff 0, rgba(255,255,255,.9) 22%, rgba(255,255,255,.35) 52%, rgba(255,255,255,0) 82%); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); -webkit-mask-image: linear-gradient(to right, #000 0, #000 45%, transparent 85%); mask-image: linear-gradient(to right, #000 0, #000 45%, transparent 85%); }
+.card.news .news-info { position: relative; z-index: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.card.news .news-info h3 { max-width: 72%; }
+.card.news:not(.open) .news-text, .card.news:not(.open) .more { display: none; }
+.card.news.open .news-text { background: rgba(255,255,255,.88); border-radius: 8px; padding: 4px 0; }
