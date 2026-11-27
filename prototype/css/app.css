@@ -1253,3 +1253,16 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .card.news.open .news-text { background: rgba(255,255,255,.88); border-radius: 8px; padding: 4px 0; }
 .card.news .news-img img { object-position: 60% 72%; }
 .nov-uloge { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+
+/* ankete */
+.poll { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.poll-opt { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 11px 14px; border: 1.5px solid var(--silver, #B4C0CC); border-radius: 12px; background: #fff; font: inherit; font-weight: 600; color: var(--navy); cursor: pointer; overflow: hidden; }
+.poll-opt i { position: absolute; inset: 0 auto 0 0; background: rgba(240,182,78,.35); transition: width .35s; z-index: 0; }
+.poll-opt > span, .poll-opt > b { position: relative; z-index: 1; }
+.poll-opt.on { border-color: var(--gold, #F0B64E); box-shadow: 0 0 0 2px rgba(240,182,78,.4); }
+.poll-opt:disabled { cursor: default; opacity: .85; }
+.poll-opt.ro { cursor: default; }
+.poll-res { display: flex; flex-direction: column; gap: 3px; }
+.poll-opts { display: flex; flex-direction: column; gap: 8px; }
+.card.news:not(.open) .news-poll { display: none; }
+.card.news .news-poll { background: rgba(255,255,255,.92); border-radius: 12px; padding: 8px 0; }

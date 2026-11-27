@@ -70,6 +70,14 @@ def djeca(seed):
         s += osoba(x, y, sc, (GOLD, '#fff', RED, SILV)[i % 4], ruka=r.random() < .3)
     return s
 scene['skola'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{djeca(4)}</g></g>') + loptica(470, 290, 56) + f'<path d="M400 340 Q470 312 540 340" stroke="#000" stroke-opacity=".25" stroke-width="10" fill="none" stroke-linecap="round"/>'
+# 6 anketa: kartica s trakama odgovora u prvom planu, zamućena ekipa u daljini
+scene['anketa'] = pozadina(f'<g filter="url(#b6)"><g transform="translate(235 73) scale(.65)">{ekipa(8,210,13)}</g></g>') + f'''<g transform="translate(470 215)"><ellipse cy="122" rx="120" ry="10" fill="#000" opacity=".3"/>
+<rect x="-110" y="-110" width="220" height="228" rx="20" fill="#fff"/><rect x="-110" y="-110" width="220" height="44" rx="20" fill="{NAVY}"/><rect x="-110" y="-86" width="220" height="20" fill="{NAVY}"/>
+<rect x="-84" y="-92" width="90" height="10" rx="5" fill="#fff" opacity=".9"/>
+<g><circle cx="-80" cy="-34" r="9" fill="none" stroke="{NAVY}" stroke-width="4"/><rect x="-60" y="-42" width="140" height="16" rx="8" fill="#e8ecf4"/><rect x="-60" y="-42" width="98" height="16" rx="8" fill="{GOLD}"/></g>
+<g><circle cx="-80" cy="8" r="9" fill="{NAVY}"/><rect x="-60" y="0" width="140" height="16" rx="8" fill="#e8ecf4"/><rect x="-60" y="0" width="62" height="16" rx="8" fill="{RED}"/></g>
+<g><circle cx="-80" cy="50" r="9" fill="none" stroke="{NAVY}" stroke-width="4"/><rect x="-60" y="42" width="140" height="16" rx="8" fill="#e8ecf4"/><rect x="-60" y="42" width="34" height="16" rx="8" fill="{SILV}"/></g>
+<path d="M-70 92 l14 14 l30 -30" stroke="{RED}" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'''
 for k, v in scene.items():
     open(os.path.join(OUT, k + '.svg'), 'w').write(wrap(v))
 print('ok', list(scene))

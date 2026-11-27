@@ -67,6 +67,9 @@ const UPLATE = [
 
 // Novosti za roditelje (grupa: 'Svi' ili naziv grupe). citalo = koliko je roditelja otvorilo objavu.
 const NOVOSTI = [
+  { id: 6, oznaka: 'Anketa', grupa: 'Svi', dat: '24.11.2026.', naslov: 'Dolazite li na fotografiranje u subotu?',
+    tekst: 'Trebamo okvirni broj da rasporedimo termine po ekipama.', citalo: 80, od: 128,
+    anketa: { opcije: ['Dolazim', 'Ne mogu', 'Još ne znam'], brojevi: [48, 9, 14], odg: 71, visestruko: false, anonimno: false, rok: '27.11.2026.' } },
   { id: 1, pin: true, oznaka: 'Važno', grupa: 'Svi', dat: '24.11.2026.', naslov: 'Promjena termina u dvorani B ovaj petak',
     tekst: 'Zbog održavanja dvorane B trening Škole košarke u petak se održava u dvorani A, u isto vrijeme. Molimo roditelje da djecu dovedu 10 minuta ranije kako bismo stigli pripremiti teren.', citalo: 41, od: 52 },
   { id: 2, oznaka: 'Klub', grupa: 'Svi', dat: '22.11.2026.', naslov: 'Fotografiranje ekipa — subota u 10:00',

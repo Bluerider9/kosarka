@@ -107,13 +107,57 @@ const novPublika = (n) => `${novGrupaOpis(n.grupa)} · ${novUloge(n).length === 
 function novOd(g, uloge) { if (!uloge.includes('roditelj') && !uloge.includes('igracica')) return uloge.includes('trener') ? 3 : 0;
   const base = g === 'Svi' ? 128 : g === 'Selekcija' ? GROUPS.filter((x) => SELEKCIJA_GRUPE.includes(x.ime)).reduce((a, x) => a + x.cl, 0) : (GROUPS.find((x) => x.ime === g) || { cl: 0 }).cl;
   return base + (uloge.includes('trener') ? 3 : 0); }
+
+/* ---------- ankete (objava s pitanjem i odgovorima) ---------- */
+const ANKETA_DANAS = '24.11.2026.'; // "današnji dan" u prototipu
+const datKljuc = (d) => { const m = /^(\d{2})\.(\d{2})\.(\d{4})/.exec(d || ''); return m ? m[3] + m[2] + m[1] : ''; };
+const anketaZatvorena = (n) => !!n.anketa.rok && datKljuc(n.anketa.rok) < datKljuc(ANKETA_DANAS);
+const glasKljuc = (n, ul) => `${n.id}|${ul}`;
+const mojGlas = (n, ul = uloga()) => (state.glasovi && state.glasovi[glasKljuc(n, ul)]) || [];
+const glasaci = (n) => Object.keys(state.glasovi || {}).filter((k) => k.startsWith(n.id + '|') && state.glasovi[k].length);
+const anketaBrojevi = (n) => n.anketa.opcije.map((_, i) => (n.anketa.brojevi[i] || 0) + glasaci(n).filter((k) => state.glasovi[k].includes(i)).length);
+const anketaOdg = (n) => n.anketa.odg + glasaci(n).length;
+const anketaRokTekst = (a) => (a.rok ? (anketaZatvorena({ anketa: a }) ? `rok istekao ${a.rok}` : `do ${a.rok}`) : 'bez roka');
+function anketaHtml(n, ul = uloga()) {
+  const a = n.anketa, moj = mojGlas(n, ul), zat = anketaZatvorena(n), br = anketaBrojevi(n), odg = Math.max(1, anketaOdg(n)), vidi = moj.length || zat;
+  return `<div class="news-poll poll" data-poll="${n.id}"><div class="meta poll-info">${a.visestruko ? 'Možeš odabrati više odgovora' : 'Odaberi jedan odgovor'} · ${a.anonimno ? 'anonimno' : 'vidi se tko je odgovorio'} · ${anketaRokTekst(a)}</div>
+    ${a.opcije.map((o, i) => `<button type="button" class="poll-opt ${moj.includes(i) ? 'on' : ''}" data-pollvote="${n.id}|${i}" ${zat ? 'disabled' : ''}>${vidi ? `<i style="width:${Math.round(br[i] / odg * 100)}%"></i>` : ''}<span class="po-t">${moj.includes(i) ? '✓ ' : ''}${o}</span>${vidi ? `<b>${Math.round(br[i] / odg * 100)}%</b>` : ''}</button>`).join('')}
+    <div class="meta poll-foot">${zat ? 'Anketa je zatvorena. ' : moj.length ? 'Odgovor je spremljen, možeš ga promijeniti. ' : ''}Odgovorilo ${anketaOdg(n)} od ${n.od}</div></div>`;
+}
+const GLAS_IME = { roditelj: 'Roditelj (Ana H.)', igracica: 'Ana H.', trener: 'Trener Ivan' };
+const IMENA_ANKETA = ['Mia K.', 'Lana B.', 'Petra Š.', 'Iva M.', 'Nika J.', 'Ema T.', 'Tara P.', 'Lea V.', 'Sara D.', 'Dora G.'];
+function anketaAdmin(n) {
+  const a = n.anketa, br = anketaBrojevi(n), odg = Math.max(1, anketaOdg(n)), zat = anketaZatvorena(n);
+  return `<div class="poll admin-poll" style="margin-top:14px"><h3 style="font-size:var(--fs-md);margin-bottom:6px">Rezultati ankete</h3>
+    <div class="meta">${a.visestruko ? 'Više odgovora' : 'Jedan odgovor'} · ${a.anonimno ? 'anonimno' : 's imenima'} · ${anketaRokTekst(a)}${zat ? ' · zatvorena' : ''}</div>
+    ${a.opcije.map((o, i) => { const imena = glasaci(n).filter((k) => state.glasovi[k].includes(i)).map((k) => GLAS_IME[k.split('|')[1]]).concat(IMENA_ANKETA.slice(i * 3, i * 3 + 3));
+      return `<div class="poll-res"><div class="poll-opt ro"><i style="width:${Math.round(br[i] / odg * 100)}%"></i><span class="po-t">${o}</span><b>${br[i]} (${Math.round(br[i] / odg * 100)}%)</b></div>${a.anonimno ? '' : `<small class="meta">${imena.slice(0, 5).join(', ')}${br[i] > 5 ? ` + još ${br[i] - 5}` : ''}</small>`}</div>`; }).join('')}
+    <div class="row spread" style="margin-top:10px"><b>Odgovorilo ${anketaOdg(n)} / ${n.od}</b>${zat ? '' : `<button class="btn ghost sm" data-pollpodsjeti="${n.id}">Podsjeti one koji nisu odgovorili</button>`}</div></div>`;
+}
+function pollSheet() {
+  modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova anketa</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+    <form id="anketaForm" class="stack" novalidate>
+      ${field('naslov', 'Pitanje', { ph: 'npr. Dolazite li na fotografiranje u subotu?' })}
+      <div class="field" data-field="tekst"><label>Dodatni opis (neobavezno)</label><textarea class="input" name="tekst" rows="2"></textarea></div>
+      <div class="field"><label>Odgovori (2 do 6)</label><div class="poll-opts" id="pollOpts"><input class="input" name="opcija" placeholder="Odgovor 1"><input class="input" name="opcija" placeholder="Odgovor 2"></div>
+        <button type="button" class="btn ghost sm" data-pollopt style="margin-top:8px">${ic('plus', 16)} Dodaj odgovor</button><small class="err" id="pollErr"></small></div>
+      ${field('grupa', 'Grupa', { opts: NOV_GRUPE })}
+      <div class="field"><label>Tko dobiva anketu</label><div class="nov-uloge">${NOV_ULOGE.map(([k, l]) => `<label class="check"><input type="checkbox" name="uloga" value="${k}" checked><span>${l}</span></label>`).join('')}</div>
+        <small class="err" id="novUlogeErr"></small><small class="meta" id="novPubInfo"></small></div>
+      ${field('rok', 'Rok za odgovor (neobavezno)', { ph: 'dd.mm.gggg', extra: 'inputmode="numeric"' })}
+      <label class="check"><input type="checkbox" name="visestruko"><span>Dopusti više odgovora</span></label>
+      <label class="check"><input type="checkbox" name="anonimno"><span>Anonimno (admin ne vidi tko je što odgovorio)</span></label>
+      <label class="check"><input type="checkbox" name="pin"><span>Prikvači na vrh</span></label>
+      <div class="row" style="gap:10px"><button class="btn ghost grow" type="button" data-close>Odustani</button><button class="btn red grow" type="submit">Objavi anketu</button></div>
+    </form>`);
+}
 function newPostSheet() {
   state.novFotoTmp = null;
   modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova objava</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
     <form id="novostForm" class="stack" novalidate>
       ${field('naslov', 'Naslov')}
       <div class="field" data-field="tekst"><label>Tekst</label><textarea class="input" name="tekst" rows="5"></textarea><small class="err"></small></div>
-      <div class="two">${field('grupa', 'Grupa', { opts: NOV_GRUPE })}${field('oznaka', 'Oznaka', { opts: Object.keys(OZNAKE) })}</div>
+      <div class="two">${field('grupa', 'Grupa', { opts: NOV_GRUPE })}${field('oznaka', 'Oznaka', { opts: Object.keys(OZNAKE).filter((k) => k !== 'Anketa') })}</div>
       <div class="field"><label>Tko dobiva objavu</label><div class="nov-uloge">${NOV_ULOGE.map(([k, l]) => `<label class="check"><input type="checkbox" name="uloga" value="${k}" checked><span>${l}</span></label>`).join('')}</div>
         <small class="err" id="novUlogeErr"></small><small class="meta" id="novPubInfo"></small></div>
       <div class="field"><label>Fotografija (neobavezno)</label>
@@ -356,7 +400,7 @@ function profilBody(p, uloga) {
 }
 const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
 /* ---------- NOVOSTI ---------- */
-const OZNAKE = { 'Važno': 'danger', 'Klub': 'navy', 'Trening': 'ok', 'Članarina': 'warn', 'Škola košarke': 'navy' };
+const OZNAKE = { 'Važno': 'danger', 'Klub': 'navy', 'Trening': 'ok', 'Članarina': 'warn', 'Škola košarke': 'navy', 'Anketa': 'ok' };
 const novostiRoditelj = (ul = 'roditelj') => NOVOSTI.filter((n) => novUloge(n).includes(ul) && novGrupaPogodi(n.grupa, NOV_GRUPE_ULOGE[ul] || []))
   .sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
 // Novosti vide svi: roditelj, igračica (grupa U14 + Svi) i trener (njegove grupe + Svi); pročitano se pamti po ulozi
@@ -375,7 +419,7 @@ function novostCard(n) {
     <div class="news-img"><img src="${sl}" alt=""></div>
     <div class="news-info"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div>
       <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><span class="meta">${n.dat}</span>
-      <p class="news-text">${n.tekst}</p><span class="more">Prikaži manje</span></div></div>`;
+      <p class="news-text">${n.tekst}</p>${n.anketa ? anketaHtml(n) : ''}<span class="more">Prikaži manje</span></div></div>`;
 }
 /* ---------- FALCOINI I ORMAR ---------- */
 const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;
@@ -1029,7 +1073,7 @@ const regTraka = () => {
     <div class="reg-list">${l.map((p) => `<button type="button" class="reg-kartica" data-open="${p.id}">${av(p, 'sm')}<div class="grow"><b>${p.ime} ${p.prezime}</b><small>${p.grupa} · ${p.rod.slice(0, 4)}. · ${p.dat}</small></div>${p.dup ? chip('Moguća dvostruka', 'danger') : ''}<span class="meta">Pregledaj ›</span></button>`).join('')}</div></div>`;
 };
 /* generička naslovnica novosti (po oznaci) — kasnije se može zamijeniti pravom fotografijom */
-const NOV_SLIKA = { 'Važno': 'termin', 'Klub': 'fotografiranje', 'Trening': 'trening', 'Članarina': 'clanarina', 'Škola košarke': 'skola' }; // izvor: migracija/novosti_naslovnice.py
+const NOV_SLIKA = { 'Važno': 'termin', 'Klub': 'fotografiranje', 'Trening': 'trening', 'Članarina': 'clanarina', 'Škola košarke': 'skola', 'Anketa': 'anketa' }; // izvor: migracija/novosti_naslovnice.py
 const novostSlika = (n) => n.foto || `assets/novosti/${NOV_SLIKA[n.oznaka] || 'fotografiranje'}.svg`;
 const NOV_FOTO_INFO = 'Preporučeno 1280 × 720 px (omjer 16:9), JPG ili PNG. Fotografija se sama izreže na taj omjer i smanji na 1280 × 720 px.';
 // učitava sliku, izreže na 16:9 i smanji na 1280×720 (JPEG); cb(dataUrl, izvornaŠirina, izvornaVisina)
@@ -1041,7 +1085,7 @@ const novostCover = (n) => `<div class="nov-cover"><img src="${novostSlika(n)}" 
 const novostKartica = (n) => `<button type="button" class="nov-card" data-novotv="${n.id}">${novostCover(n)}
   <span class="nov-tag">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</span>${n.pin ? `<span class="nov-pin">${ic('bell', 14)} Prikvačeno</span>` : ''}
   <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${novPublika(n)}</div>
-  <div class="nov-read"><i style="width:${n.od ? Math.round(n.citalo / n.od * 100) : 0}%"></i></div><small>${n.citalo ? `Pročitalo ${n.citalo} / ${n.od}` : 'Još nitko nije pročitao'}</small></div></button>`;
+  <div class="nov-read"><i style="width:${n.od ? Math.round(n.citalo / n.od * 100) : 0}%"></i></div><small>${n.anketa ? `Anketa · odgovorilo ${anketaOdg(n)} / ${n.od}` : n.citalo ? `Pročitalo ${n.citalo} / ${n.od}` : 'Još nitko nije pročitao'}</small></div></button>`;
 
 const ADMIN = {
   baza: () => bazaScreen(),
@@ -1126,7 +1170,7 @@ const ADMIN = {
       cols: [{ id: 'ime', label: 'Artikl', val: (a) => a.ime, html: (a) => `<div class="who">${itemTile(a, 'sm')}<span>${a.ime}</span></div>` }, { id: 'kat', label: 'Kategorija', val: (a) => a.kat, html: (a) => chip(a.kat, 'navy') },
         { id: 'cij', label: 'Cijena (FLC = €)', val: (a) => a.cijena, html: (a) => cijenaHtml(a) }, { id: 'zal', label: 'Zaliha', val: (a) => zaliha(a), html: (a) => `${zaliha(a) ? `${zaliha(a)} kom` : '—'}${imaPre(a) ? ` ${chip('predbilježba', 'warn')}` : ''}` }] })}`,
   novosti: () => `<div class="page-head"><div><h1>Novosti</h1><div class="sub">Objave za roditelje, igračice i trenere</div></div><div class="grow"></div>
-      <button class="btn" data-newpost>${ic('plus', 18)} Nova objava</button></div>
+      <button class="btn ghost" data-newpoll>${ic('plus', 18)} Nova anketa</button><button class="btn" data-newpost style="margin-left:10px">${ic('plus', 18)} Nova objava</button></div>
     <div class="nov-gal">${NOVOSTI.slice().sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0)).map(novostKartica).join('') || '<div class="meta">Nema objava.</div>'}</div>`,
   grupe: () => { state.klubTab = 'grupe'; return klubScreen(); },
   __grupeTijelo: () => `${pogled('grupe', { lepeza: false, samoTablica: true, lnaslov: 'Grupe', title: 'ime', empty: 'Nema grupa.', rows: GROUPS, lsub: (g) => g.trener + ' · ' + g.cl + ' članica', lchip: (g) => chip(g.raspored, ''),
@@ -1244,6 +1288,19 @@ function goStep(form, n) {
   const body = form.closest('.app-body'); if (body) body.scrollTo({ top: 0, behavior: 'smooth' });
 }
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'anketaForm') {
+    e.preventDefault(); const f = e.target, d = readForm(f); let ok = true;
+    showErr(f, 'naslov', d.naslov ? '' : 'Obavezno polje'); if (!d.naslov) ok = false;
+    const opcije = [...f.querySelectorAll('[name=opcija]')].map((x) => x.value.trim()).filter(Boolean), er = $('#pollErr');
+    if (opcije.length < 2) { er.textContent = 'Upiši barem dva odgovora'; ok = false; } else if (new Set(opcije.map((x) => x.toLowerCase())).size !== opcije.length) { er.textContent = 'Odgovori se ne smiju ponavljati'; ok = false; } else er.textContent = '';
+    const dan = d.rok ? utkDanIz(d.rok) : null; showErr(f, 'rok', d.rok && !dan ? 'Upiši datum u obliku dd.mm.gggg' : ''); if (d.rok && !dan) ok = false;
+    if (!ok) return;
+    const uloge = [...f.querySelectorAll('[name=uloga]:checked')].map((x) => x.value);
+    if (!uloge.length) { $('#novUlogeErr').textContent = 'Odaberi barem jednu skupinu'; return; }
+    NOVOSTI.unshift({ id: Date.now(), pin: !!d.pin, oznaka: 'Anketa', grupa: d.grupa, uloge, dat: ANKETA_DANAS, naslov: d.naslov, tekst: d.tekst || '', citalo: 0, od: novOd(d.grupa, uloge),
+      anketa: { opcije, brojevi: opcije.map(() => 0), odg: 0, visestruko: !!d.visestruko, anonimno: !!d.anonimno, rok: d.rok ? d.rok.replace(/\.?$/, '.') : '' } });
+    closeModal(); render(); toastIn('Anketa objavljena'); return;
+  }
   if (e.target.id === 'novostForm') {
     e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
     ['naslov', 'tekst'].forEach((k) => { const bad = !d[k]; showErr(f, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
@@ -1289,7 +1346,7 @@ document.addEventListener('change', (e) => { const t = e.target, file = t.files 
   if (t.id === 'novFoto') novFotoObradi(file, (url, w, h) => { state.novFotoTmp = url; const p = $('#novPrev'), i = $('#novFotoInfo');
     if (p) p.innerHTML = `<img src="${url}" alt="">`; if (i) i.innerHTML = `Učitano: ${w} × ${h} px, izrezano na 1280 × 720 px (16:9).${w < 1280 || h < 720 ? ' <b style="color:var(--red)">Slika je manja od preporučene pa može biti mutna.</b>' : ''}`; });
   if (t.dataset && t.dataset.novfoto) novFotoObradi(file, (url) => { const n = NOVOSTI.find((x) => x.id === +t.dataset.novfoto); if (n) { n.foto = url; closeModal(); render(); toastIn('Fotografija objave spremljena'); } }); });
-document.addEventListener('change', (e) => { const f = e.target.closest && e.target.closest('#novostForm'); if (!f) return;
+document.addEventListener('change', (e) => { const f = e.target.closest && e.target.closest('#novostForm, #anketaForm'); if (!f) return;
   const g = f.querySelector('[name=grupa]').value, u = [...f.querySelectorAll('[name=uloga]:checked')].map((x) => x.value), i = $('#novPubInfo'), er = $('#novUlogeErr');
   if (er) er.textContent = ''; if (i) i.textContent = u.length ? `Objavu će vidjeti oko ${novOd(g, u)} osoba (${novGrupaOpis(g)}).` : ''; });
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
@@ -1505,7 +1562,15 @@ document.addEventListener('click', (e) => {
     if (id === IGR_ID) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: why || 'Ručno dodijeljeno', iznos: sign * n });
     state.fcMsg = `${sign > 0 ? 'Dodijeljeno' : 'Oduzeto'} ${fmt(n)} — ${ime}, novo stanje ${fmt(FALCOINI[id])}`; render(); return; }
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
-  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${novPublika(n)} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p><div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
+  if (e.target.closest('[data-newpoll]')) { pollSheet(); return; }
+  if (e.target.closest('[data-pollopt]')) { const w = $('#pollOpts'); if (w && w.children.length < 6) { const i = document.createElement('input'); i.className = 'input'; i.name = 'opcija'; i.placeholder = `Odgovor ${w.children.length + 1}`; w.appendChild(i); i.focus(); if (w.children.length >= 6) e.target.closest('[data-pollopt]').hidden = true; } return; }
+  const anVote = e.target.closest('[data-pollvote]'); if (anVote) { const [id, i] = anVote.dataset.pollvote.split('|').map(Number), n = NOVOSTI.find((x) => x.id === id), ul = uloga();
+    if (!n || !n.anketa || anketaZatvorena(n)) return; state.glasovi = state.glasovi || {}; let cur = mojGlas(n, ul);
+    cur = n.anketa.visestruko ? (cur.includes(i) ? cur.filter((x) => x !== i) : [...cur, i].sort()) : [i]; state.glasovi[glasKljuc(n, ul)] = cur;
+    const box = anVote.closest('[data-poll]'); if (box) box.outerHTML = anketaHtml(n, ul); toastIn(cur.length ? 'Odgovor spremljen' : 'Odgovor povučen'); return; }
+  const anPods = e.target.closest('[data-pollpodsjeti]'); if (anPods) { const n = NOVOSTI.find((x) => x.id === +anPods.dataset.pollpodsjeti); if (n) { const ceka = Math.max(0, n.od - anketaOdg(n));
+    novUloge(n).forEach((ul) => { if (!mojGlas(n, ul).length && OBAVIJESTI[ul]) notify(ul, 'Podsjetnik: anketa', `Odgovori na anketu „${n.naslov}”.`); }); toastIn(`Podsjetnik poslan: ${ceka} osoba`); } return; }
+  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${novPublika(n)} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p>${n.anketa ? anketaAdmin(n) : ''}<div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
   const nfu = e.target.closest('[data-novfotoukloni]'); if (nfu) { const n = NOVOSTI.find((x) => x.id === +nfu.dataset.novfotoukloni); if (n) { delete n.foto; closeModal(); render(); toastIn('Fotografija uklonjena, vraćena je zadana ilustracija'); } return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';
