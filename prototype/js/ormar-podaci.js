@@ -6,10 +6,10 @@ const ORMAR_PODACI = [
   "cijena": 25.0,
   "staraCijena": 30.0,
   "kat": "Paketi",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_64462ca82f456aaa.jpg",
+  "slika": "assets/ormar/p_64462ca82f456aaa.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_64462ca82f456aaa.jpg",
-   "https://ormar.zkkfalcons.hr/uploads/products/p_c8a0ec4679102ee7.jpg"
+   "assets/ormar/p_64462ca82f456aaa.jpg",
+   "assets/ormar/p_c8a0ec4679102ee7.jpg"
   ],
   "opis": "Čarape \"FLCN\" bijele + Čarape \"FLCN\" plave + Čarape \"FLCN\" crvene",
   "velicine": [
@@ -34,9 +34,9 @@ const ORMAR_PODACI = [
   "cijena": 20.0,
   "staraCijena": 24.0,
   "kat": "Paketi",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_bcb638b037eb80e5.jpg",
+  "slika": "assets/ormar/p_bcb638b037eb80e5.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_bcb638b037eb80e5.jpg"
+   "assets/ormar/p_bcb638b037eb80e5.jpg"
   ],
   "opis": "T-shirt \"Logo one color\" crvena + T-shirt \"Falcons Basketball\"",
   "velicine": [
@@ -91,9 +91,9 @@ const ORMAR_PODACI = [
   "ime": "Falcons Zagreb",
   "cijena": 12.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_f16f8512c532d374.jpg",
+  "slika": "assets/ormar/p_f16f8512c532d374.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_f16f8512c532d374.jpg"
+   "assets/ormar/p_f16f8512c532d374.jpg"
   ],
   "novo": true,
   "predbilj": true,
@@ -130,10 +130,10 @@ const ORMAR_PODACI = [
   "ime": "Čarape \"FLCN\" bijele",
   "cijena": 10.0,
   "kat": "Čarape",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_64462ca82f456aaa.jpg",
+  "slika": "assets/ormar/p_64462ca82f456aaa.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_64462ca82f456aaa.jpg",
-   "https://ormar.zkkfalcons.hr/uploads/products/p_c8a0ec4679102ee7.jpg"
+   "assets/ormar/p_64462ca82f456aaa.jpg",
+   "assets/ormar/p_c8a0ec4679102ee7.jpg"
   ],
   "novo": true,
   "predbilj": false,
@@ -154,10 +154,10 @@ const ORMAR_PODACI = [
   "ime": "Čarape \"FLCN\" plave",
   "cijena": 10.0,
   "kat": "Čarape",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_b7074e76170f907e.jpg",
+  "slika": "assets/ormar/p_b7074e76170f907e.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_b7074e76170f907e.jpg",
-   "https://ormar.zkkfalcons.hr/uploads/products/p_3c731199843c36a2.jpg"
+   "assets/ormar/p_b7074e76170f907e.jpg",
+   "assets/ormar/p_3c731199843c36a2.jpg"
   ],
   "novo": true,
   "predbilj": false,
@@ -178,10 +178,10 @@ const ORMAR_PODACI = [
   "ime": "Čarape \"FLCN\" crvene",
   "cijena": 10.0,
   "kat": "Čarape",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_45f290ea6b2ebbe8.jpg",
+  "slika": "assets/ormar/p_45f290ea6b2ebbe8.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_45f290ea6b2ebbe8.jpg",
-   "https://ormar.zkkfalcons.hr/uploads/products/p_5bda52dd9c223a7f.jpg"
+   "assets/ormar/p_45f290ea6b2ebbe8.jpg",
+   "assets/ormar/p_5bda52dd9c223a7f.jpg"
   ],
   "novo": true,
   "predbilj": false,
@@ -202,9 +202,9 @@ const ORMAR_PODACI = [
   "ime": "Ruksak \"Falcons\"",
   "cijena": 50.0,
   "kat": "Torbe",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_6a67064e287b461a.jpg",
+  "slika": "assets/ormar/p_6a67064e287b461a.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_6a67064e287b461a.jpg"
+   "assets/ormar/p_6a67064e287b461a.jpg"
   ],
   "novo": true,
   "predbilj": true,
@@ -221,9 +221,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Logo one color\" plava",
   "cijena": 12.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_42dd971bd5c22d7a.jpg",
+  "slika": "assets/ormar/p_42dd971bd5c22d7a.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_42dd971bd5c22d7a.jpg"
+   "assets/ormar/p_42dd971bd5c22d7a.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -260,9 +260,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Logo one color\" crvena",
   "cijena": 12.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_bcb638b037eb80e5.jpg",
+  "slika": "assets/ormar/p_bcb638b037eb80e5.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_bcb638b037eb80e5.jpg"
+   "assets/ormar/p_bcb638b037eb80e5.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -315,9 +315,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Falcon\"",
   "cijena": 17.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_e502d54fa3ade141.jpg",
+  "slika": "assets/ormar/p_e502d54fa3ade141.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_e502d54fa3ade141.jpg"
+   "assets/ormar/p_e502d54fa3ade141.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -354,9 +354,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Falcons Colorful\"",
   "cijena": 17.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_3a402266f6887976.jpg",
+  "slika": "assets/ormar/p_3a402266f6887976.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_3a402266f6887976.jpg"
+   "assets/ormar/p_3a402266f6887976.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -393,9 +393,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"FLCN\" crvena",
   "cijena": 12.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_2e958618c771473b.jpg",
+  "slika": "assets/ormar/p_2e958618c771473b.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_2e958618c771473b.jpg"
+   "assets/ormar/p_2e958618c771473b.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -432,9 +432,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"FLCN\" plava",
   "cijena": 12.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_27331364a8e239ab.jpg",
+  "slika": "assets/ormar/p_27331364a8e239ab.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_27331364a8e239ab.jpg"
+   "assets/ormar/p_27331364a8e239ab.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -471,9 +471,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Falcons Basketball\"",
   "cijena": 12.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_9633b109daddf24e.jpg",
+  "slika": "assets/ormar/p_9633b109daddf24e.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_9633b109daddf24e.jpg"
+   "assets/ormar/p_9633b109daddf24e.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -526,9 +526,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Logo\" plava",
   "cijena": 17.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_53b95a5086465648.jpg",
+  "slika": "assets/ormar/p_53b95a5086465648.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_53b95a5086465648.jpg"
+   "assets/ormar/p_53b95a5086465648.jpg"
   ],
   "novo": false,
   "predbilj": false,
@@ -565,9 +565,9 @@ const ORMAR_PODACI = [
   "ime": "T-shirt \"Logo\" crvena",
   "cijena": 17.0,
   "kat": "Majice",
-  "slika": "https://ormar.zkkfalcons.hr/uploads/products/p_c9d8ee8aa1311b81.jpg",
+  "slika": "assets/ormar/p_c9d8ee8aa1311b81.jpg",
   "slike": [
-   "https://ormar.zkkfalcons.hr/uploads/products/p_c9d8ee8aa1311b81.jpg"
+   "assets/ormar/p_c9d8ee8aa1311b81.jpg"
   ],
   "novo": false,
   "predbilj": false,

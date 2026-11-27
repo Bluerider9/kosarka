@@ -6,7 +6,7 @@ import json, os, sys, re
 sys.path.insert(0, os.path.dirname(__file__))
 from dump_parser import parse
 
-BAZA = 'https://ormar.zkkfalcons.hr/'
+BAZA = 'assets/ormar/'  # slike su lokalno; u dumpu su putanje oblika uploads/products/p_xxx.jpg
 def vel(n):
     n = n.strip().replace(' - ', '–')
     n = re.sub(r'^dječji ', 'Kids ', n)
@@ -24,7 +24,7 @@ def main(path):
         vs = json.loads(p['sizes_stock'])
         velicine = [{'v': vel(v['name']), 'n': v['stock'] if v['stock'] > 0 else None} for v in vs]
         velicine.sort(key=lambda v: v['n'] is None)  # na stanju prvo
-        slike = [BAZA + x for x in json.loads(p['images'] or '[]')] or ([BAZA + p['image_path']] if p['image_path'] else [])
+        slike = [BAZA + x.split('/')[-1] for x in json.loads(p['images'] or '[]')] or ([BAZA + p['image_path'].split('/')[-1]] if p['image_path'] else [])
         a = {'id': p['id'], 'ime': ime_lijepo(p['name']), 'cijena': float(p['price']), 'kat': kat(p['tag']), 'slika': slike[0] if slike else None, 'slike': slike,
              'novo': bool(p['is_new']), 'predbilj': bool(p['preorder_open']), 'oznaka': p['badge_text'], 'velicine': velicine}
         izlaz.append(a); po_id[p['id']] = a
@@ -41,7 +41,7 @@ def main(path):
                       'slika': dijelovi[0]['slika'], 'slike': dijelovi[0]['slike'], 'opis': ' + '.join(x['ime'] for x in dijelovi), 'velicine': velicine, 'paket': ids})
     izlaz.sort(key=lambda a: (a['kat'] != 'Paketi', 0))  # paketi prvi, ostalo po sort_order
     flc = next((s['setting_value'] for s in d.get('settings', []) if s['setting_key'] == 'flc_info'), '')
-    out = '// GENERIRANO iz dumpa Ormara (migracija/ormar_iz_dumpa.py). Slike se hotlinkaju s ormar.zkkfalcons.hr.\n'
+    out = '// GENERIRANO iz dumpa Ormara (migracija/ormar_iz_dumpa.py). Slike su lokalno u prototype/assets/ormar.\n'
     out += 'const ORMAR_PODACI = %s;\nconst FLC_INFO_STARI = %s;\n' % (json.dumps(izlaz, ensure_ascii=False, indent=1), json.dumps(flc, ensure_ascii=False))
     open(os.path.join(os.path.dirname(__file__), '..', 'prototype', 'js', 'ormar-podaci.js'), 'w', encoding='utf8').write(out)
     print(len(izlaz), 'artikala,', sum(len(a['slike']) for a in izlaz), 'slika')
