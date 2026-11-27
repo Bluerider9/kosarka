@@ -419,7 +419,7 @@ function novostCard(n) {
     <div class="news-img"><img src="${sl}" alt=""></div>
     <div class="news-info"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div>
       <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><span class="meta">${n.dat}</span>
-      <p class="news-text">${n.tekst}</p>${n.anketa ? anketaHtml(n) : ''}<span class="more">Prikaži manje</span></div></div>`;
+      <span class="more">${n.anketa ? 'Odgovori na anketu' : 'Otvori'} ›</span></div></div>`;
 }
 /* ---------- FALCOINI I ORMAR ---------- */
 const coinSvg = (s = 18) => `<svg class="fcoin" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#F0B64E"/><circle cx="12" cy="12" r="8.6" fill="none" stroke="#C98A1B" stroke-width="1.3"/><text x="12" y="16.4" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="12.5" fill="#182454">F</text></svg>`;
@@ -1573,7 +1573,10 @@ document.addEventListener('click', (e) => {
   const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${novPublika(n)} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p>${n.anketa ? anketaAdmin(n) : ''}<div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
   const nfu = e.target.closest('[data-novfotoukloni]'); if (nfu) { const n = NOVOSTI.find((x) => x.id === +nfu.dataset.novfotoukloni); if (n) { delete n.foto; closeModal(); render(); toastIn('Fotografija uklonjena, vraćena je zadana ilustracija'); } return; }
   const nw = e.target.closest('[data-news]');
-  if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';
+  if (nw) { const id = +nw.dataset.news, n = NOVOSTI.find((x) => x.id === id); if (!n) return;
+    overlay(`<div class="row spread" style="margin-bottom:10px"><div class="row" style="gap:8px">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div><button class="btn ghost sm" data-fxclose>Zatvori</button></div>
+      <div class="nov-cover" style="border-radius:14px;overflow:hidden"><img src="${novostSlika(n)}" alt=""></div>
+      <h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat}</div>${n.tekst ? `<p style="margin-top:12px;line-height:1.55">${n.tekst}</p>` : ''}${n.anketa ? anketaHtml(n) : ''}`, 'news-sheet');
     if (citanoSet().add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
   const pr = e.target.closest('[data-profil]');
   if (pr) { state.profil = +pr.dataset.profil; const u = location.hash.slice(1).split('-')[0]; location.hash = u === 'admin' ? 'admin-profil' : `${u}-igracica`; return; }

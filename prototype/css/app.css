@@ -1269,3 +1269,6 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 /* zupčanik u adminu: središnja os kao naslov i gumbi u zaglavlju stranice */
 .main > .page-head:first-of-type { min-height: 64px; }
 .cog.admin-cog { top: calc(var(--s8) + 12px); }
+/* novost u posebnom prozoru (mobitel) */
+.news-sheet .m-sheet { text-align: left; max-height: 92%; overflow-y: auto; }
+.news-sheet .nov-cover img { width: 100%; display: block; }
