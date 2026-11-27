@@ -96,11 +96,16 @@ function modal(html) {
   m.innerHTML = `<div class="sheet">${html}</div>`; document.body.appendChild(m);
 }
 function newPostSheet() {
+  state.novFotoTmp = null;
   modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova objava</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
     <form id="novostForm" class="stack" novalidate>
       ${field('naslov', 'Naslov')}
       <div class="field" data-field="tekst"><label>Tekst</label><textarea class="input" name="tekst" rows="5"></textarea><small class="err"></small></div>
       <div class="two">${field('grupa', 'Za koga', { opts: ['Svi', ...GROUPS.map((g) => g.ime)] })}${field('oznaka', 'Oznaka', { opts: Object.keys(OZNAKE) })}</div>
+      <div class="field"><label>Fotografija (neobavezno)</label>
+        <div class="nov-up"><div class="nov-prev" id="novPrev"><span>Bez fotografije: koristi se zadana ilustracija po oznaci</span></div>
+        <label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} Odaberi fotografiju<input type="file" id="novFoto" accept="image/*" hidden></label></div>
+        <small class="meta" id="novFotoInfo">${NOV_FOTO_INFO}</small></div>
       <label class="check"><input type="checkbox" name="pin"><span>Prikvači na vrh</span></label>
       <div class="meta">Roditelji djevojčica u odabranoj grupi dobivaju objavu u aplikaciji.</div>
       <div class="row" style="gap:10px"><button class="btn ghost grow" type="button" data-close>Odustani</button><button class="btn red grow" type="submit">Objavi</button></div>
@@ -353,6 +358,7 @@ const novostiScreen = (ul, tabs) => ({
 function novostCard(n) {
   const nova = !citanoSet().has(n.id);
   return `<div class="card news ${nova ? 'unread' : ''}" data-news="${n.id}">
+    <div class="news-img"><img src="${novostSlika(n)}" alt=""></div>
     <div class="row spread"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(n.grupa) : ''}</div>
       <span class="meta">${n.dat}</span></div>
     <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><p class="news-text">${n.tekst}</p><span class="more">Prikaži više</span></div>`;
@@ -1010,7 +1016,14 @@ const regTraka = () => {
 };
 /* generička naslovnica novosti (po oznaci) — kasnije se može zamijeniti pravom fotografijom */
 const NOV_SLIKA = { 'Važno': 'termin', 'Klub': 'fotografiranje', 'Trening': 'trening', 'Članarina': 'clanarina', 'Škola košarke': 'skola' }; // izvor: migracija/novosti_naslovnice.py
-const novostCover = (n) => `<div class="nov-cover"><img src="assets/novosti/${NOV_SLIKA[n.oznaka] || 'fotografiranje'}.svg" alt=""></div>`;
+const novostSlika = (n) => n.foto || `assets/novosti/${NOV_SLIKA[n.oznaka] || 'fotografiranje'}.svg`;
+const NOV_FOTO_INFO = 'Preporučeno 1280 × 720 px (omjer 16:9), JPG ili PNG. Fotografija se sama izreže na taj omjer i smanji na 1280 × 720 px.';
+// učitava sliku, izreže na 16:9 i smanji na 1280×720 (JPEG); cb(dataUrl, izvornaŠirina, izvornaVisina)
+function novFotoObradi(file, cb) { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => {
+  const W = 1280, H = 720, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  const k = Math.max(W / im.width, H / im.height), w = im.width * k, h = im.height * k; x.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+  cb(c.toDataURL('image/jpeg', 0.82), im.width, im.height); }; im.src = r.result; }; r.readAsDataURL(file); }
+const novostCover = (n) => `<div class="nov-cover"><img src="${novostSlika(n)}" alt=""></div>`;
 const novostKartica = (n) => `<button type="button" class="nov-card" data-novotv="${n.id}">${novostCover(n)}
   <span class="nov-tag">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</span>${n.pin ? `<span class="nov-pin">${ic('bell', 14)} Prikvačeno</span>` : ''}
   <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa}</div>
@@ -1221,7 +1234,7 @@ document.addEventListener('submit', (e) => {
     e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
     ['naslov', 'tekst'].forEach((k) => { const bad = !d[k]; showErr(f, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
     if (!ok) return;
-    NOVOSTI.unshift({ id: Date.now(), pin: !!d.pin, oznaka: d.oznaka, grupa: d.grupa, dat: '24.11.2026.', naslov: d.naslov, tekst: d.tekst, citalo: 0, od: d.grupa === 'Svi' ? 128 : (GROUPS.find((g) => g.ime === d.grupa) || { cl: 0 }).cl });
+    NOVOSTI.unshift({ id: Date.now(), pin: !!d.pin, oznaka: d.oznaka, grupa: d.grupa, dat: '24.11.2026.', naslov: d.naslov, tekst: d.tekst, foto: state.novFotoTmp || undefined, citalo: 0, od: d.grupa === 'Svi' ? 128 : (GROUPS.find((g) => g.ime === d.grupa) || { cl: 0 }).cl });
     closeModal(); render(); return;
   }
   if (e.target.id === 'loginForm') {
@@ -1256,6 +1269,10 @@ document.addEventListener('change', (e) => {
   if (t.dataset && t.dataset.protlogo) citajSliku(t.files[0], (u) => { PROTIVNICI.find((k) => k.id === +t.dataset.protlogo).logo = u; render(); toastIn('Logotip spremljen'); });
   if (t.dataset && t.dataset.protnovilogo !== undefined) citajSliku(t.files[0], (u) => { state.protNoviLogo = u; const pv = $('#protPrev'); if (pv) pv.innerHTML = `<img class="prot-logo lg" src="${u}">`; });
 });
+document.addEventListener('change', (e) => { const t = e.target, file = t.files && t.files[0]; if (!file) return;
+  if (t.id === 'novFoto') novFotoObradi(file, (url, w, h) => { state.novFotoTmp = url; const p = $('#novPrev'), i = $('#novFotoInfo');
+    if (p) p.innerHTML = `<img src="${url}" alt="">`; if (i) i.innerHTML = `Učitano: ${w} × ${h} px, izrezano na 1280 × 720 px (16:9).${w < 1280 || h < 720 ? ' <b style="color:var(--red)">Slika je manja od preporučene pa može biti mutna.</b>' : ''}`; });
+  if (t.dataset && t.dataset.novfoto) novFotoObradi(file, (url) => { const n = NOVOSTI.find((x) => x.id === +t.dataset.novfoto); if (n) { n.foto = url; closeModal(); render(); toastIn('Fotografija objave spremljena'); } }); });
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
 document.addEventListener('change', (e) => { const t = e.target; if (!t.dataset) return; let key;
   if (t.dataset.rez) { const [kk, f] = t.dataset.rez.split('|'), { k } = keloKolo(kk); key = kk; k[f] = t.value === '' ? undefined : Math.max(0, parseInt(t.value, 10) || 0); k.rez = k.nasi !== undefined && k.njihovi !== undefined ? k.nasi + ' : ' + k.njihovi : undefined; }
@@ -1469,7 +1486,8 @@ document.addEventListener('click', (e) => {
     if (id === IGR_ID) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: why || 'Ručno dodijeljeno', iznos: sign * n });
     state.fcMsg = `${sign > 0 ? 'Dodijeljeno' : 'Oduzeto'} ${fmt(n)} — ${ime}, novo stanje ${fmt(FALCOINI[id])}`; render(); return; }
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
-  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p>`); return; }
+  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p><div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
+  const nfu = e.target.closest('[data-novfotoukloni]'); if (nfu) { const n = NOVOSTI.find((x) => x.id === +nfu.dataset.novfotoukloni); if (n) { delete n.foto; closeModal(); render(); toastIn('Fotografija uklonjena, vraćena je zadana ilustracija'); } return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';
     if (citanoSet().add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }

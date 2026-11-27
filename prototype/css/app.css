@@ -1235,3 +1235,9 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .nov-body small { color: var(--muted, #6b7585); font-size: 11px; }
 .nov-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .nov-ball, .nov-ic { display: none; }
+
+.nov-up { display: flex; gap: 12px; align-items: center; }
+.nov-prev { width: 160px; aspect-ratio: 16 / 9; border-radius: 10px; background: #eef1f6; border: 1px dashed #b4c0cc; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 10px; color: #6b7585; padding: 6px; overflow: hidden; flex: none; }
+.nov-prev img { width: 100%; height: 100%; object-fit: cover; display: block; margin: -6px; width: calc(100% + 12px); height: calc(100% + 12px); max-width: none; }
+.news-img { margin: -2px -2px 2px; border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 9; }
+.news-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
