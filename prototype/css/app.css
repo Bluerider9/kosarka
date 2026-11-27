@@ -1252,3 +1252,4 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .card.news:not(.open) .news-text, .card.news:not(.open) .more { display: none; }
 .card.news.open .news-text { background: rgba(255,255,255,.88); border-radius: 8px; padding: 4px 0; }
 .card.news .news-img img { object-position: 60% 72%; }
+.nov-uloge { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }

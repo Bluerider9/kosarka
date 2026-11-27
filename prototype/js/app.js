@@ -95,13 +95,27 @@ function modal(html) {
   const m = document.createElement('div'); m.className = 'modal';
   m.innerHTML = `<div class="sheet">${html}</div>`; document.body.appendChild(m);
 }
+// publika objave: grupa (Svi / Selekcija / Škola košarke / pojedina grupa) + uloge (roditelj, igračica, trener)
+const SELEKCIJA_GRUPE = ['U12', 'U14', 'U16', 'SEN'];
+const NOV_GRUPE = ['Svi', 'Selekcija', 'Škola košarke', ...SELEKCIJA_GRUPE];
+const NOV_ULOGE = [['roditelj', 'Roditelji'], ['igracica', 'Igračice'], ['trener', 'Treneri']];
+const NOV_GRUPE_ULOGE = { roditelj: ['U14', 'Škola košarke'], igracica: ['U14'], trener: ['U12', 'U14'] }; // u prototipu: grupe prijavljene osobe
+const novGrupaOpis = (g) => ({ Svi: 'Sve grupe', Selekcija: 'Selekcija (U12–SEN)', 'Škola košarke': 'Škole košarke' }[g] || g);
+const novGrupaPogodi = (g, grupe) => g === 'Svi' || (g === 'Selekcija' ? grupe.some((x) => SELEKCIJA_GRUPE.includes(x)) : grupe.includes(g));
+const novUloge = (n) => n.uloge || NOV_ULOGE.map(([k]) => k);
+const novPublika = (n) => `${novGrupaOpis(n.grupa)} · ${novUloge(n).length === 3 ? 'roditelji, igračice, treneri' : NOV_ULOGE.filter(([k]) => novUloge(n).includes(k)).map(([, l]) => l.toLowerCase()).join(', ')}`;
+function novOd(g, uloge) { if (!uloge.includes('roditelj') && !uloge.includes('igracica')) return uloge.includes('trener') ? 3 : 0;
+  const base = g === 'Svi' ? 128 : g === 'Selekcija' ? GROUPS.filter((x) => SELEKCIJA_GRUPE.includes(x.ime)).reduce((a, x) => a + x.cl, 0) : (GROUPS.find((x) => x.ime === g) || { cl: 0 }).cl;
+  return base + (uloge.includes('trener') ? 3 : 0); }
 function newPostSheet() {
   state.novFotoTmp = null;
   modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova objava</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
     <form id="novostForm" class="stack" novalidate>
       ${field('naslov', 'Naslov')}
       <div class="field" data-field="tekst"><label>Tekst</label><textarea class="input" name="tekst" rows="5"></textarea><small class="err"></small></div>
-      <div class="two">${field('grupa', 'Za koga', { opts: ['Svi', ...GROUPS.map((g) => g.ime)] })}${field('oznaka', 'Oznaka', { opts: Object.keys(OZNAKE) })}</div>
+      <div class="two">${field('grupa', 'Grupa', { opts: NOV_GRUPE })}${field('oznaka', 'Oznaka', { opts: Object.keys(OZNAKE) })}</div>
+      <div class="field"><label>Tko dobiva objavu</label><div class="nov-uloge">${NOV_ULOGE.map(([k, l]) => `<label class="check"><input type="checkbox" name="uloga" value="${k}" checked><span>${l}</span></label>`).join('')}</div>
+        <small class="err" id="novUlogeErr"></small><small class="meta" id="novPubInfo"></small></div>
       <div class="field"><label>Fotografija (neobavezno)</label>
         <div class="nov-up"><div class="nov-prev" id="novPrev"><span>Bez fotografije: koristi se zadana ilustracija po oznaci</span></div>
         <label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} Odaberi fotografiju<input type="file" id="novFoto" accept="image/*" hidden></label></div>
@@ -343,14 +357,14 @@ function profilBody(p, uloga) {
 const profilIgr = () => PLAYERS.find((x) => x.id === state.profil) || PLAYERS[0];
 /* ---------- NOVOSTI ---------- */
 const OZNAKE = { 'Važno': 'danger', 'Klub': 'navy', 'Trening': 'ok', 'Članarina': 'warn', 'Škola košarke': 'navy' };
-const novostiRoditelj = () => NOVOSTI.filter((n) => n.grupa === 'Svi' || ['U14', 'Škola košarke'].includes(n.grupa))
+const novostiRoditelj = (ul = 'roditelj') => NOVOSTI.filter((n) => novUloge(n).includes(ul) && novGrupaPogodi(n.grupa, NOV_GRUPE_ULOGE[ul] || []))
   .sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
 // Novosti vide svi: roditelj, igračica (grupa U14 + Svi) i trener (njegove grupe + Svi); pročitano se pamti po ulozi
-const novostiZa = () => novostiRoditelj();
+const novostiZa = (ul = uloga()) => novostiRoditelj(ul);
 const citanoSet = (ul = uloga()) => (state.citanoPo[ul] = state.citanoPo[ul] || new Set([3, 4]));
 const neprocitano = (ul = uloga()) => novostiZa().filter((n) => !citanoSet(ul).has(n.id)).length;
 const novostiTeaser = (ul) => `<div class="card news-teaser" data-go="${ul}-novosti"><div class="row spread"><div class="row" style="gap:8px"><span class="pin">${ic('bell', 14)}</span><h3>Novosti</h3></div>${neprocitano() ? chip(neprocitano() + ' novo', 'warn') : ''}</div>
-  <div class="meta" style="margin-top:6px">${novostiZa()[0].naslov}</div></div>`;
+  <div class="meta" style="margin-top:6px">${(novostiZa()[0] || { naslov: 'Nema novosti' }).naslov}</div></div>`;
 const novostiScreen = (ul, tabs) => ({
   header: mHeader('Novosti', neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'),
   tabs, body: novostiZa().map(novostCard).join(''),
@@ -359,7 +373,7 @@ function novostCard(n) {
   const nova = !citanoSet().has(n.id), sl = novostSlika(n);
   return `<div class="card news ${nova ? 'unread' : ''}" data-news="${n.id}">
     <div class="news-img"><img src="${sl}" alt=""></div>
-    <div class="news-info"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(n.grupa) : ''}</div>
+    <div class="news-info"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div>
       <h3>${nova ? '<i class="dot"></i>' : ''}${n.naslov}</h3><span class="meta">${n.dat}</span>
       <p class="news-text">${n.tekst}</p><span class="more">Prikaži manje</span></div></div>`;
 }
@@ -1026,7 +1040,7 @@ function novFotoObradi(file, cb) { const r = new FileReader(); r.onload = () => 
 const novostCover = (n) => `<div class="nov-cover"><img src="${novostSlika(n)}" alt=""></div>`;
 const novostKartica = (n) => `<button type="button" class="nov-card" data-novotv="${n.id}">${novostCover(n)}
   <span class="nov-tag">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</span>${n.pin ? `<span class="nov-pin">${ic('bell', 14)} Prikvačeno</span>` : ''}
-  <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa}</div>
+  <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${novPublika(n)}</div>
   <div class="nov-read"><i style="width:${n.od ? Math.round(n.citalo / n.od * 100) : 0}%"></i></div><small>${n.citalo ? `Pročitalo ${n.citalo} / ${n.od}` : 'Još nitko nije pročitao'}</small></div></button>`;
 
 const ADMIN = {
@@ -1234,7 +1248,9 @@ document.addEventListener('submit', (e) => {
     e.preventDefault(); const f = e.target; const d = readForm(f); let ok = true;
     ['naslov', 'tekst'].forEach((k) => { const bad = !d[k]; showErr(f, k, bad ? 'Obavezno polje' : ''); if (bad) ok = false; });
     if (!ok) return;
-    NOVOSTI.unshift({ id: Date.now(), pin: !!d.pin, oznaka: d.oznaka, grupa: d.grupa, dat: '24.11.2026.', naslov: d.naslov, tekst: d.tekst, foto: state.novFotoTmp || undefined, citalo: 0, od: d.grupa === 'Svi' ? 128 : (GROUPS.find((g) => g.ime === d.grupa) || { cl: 0 }).cl });
+    const uloge = [...f.querySelectorAll('[name=uloga]:checked')].map((x) => x.value);
+    if (!uloge.length) { const er = $('#novUlogeErr'); if (er) er.textContent = 'Odaberi barem jednu skupinu'; return; }
+    NOVOSTI.unshift({ id: Date.now(), pin: !!d.pin, oznaka: d.oznaka, grupa: d.grupa, uloge, dat: '24.11.2026.', naslov: d.naslov, tekst: d.tekst, foto: state.novFotoTmp || undefined, citalo: 0, od: novOd(d.grupa, uloge) });
     closeModal(); render(); return;
   }
   if (e.target.id === 'loginForm') {
@@ -1273,6 +1289,9 @@ document.addEventListener('change', (e) => { const t = e.target, file = t.files 
   if (t.id === 'novFoto') novFotoObradi(file, (url, w, h) => { state.novFotoTmp = url; const p = $('#novPrev'), i = $('#novFotoInfo');
     if (p) p.innerHTML = `<img src="${url}" alt="">`; if (i) i.innerHTML = `Učitano: ${w} × ${h} px, izrezano na 1280 × 720 px (16:9).${w < 1280 || h < 720 ? ' <b style="color:var(--red)">Slika je manja od preporučene pa može biti mutna.</b>' : ''}`; });
   if (t.dataset && t.dataset.novfoto) novFotoObradi(file, (url) => { const n = NOVOSTI.find((x) => x.id === +t.dataset.novfoto); if (n) { n.foto = url; closeModal(); render(); toastIn('Fotografija objave spremljena'); } }); });
+document.addEventListener('change', (e) => { const f = e.target.closest && e.target.closest('#novostForm'); if (!f) return;
+  const g = f.querySelector('[name=grupa]').value, u = [...f.querySelectorAll('[name=uloga]:checked')].map((x) => x.value), i = $('#novPubInfo'), er = $('#novUlogeErr');
+  if (er) er.textContent = ''; if (i) i.textContent = u.length ? `Objavu će vidjeti oko ${novOd(g, u)} osoba (${novGrupaOpis(g)}).` : ''; });
 document.addEventListener('change', (e) => { if (e.target.id === 'vidFile') { const n = $('#vidName'); if (n && e.target.files[0]) n.textContent = e.target.files[0].name; } });
 document.addEventListener('change', (e) => { const t = e.target; if (!t.dataset) return; let key;
   if (t.dataset.rez) { const [kk, f] = t.dataset.rez.split('|'), { k } = keloKolo(kk); key = kk; k[f] = t.value === '' ? undefined : Math.max(0, parseInt(t.value, 10) || 0); k.rez = k.nasi !== undefined && k.njihovi !== undefined ? k.nasi + ' : ' + k.njihovi : undefined; }
@@ -1486,7 +1505,7 @@ document.addEventListener('click', (e) => {
     if (id === IGR_ID) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: why || 'Ručno dodijeljeno', iznos: sign * n });
     state.fcMsg = `${sign > 0 ? 'Dodijeljeno' : 'Oduzeto'} ${fmt(n)} — ${ime}, novo stanje ${fmt(FALCOINI[id])}`; render(); return; }
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
-  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p><div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
+  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${novPublika(n)} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p><div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
   const nfu = e.target.closest('[data-novfotoukloni]'); if (nfu) { const n = NOVOSTI.find((x) => x.id === +nfu.dataset.novfotoukloni); if (n) { delete n.foto; closeModal(); render(); toastIn('Fotografija uklonjena, vraćena je zadana ilustracija'); } return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news; nw.classList.toggle('open'); nw.querySelector('.more').textContent = nw.classList.contains('open') ? 'Prikaži manje' : 'Prikaži više';

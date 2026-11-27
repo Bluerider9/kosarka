@@ -73,7 +73,7 @@ const NOVOSTI = [
     tekst: 'U subotu snimamo službene fotografije svih ekipa u dvorani A. Dođite u klupskim dresovima, a roditelje molimo da obavezno ponesu potpisanu privolu za fotografiju ako je još nisu predali.', citalo: 78, od: 128 },
   { id: 3, oznaka: 'Trening', grupa: 'U14', dat: '20.11.2026.', naslov: 'U14: dodatni trening četvrtkom',
     tekst: 'Do kraja prosinca U14 ima dodatni trening četvrtkom u 17:30. Dolazak je preporučen, a trener Ivan javlja detalje na treningu.', citalo: 12, od: 16 },
-  { id: 4, oznaka: 'Članarina', grupa: 'Svi', dat: '18.11.2026.', naslov: 'Članarina za studeni dospijeva do 30.11.',
+  { id: 4, oznaka: 'Članarina', grupa: 'Svi', dat: '18.11.2026.', naslov: 'Članarina za studeni dospijeva do 30.11.', uloge: ['roditelj'],
     tekst: 'Podsjećamo da članarina za studeni dospijeva do kraja mjeseca. Podaci za uplatu nalaze se u izborniku Članarina, a uplate se ažuriraju svakog ponedjeljka.', citalo: 96, od: 128 },
   { id: 5, oznaka: 'Škola košarke', grupa: 'Škola košarke', dat: '15.11.2026.', naslov: 'Škola košarke: nova grupa OŠ 3',
     tekst: 'Otvaramo novu grupu u OŠ 3, ponedjeljkom i srijedom u 15:00. Ima još nekoliko slobodnih mjesta, a prijava ide preko javnog obrasca.', citalo: 30, od: 38 },
