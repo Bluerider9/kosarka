@@ -1009,9 +1009,8 @@ const regTraka = () => {
     <div class="reg-list">${l.map((p) => `<button type="button" class="reg-kartica" data-open="${p.id}">${av(p, 'sm')}<div class="grow"><b>${p.ime} ${p.prezime}</b><small>${p.grupa} · ${p.rod.slice(0, 4)}. · ${p.dat}</small></div>${p.dup ? chip('Moguća dvostruka', 'danger') : ''}<span class="meta">Pregledaj ›</span></button>`).join('')}</div></div>`;
 };
 /* generička naslovnica novosti (po oznaci) — kasnije se može zamijeniti pravom fotografijom */
-const NOV_COVER = { 'Važno': ['#C04848', '#8e2f2f', 'bell', '#fff'], 'Klub': ['#182454', '#2a3a7a', 'home', '#F0B64E'], 'Trening': ['#2a3a7a', '#182454', 'check', '#F0B64E'], 'Članarina': ['#F0B64E', '#d9952a', 'wallet', '#182454'], 'Škola košarke': ['#B4C0CC', '#8fa0b2', 'users', '#182454'] };
-const novostCover = (n) => { const [a, b, ik, c] = NOV_COVER[n.oznaka] || NOV_COVER.Klub;
-  return `<div class="nov-cover" style="background:linear-gradient(135deg,${a},${b});color:${c}"><span class="nov-ball"></span><span class="nov-ic">${ic(ik, 44)}</span></div>`; };
+const NOV_SLIKA = { 'Važno': 'termin', 'Klub': 'fotografiranje', 'Trening': 'trening', 'Članarina': 'clanarina', 'Škola košarke': 'skola' }; // izvor: migracija/novosti_naslovnice.py
+const novostCover = (n) => `<div class="nov-cover"><img src="assets/novosti/${NOV_SLIKA[n.oznaka] || 'fotografiranje'}.svg" alt=""></div>`;
 const novostKartica = (n) => `<button type="button" class="nov-card" data-novotv="${n.id}">${novostCover(n)}
   <span class="nov-tag">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</span>${n.pin ? `<span class="nov-pin">${ic('bell', 14)} Prikvačeno</span>` : ''}
   <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${n.grupa === 'Svi' ? 'Svi roditelji' : n.grupa}</div>

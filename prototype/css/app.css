@@ -1233,3 +1233,5 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .nov-read { height: 5px; border-radius: 3px; background: #e9edf3; overflow: hidden; margin-top: 4px; }
 .nov-read i { display: block; height: 100%; background: var(--gold, #F0B64E); }
 .nov-body small { color: var(--muted, #6b7585); font-size: 11px; }
+.nov-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.nov-ball, .nov-ic { display: none; }
