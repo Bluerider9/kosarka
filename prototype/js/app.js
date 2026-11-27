@@ -817,7 +817,7 @@ const IGRACICA_TABS = [['pocetna', 'Početna', 'home'], ['raspored', 'Raspored',
 
 /* ---------- ADMIN (desktop) ---------- */
 const novihNarudzbi = () => NARUDZBE.filter((n) => n.st === 'čeka').length;
-const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['prijave', 'Registracije', 'file'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Webshop', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
+const ADMIN_NAV = [['pregled', 'Pregled', 'grid'], ['clanovi', 'Članovi', 'users'], ['raspored', 'Raspored', 'cal'], ['clanarine', 'Članarine', 'wallet'], ['novosti', 'Novosti', 'bell'], ['falcoini', SEKCIJA_FALCOIN, 'coin'], ['zadatak', 'Tjedni zadaci', 'check'], ['ormar', 'Webshop', 'bag'], ['lige', 'Lige', 'cal'], ['protivnici', 'Protivnici', 'cup'], ['klub', 'Klub', 'home'], ['baza', 'Baza', 'folder']];
 const memberRows = (q = '', g = 'Sve') => PLAYERS.filter((p) =>
   (g === 'Sve' || p.grupe.some((x) => x.startsWith(g))) && p.ime.toLowerCase().includes(q.toLowerCase()))
   .map((p) => `<tr class="click" data-profil="${p.id}"><td><div class="who">${av(p, 'sm')}${p.ime}</div></td><td>${p.god}.</td>
@@ -998,6 +998,13 @@ function bazaScreen() {
     <div class="baza-bar"><input class="input" id="bazaQ" placeholder="Traži u tablici ${t[1]}…" value="${state.bazaQ || ''}"><span class="meta">${rows.length} redaka · tablica <b>${t[0]}</b></span></div>
     ${pogled('baza-' + t[0], { cols: t[2].map((c, ci) => ({ id: c, label: c.replace(/_/g, ' '), val: (r) => r[ci] })), rows, lnaslov: t[1], title: t[2][t[2][0] === 'id' ? 1 : 0], empty: 'Nema redaka.' })}`;
 }
+/* Nove registracije (javni obrazac) stoje na vrhu Članova dok ne budu potvrđene; nakon potvrde nestaju i članica je u tablici */
+const regTraka = () => {
+  const l = prijave.filter((p) => p.status === 'ceka');
+  if (!l.length) return '';
+  return `<div class="reg-traka"><div class="row spread"><b>Nove registracije <span class="chip warn">${l.length}</span></b><button class="btn ghost sm" data-go="prijava-forma">Otvori javni obrazac</button></div>
+    <div class="reg-list">${l.map((p) => `<button type="button" class="reg-kartica" data-open="${p.id}">${av(p, 'sm')}<div class="grow"><b>${p.ime} ${p.prezime}</b><small>${p.grupa} · ${p.rod.slice(0, 4)}. · ${p.dat}</small></div>${p.dup ? chip('Moguća dvostruka', 'danger') : ''}<span class="meta">Pregledaj ›</span></button>`).join('')}</div></div>`;
+};
 const ADMIN = {
   baza: () => bazaScreen(),
   lige: () => ligeScreen(),
@@ -1008,12 +1015,7 @@ const ADMIN = {
     <div class="prot-grid">${PROTIVNICI.map((k) => `<div class="card prot-card">${protLogo(k.naziv, 'lg')}<b>${k.naziv}</b><div class="meta">${k.grad}</div>
       <div class="prot-dv"><span>Dvorane (do 3)</span>${[0, 1, 2].map((i) => `<input class="input" data-protdv="${k.id}-${i}" placeholder="Dvorana ${i + 1}" value="${(k.dvorane && k.dvorane[i]) || ''}">`).join('')}</div>
       <label class="btn ghost sm">${ic('upload', 16)} ${k.logo ? 'Promijeni logotip' : 'Učitaj logotip'}<input type="file" accept="image/*" hidden data-protlogo="${k.id}"></label>${k.logo ? `<button class="btn ghost sm" data-protukloni="${k.id}">Ukloni</button>` : ''}</div>`).join('')}</div>`,
-  prijave: () => `<div class="page-head"><div><h1>Registracije</h1><div class="sub">Nove članice koje čekaju potvrdu</div></div><div class="grow"></div>
-      <button class="btn ghost" data-go="prijava-forma">Otvori javni obrazac</button></div>
-    ${pogled('prijave', { lepeza: false, pocetni: 'kartice', samoKartice: true, title: 'ime', attr: (p) => `data-open="${p.id}"`, empty: 'Nema registracija.', rows: prijave, lav: (p) => av(p, 'sm'), lsub: (p) => p.grupa + ' · ' + p.rod.slice(0, 4) + '.', lchip: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]),
-      cols: [{ id: 'ime', label: 'Djevojčica', val: (p) => p.ime + ' ' + p.prezime, html: (p) => `<div class="who">${av(p, 'sm')}${p.ime} ${p.prezime}</div>` }, { id: 'dat', label: 'Datum', val: (p) => p.dat }, { id: 'god', label: 'Godište', val: (p) => p.rod.slice(0, 4), html: (p) => p.rod.slice(0, 4) + '.' },
-        { id: 'grupa', label: 'Zatražena grupa', val: (p) => p.grupa, html: (p) => chip(p.grupa, 'navy') }, { id: 'email', label: 'Kontakt roditelja', val: (p) => p.email },
-        { id: 'st', label: 'Status', val: (p) => STATUS_P[p.status][0], html: (p) => chip(STATUS_P[p.status][0], STATUS_P[p.status][1]) + (p.dup && p.status === 'ceka' ? ' ' + chip('Moguća dvostruka', 'danger') : '') }] })}`,
+  prijave: () => ADMIN.clanovi(),
   pregled: () => `<div class="page-head"><div><h1>Pregled</h1><div class="sub">Utorak, 24. studenoga 2026.</div></div></div>${izazovPodsjetnik()}
     <div class="stats">
       <div class="stat"><div class="lbl">Aktivne članice</div><div class="val">128</div><div class="hint">+6 ovaj mjesec</div></div>
@@ -1027,6 +1029,7 @@ const ADMIN = {
         <button class="btn ghost" data-go="admin-clanarine">Otvori članarine</button></div></div>`,
   clanovi: () => `<div class="page-head"><div><h1>Članovi</h1><div class="sub">128 aktivnih</div></div><div class="grow"></div>
       <button class="btn" data-toast="Obrazac za novu članicu — sljedeći korak">${ic('plus', 18)} Nova članica</button></div>
+    ${regTraka()}
     <div class="toolbar"><label class="search">${ic('search', 18)}<input id="q" placeholder="Pretraži po imenu…" value="${state.clQ || ''}"></label>
       <div class="filters" id="filters">${['Sve', 'U12', 'U14', 'U16', 'SEN', 'Škola'].map((f) => `<span class="chip ${(state.clG || 'Sve') === f ? 'on' : ''}" data-f="${f}">${f}</span>`).join('')}</div></div>
     ${pogled('clanovi', { lnaslov: 'Igračice', lav: (p) => av(p, 'sm'), lsub: (p) => p.grupe.join(' · ') + ' · ' + p.god + '.', lchip: (p) => clan(p.clanarina), title: 'ime', attr: (p) => `data-profil="${p.id}"`, empty: 'Nema članica za ovaj filter.',
@@ -1124,7 +1127,7 @@ function render() {
     stage.className = 'stage admin-stage';
     const a = ekran in ADMIN ? ekran : 'pregled';
     app.innerHTML = `<div class="admin"><aside class="sidebar"><div class="logo">${badge('lg')}<div><b>FALCONS</b><small>Administracija</small></div></div>
-      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') || (a === 'grupe' && id === 'klub') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'prijave' && pending() ? `<span class="badge">${pending()}</span>` : ''}${id === 'zadatak' && VIDEA.filter((v) => v.st === 'čeka').length ? `<span class="badge">${VIDEA.filter((v) => v.st === 'čeka').length}</span>` : ''}${id === 'ormar' && novihNarudzbi() ? `<span class="badge">${novihNarudzbi()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
+      ${ADMIN_NAV.map(([id, l, i]) => `<button class="${id === a || (a === 'profil' && id === 'clanovi') || (a === 'grupe' && id === 'klub') ? 'on' : ''}" data-go="admin-${id}">${ic(i, 20)}${l}${id === 'clanovi' && pending() ? `<span class="badge">${pending()}</span>` : ''}${id === 'zadatak' && VIDEA.filter((v) => v.st === 'čeka').length ? `<span class="badge">${VIDEA.filter((v) => v.st === 'čeka').length}</span>` : ''}${id === 'ormar' && novihNarudzbi() ? `<span class="badge">${novihNarudzbi()}</span>` : ''}</button>`).join('')}<div class="sp"></div>
       <button>${ic('user', 20)}Mislav</button></aside><main class="main">${bellBtn('admin-bell', 'data-bell-admin')}<button class="cog admin-cog" data-opt-admin aria-label="Opcije">${ic('cog', 22)}</button>${ADMIN[a]()}</main></div>`;
     return;
   }

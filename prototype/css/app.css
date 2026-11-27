@@ -1182,3 +1182,10 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 .baza-tabs button { border-radius: 999px; padding: 9px 16px; border: 1px solid var(--silver-100); background: #fff; box-shadow: 0 1px 2px rgba(24,36,84,.06); transition: background .15s, color .15s; }
 .baza-tabs button:hover { background: var(--navy-100); }
 .baza-tabs button.on:hover { background: var(--navy); }
+
+/* nove registracije na vrhu Članova */
+.reg-traka { background: #fff8e8; border: 1px solid var(--gold); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+.reg-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.reg-kartica { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--silver-100); border-radius: 12px; padding: 10px 14px; cursor: pointer; font: inherit; text-align: left; color: var(--text); }
+.reg-kartica:hover { border-color: var(--navy); }
+.reg-kartica small { display: block; color: var(--muted, #667); font-weight: 500; }
