@@ -1296,11 +1296,26 @@ document.addEventListener('click', (e) => {
       <div class="meta" style="margin-top:12px">Fotografiju igračice dodaješ na njenom profilu nakon potvrde.</div>`);
     return;
   }
+  const rz = e.target.closest('[data-razlog]');
+  if (rz) { const t = $('#razlogTxt'); t.value = rz.dataset.razlog; document.querySelectorAll('[data-razlog]').forEach((b) => b.classList.toggle('on', b === rz)); t.focus(); return; }
   const act = e.target.closest('[data-act]');
   if (act) {
     const p = prijave.find((x) => x.id === +act.dataset.id);
     if (act.dataset.act === 'odobri') { p.status = 'odobreno'; p.dodijeljeno = $('#dodjela').value; render(); modal(`<div class="meta" style="margin-bottom:10px">✓ Prijava potvrđena. Ovaj e-mail je poslan na <b>${p.email}</b>:</div>${mailPreview(p)}<button class="btn block" style="margin-top:14px" data-close>Zatvori</button>`); }
-    else if (act.dataset.act === 'odbij') { p.status = 'odbijeno'; render(); closeModal(); }
+    else if (act.dataset.act === 'odbij') {
+      const RAZLOZI = ['Duplikat prijave', 'Nepotpuni ili neispravni podaci', 'Neispravan OIB', 'Nema slobodnih mjesta u grupi', 'Izvan dobne granice', 'Roditelj je odustao'];
+      modal(`<h2 style="font-size:var(--fs-xl);margin-bottom:4px">Odbij registraciju</h2><div class="meta" style="margin-bottom:14px">${p.ime} ${p.prezime} · ${p.email}</div>
+        <div class="field"><label>Razlog odbijanja</label><div class="razlozi">${RAZLOZI.map((r) => `<button type="button" class="chip" data-razlog="${r}">${r}</button>`).join('')}</div>
+        <textarea class="input" id="razlogTxt" rows="3" placeholder="Odaberi razlog gore ili upiši svoj…" style="margin-top:10px"></textarea></div>
+        <label class="row" style="gap:8px;margin:12px 0;align-items:center"><input type="checkbox" id="razlogMail" checked> <span class="meta">Pošalji razlog roditelju e-mailom</span></label>
+        <div class="row" style="gap:8px"><button class="btn red grow" data-act="odbij-ok" data-id="${p.id}">Odbij registraciju</button><button class="btn ghost" data-close>Odustani</button></div>`);
+    }
+    else if (act.dataset.act === 'odbij-ok') {
+      const r = ($('#razlogTxt').value || '').trim();
+      if (!r) { toastIn('Odaberi ili upiši razlog odbijanja'); $('#razlogTxt').focus(); return; }
+      p.status = 'odbijeno'; p.razlog = r; const mail = $('#razlogMail').checked; render(); closeModal();
+      toastIn(mail ? `Registracija odbijena, razlog poslan na ${p.email}` : 'Registracija odbijena');
+    }
     else if (act.dataset.act === 'mail') { modal(`${mailPreview(p)}<button class="btn block" style="margin-top:14px" data-close>Zatvori</button>`); }
     return;
   }
