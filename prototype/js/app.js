@@ -1142,8 +1142,8 @@ const ADMIN = {
     </div>`,
   falcoini: () => `<div class="page-head"><div><h1>${SEKCIJA_FALCOIN}</h1><div class="sub">Pravila bodovanja i ljestvica</div></div></div>
     <div class="pf-grid">
-      <div class="card pf-sec"><h4>Pravila bodovanja</h4>${FALCOIN_PRAVILA.map((r) => `<div class="pf-kv"><span>${r.label}</span><span class="row" style="gap:8px">${coinSvg(18)}<input class="input fc-in" type="number" min="0" step="0.01" inputmode="decimal" value="${r.iznos.toFixed(2)}" data-rule="${r.k}"></span></div>`).join('')}
-        <button class="btn ghost" data-toast="Pravila spremljena (prototip)">Spremi pravila</button></div>
+      <div class="card pf-sec"><h4>Pravila bodovanja</h4>${FALCOIN_PRAVILA.map((r) => `<div class="pf-kv"><span>${r.label}</span><span class="row" style="gap:8px">${coinSvg(18)}<input class="input fc-in" type="number" min="0" step="0.01" inputmode="decimal" value="${r.iznos.toFixed(2)}" data-rule="${r.k}">${r.vlastito ? `<button class="btn ghost sm xbtn" data-pravilobrisi="${r.k}" aria-label="Obriši pravilo">${ic('x', 16)}</button>` : ''}</span></div>`).join('')}
+        <div class="row" style="gap:10px"><button class="btn ghost" data-toast="Pravila spremljena (prototip)">Spremi pravila</button><button class="btn ghost" data-pravilonovo>${ic('plus', 16)} Novo pravilo</button></div></div>
       <div class="card pf-sec"><h4>Ljestvica sezone</h4>${PLAYERS.slice().sort((a, b) => FALCOINI[b.id] - FALCOINI[a.id]).slice(0, 6).map((p, i) => `<div class="pf-kv"><span class="row" style="gap:10px"><b style="width:18px;color:var(--muted)">${i + 1}.</b>${av(p, 'sm')}<span style="color:var(--text)">${p.ime}</span></span>${fc(FALCOINI[p.id])}</div>`).join('')}</div>
       <div class="card pf-sec"><h4>Ručno dodjeljivanje</h4>
         <div class="field"><label>Igračica</label><select class="input" id="fcWho">${PLAYERS.map((p) => `<option value="${p.id}">${p.ime}</option>`).join('')}</select></div>
@@ -1506,7 +1506,7 @@ document.addEventListener('click', (e) => {
     <p>Video ili fotografiju možeš poslati <b>samo jednom tjedno</b>, zato pažljivo odaberi što šalješ.</p>
     <button class="btn block" data-fxclose>Razumijem</button>`); return; }
   if (e.target.closest('[data-flchelp]')) { overlay(`<div style="display:flex;justify-content:center">${coinSvg(56)}</div><h2>Što je FLC?</h2>
-    <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge, utakmice i turnire te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
+    <p><b>FLC</b> je kratica za <b>Falcoin</b>, virtualnu valutu kluba. Skupljaš ih dolascima na treninge i utakmice te bonusima, a mijenjaš ih za artikle u Ormaru.</p>
     <p><b>1 FLC = 1 €.</b> Ako ti Falcoina nema dovoljno za artikl, ostatak doplaćuješ gotovinom pri preuzimanju kod trenera.</p>
     <p>Falcoine možeš dobiti i <b>donacijom klubu</b> kod bilo kojeg trenera ili trenerice te osvajanjem u našim nagradnim igrama, online, na utakmicama i na događanjima.</p>
     <div class="section-title small" style="margin:6px 0 4px">Kako zarađuješ</div>
@@ -1562,6 +1562,14 @@ document.addEventListener('click', (e) => {
     if (id === IGR_ID) FALCOIN_POVIJEST.unshift({ dat: 'Danas', opis: why || 'Ručno dodijeljeno', iznos: sign * n });
     state.fcMsg = `${sign > 0 ? 'Dodijeljeno' : 'Oduzeto'} ${fmt(n)} — ${ime}, novo stanje ${fmt(FALCOINI[id])}`; render(); return; }
   if (e.target.closest('[data-newpost]')) { newPostSheet(); return; }
+  if (e.target.closest('[data-pravilonovo]')) { modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Novo pravilo bodovanja</h2><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>
+      <div class="stack"><div class="field"><label>Za što se dobivaju Falcoini</label><input class="input" id="prNaziv" placeholder="npr. Pomoć pri postavljanju dvorane"></div>
+      <div class="field"><label>Iznos (FLC)</label><input class="input" id="prIznos" type="number" min="0" step="0.01" inputmode="decimal" value="1.00"></div><small class="err" id="prErr"></small>
+      <div class="row" style="gap:10px"><button class="btn ghost grow" data-close>Odustani</button><button class="btn red grow" data-pravilosave>Dodaj pravilo</button></div></div>`); return; }
+  if (e.target.closest('[data-pravilosave]')) { const label = $('#prNaziv').value.trim(), iznos = r2(Math.max(0, +$('#prIznos').value || 0));
+    if (!label) { $('#prErr').textContent = 'Upiši naziv pravila'; return; } if (!iznos) { $('#prErr').textContent = 'Upiši iznos veći od 0'; return; }
+    FALCOIN_PRAVILA.push({ k: 'p' + Date.now(), label, iznos, vlastito: true }); closeModal(); render(); toastIn('Pravilo dodano'); return; }
+  const prb = e.target.closest('[data-pravilobrisi]'); if (prb) { const i = FALCOIN_PRAVILA.findIndex((x) => x.k === prb.dataset.pravilobrisi); if (i >= 0) FALCOIN_PRAVILA.splice(i, 1); render(); toastIn('Pravilo obrisano'); return; }
   if (e.target.closest('[data-newpoll]')) { pollSheet(); return; }
   if (e.target.closest('[data-pollopt]')) { const w = $('#pollOpts'); if (w && w.children.length < 6) { const i = document.createElement('input'); i.className = 'input'; i.name = 'opcija'; i.placeholder = `Odgovor ${w.children.length + 1}`; w.appendChild(i); i.focus(); if (w.children.length >= 6) e.target.closest('[data-pollopt]').hidden = true; } return; }
   const anVote = e.target.closest('[data-pollvote]'); if (anVote) { const [id, i] = anVote.dataset.pollvote.split('|').map(Number), n = NOVOSTI.find((x) => x.id === id), ul = uloga();
