@@ -135,7 +135,7 @@ function anketaAdmin(n) {
     <div class="row spread" style="margin-top:10px"><b>Odgovorilo ${anketaOdg(n)} / ${n.od}</b>${zat ? '' : `<button class="btn ghost sm" data-pollpodsjeti="${n.id}">Podsjeti one koji nisu odgovorili</button>`}</div></div>`;
 }
 function pollSheet() {
-  modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova anketa</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+  modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova anketa</h2><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>
     <form id="anketaForm" class="stack" novalidate>
       ${field('naslov', 'Pitanje', { ph: 'npr. Dolazite li na fotografiranje u subotu?' })}
       <div class="field" data-field="tekst"><label>Dodatni opis (neobavezno)</label><textarea class="input" name="tekst" rows="2"></textarea></div>
@@ -153,7 +153,7 @@ function pollSheet() {
 }
 function newPostSheet() {
   state.novFotoTmp = null;
-  modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova objava</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+  modal(`<div class="row spread" style="margin-bottom:12px"><h2 style="font-size:var(--fs-xl)">Nova objava</h2><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>
     <form id="novostForm" class="stack" novalidate>
       ${field('naslov', 'Naslov')}
       <div class="field" data-field="tekst"><label>Tekst</label><textarea class="input" name="tekst" rows="5"></textarea><small class="err"></small></div>
@@ -170,7 +170,7 @@ function newPostSheet() {
     </form>`);
 }
 function privacySheet() {
-  modal(`<div class="row spread" style="margin-bottom:10px"><h2 style="font-size:var(--fs-xl)">Pravila privatnosti</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+  modal(`<div class="row spread" style="margin-bottom:10px"><h2 style="font-size:var(--fs-xl)">Pravila privatnosti</h2><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>
     <div class="policy">
       <div class="meta">Nacrt teksta — prije puštanja u rad treba ga provjeriti i dopuniti (npr. podaci o kontaktu i službeniku za zaštitu podataka, ako je potreban).</div>
       <h4>Tko obrađuje podatke</h4><p>Voditelj obrade je ŽKK Falcons Zagreb (adresa, OIB i kontakt kluba — dopuniti).</p>
@@ -529,8 +529,8 @@ IZ_PLAN = [IZAZOV, null, { nagrada: 2.0, prikljuci: true, vrsta: 'foto', naslov:
 const zeljaArtikli = () => state.zelje.map((id) => ORMAR.find((a) => a.id === id)).filter(Boolean);
 function zeljaKartica() {
   const lista = zeljaArtikli();
-  if (!lista.length) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>My favorites</h3><div class="meta">Označi srcem artikle u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
-  return `<div class="card wish"><div class="row spread"><h3 style="margin:0">My favorites</h3><span class="meta">${lista.length} ${lista.length === 1 ? 'artikl' : lista.length < 5 ? 'artikla' : 'artikala'}</span></div>
+  if (!lista.length) return `<div class="card wish empty" data-go="igracica-ormar"><div class="row" style="gap:12px"><span class="wish-heart">♡</span><div class="grow"><h3>Omiljeno</h3><div class="meta">Označi srcem artikle u Ormaru i prati koliko ti još fali.</div></div></div></div>`;
+  return `<div class="card wish"><div class="row spread"><h3 style="margin:0">Omiljeno</h3><span class="meta">${lista.length} ${lista.length === 1 ? 'artikl' : lista.length < 5 ? 'artikla' : 'artikala'}</span></div>
     ${lista.map((a) => { const fali = r2(Math.max(0, a.cijena - saldo())); const pct = Math.min(100, Math.round(saldo() / a.cijena * 100));
       return `<div class="wish-item"><div class="row" style="gap:12px">${itemTile(a, 'sm')}<div class="grow"><b>${a.ime}</b>
         <div class="wish-line">${fali > 0 ? `Još ti fali <b>${fmt(fali)} ${FLC}</b>` : `<b class="ok">Imaš dovoljno ${FLC}!</b>`}</div></div>
@@ -629,7 +629,7 @@ function ormarGrid() {
   const cats = `<div class="cats">${ORMAR_KATEGORIJE.map((k) => `<button class="${k === kat ? 'on' : ''}" data-okat="${k}">${k}</button>`).join('')}</div>`;
   return cats + `<div class="ormar-grid">${ORMAR.filter((a) => kat === 'Sve' || a.kat === kat).map((a, i) => ({ a, i })).sort((x, y) => (mojaNaStanju(y.a) - mojaNaStanju(x.a)) || (x.i - y.i)).map(({ a }) => { const puno = saldo() >= a.cijena; const sv = velOdabrana(a);
     const v = a.velicine.find((x) => x.v === sv) || a.velicine[0]; const ima = v.n > 0; const jedna = jednaVel(a); const moja = jedna || (mojaVel(a) && mojaVel(a).v === v.v && ima);
-    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}">${uloga() === 'roditelj' ? '' : `<button type="button" class="heart ${state.zelje.includes(a.id) ? 'on' : ''}" data-zelja="${a.id}" aria-label="My favorites">${state.zelje.includes(a.id) ? '♥' : '♡'}</button>`}${moja ? `<span class="mine-badge">${uloga() === 'roditelj' ? (jedna ? 'Odgovara Ani' : 'Anina veličina') : (jedna ? 'Odgovara ti' : 'Tvoja veličina')}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
+    return `<div class="card item ${ima || jedna ? '' : 'dim'} ${moja ? 'mine' : ''}">${uloga() === 'roditelj' ? '' : `<button type="button" class="heart ${state.zelje.includes(a.id) ? 'on' : ''}" data-zelja="${a.id}" aria-label="Omiljeno">${state.zelje.includes(a.id) ? '♥' : '♡'}</button>`}${moja ? `<span class="mine-badge">${uloga() === 'roditelj' ? (jedna ? 'Odgovara Ani' : 'Anina veličina') : (jedna ? 'Odgovara ti' : 'Tvoja veličina')}</span>` : ''}${itemTile(a, '', ima || jedna ? '' : 'nema veličine')}<h3>${a.ime}</h3>${cijenaHtml(a)}
       <div class="stock">${jedna ? (ima ? `na stanju ${v.n}` : 'predbilježba') : moja ? `Tvoja veličina ${v.v} · na stanju ${v.n}` : ima ? 'dostupno · izaberi veličinu' : 'nema tvoje veličine · predbilježba'}</div>
       <button class="btn ${ima ? 'red' : 'ghost'} sm block" data-redeem="${a.id}">Izaberi</button></div>`; }).join('')}</div>`;
 }
@@ -1244,7 +1244,7 @@ function optSheet() {
   dev.appendChild(o);
 }
 function optAdmin() {
-  modal(`<div class="row spread" style="margin-bottom:6px"><h2 style="font-size:var(--fs-xl)">Opcije</h2><button class="btn ghost sm" data-close>Zatvori</button></div>
+  modal(`<div class="row spread" style="margin-bottom:6px"><h2 style="font-size:var(--fs-xl)">Opcije</h2><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>
     <div class="opt-list">
       <div class="opt-row" data-toast="Moj profil — sljedeći korak"><span class="grow">Moj profil</span>${ic('chev', 18)}</div>
       <div class="opt-row" data-toast="Postavke kluba: grupe, škole, sezone — sljedeći korak"><span class="grow">Postavke kluba<small>Grupe, popis škola, sezone</small></span>${ic('chev', 18)}</div>
@@ -1470,7 +1470,7 @@ document.addEventListener('click', (e) => {
   const mt = e.target.closest('[data-mftab]'); if (mt) { state.mfTab = mt.dataset.mftab; render(); return; }
   const ml = e.target.closest('[data-mile]');
   if (ml) { const m = MILESTONES.find((x) => x.id === ml.dataset.mile); if (m.dat) overlay(`<div class="mile-big">${m.glif}</div><h2>${m.naslov}</h2><p>${m.opis}</p><div class="meta">Otkriveno ${m.dat}</div><button class="btn block" data-fxclose>Super</button>`); else toastIn('Još je skriveno — otkrit će se kad ga ostvariš'); return; }
-  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja, ima = state.zelje.includes(id); state.zelje = ima ? state.zelje.filter((x) => x !== id) : [...state.zelje, id]; render(); toastIn(ima ? 'Maknuto iz My favorites' : 'Dodano u My favorites'); return; }
+  const zl = e.target.closest('[data-zelja]'); if (zl) { const id = +zl.dataset.zelja, ima = state.zelje.includes(id); state.zelje = ima ? state.zelje.filter((x) => x !== id) : [...state.zelje, id]; render(); toastIn(ima ? 'Maknuto iz Omiljeno' : 'Dodano u Omiljeno'); return; }
   if (e.target.closest('[data-vidopen]')) { videoSheet(); return; }
   if (e.target.closest('[data-vidsend]')) { const f = $('#vidFile') && $('#vidFile').files[0]; const v = { igr: 'Ana Horvat', datoteka: f ? f.name : (IZAZOV.vrsta === 'foto' ? 'dres_ana.jpg' : 'trica_ana.mp4'), st: 'čeka', ana: true, tip: IZAZOV.vrsta };
     if (state.video) VIDEA.splice(VIDEA.indexOf(state.video), 1); VIDEA.unshift(v); state.video = v; closeOverlay(); render(); toastIn(IZAZOV.vrsta === 'foto' ? 'Fotografija poslana treneru' : 'Video poslan treneru');
@@ -1570,18 +1570,18 @@ document.addEventListener('click', (e) => {
     const box = anVote.closest('[data-poll]'); if (box) box.outerHTML = anketaHtml(n, ul); toastIn(cur.length ? 'Odgovor spremljen' : 'Odgovor povučen'); return; }
   const anPods = e.target.closest('[data-pollpodsjeti]'); if (anPods) { const n = NOVOSTI.find((x) => x.id === +anPods.dataset.pollpodsjeti); if (n) { const ceka = Math.max(0, n.od - anketaOdg(n));
     novUloge(n).forEach((ul) => { if (!mojGlas(n, ul).length && OBAVIJESTI[ul]) notify(ul, 'Podsjetnik: anketa', `Odgovori na anketu „${n.naslov}”.`); }); toastIn(`Podsjetnik poslan: ${ceka} osoba`); } return; }
-  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm" data-close>Zatvori</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${novPublika(n)} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p>${n.anketa ? anketaAdmin(n) : ''}<div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
+  const novk = e.target.closest('[data-novotv]'); if (novk) { const n = NOVOSTI.find((x) => x.id === +novk.dataset.novotv); if (n) modal(`<div class="row spread" style="margin-bottom:12px"><div>${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</div><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>${novostCover(n)}<h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat} · ${novPublika(n)} · ${n.citalo ? `pročitalo ${n.citalo} / ${n.od}` : 'nitko nije pročitao'}</div><p style="margin-top:12px">${n.tekst}</p>${n.anketa ? anketaAdmin(n) : ''}<div class="row" style="gap:10px;margin-top:14px"><label class="btn ghost sm" style="cursor:pointer">${ic('upload', 16)} ${n.foto ? 'Promijeni' : 'Dodaj'} fotografiju<input type="file" accept="image/*" hidden data-novfoto="${n.id}"></label>${n.foto ? `<button class="btn ghost sm" data-novfotoukloni="${n.id}">Ukloni fotografiju</button>` : ''}</div><small class="meta">${NOV_FOTO_INFO}</small>`); return; }
   const nfu = e.target.closest('[data-novfotoukloni]'); if (nfu) { const n = NOVOSTI.find((x) => x.id === +nfu.dataset.novfotoukloni); if (n) { delete n.foto; closeModal(); render(); toastIn('Fotografija uklonjena, vraćena je zadana ilustracija'); } return; }
   const nw = e.target.closest('[data-news]');
   if (nw) { const id = +nw.dataset.news, n = NOVOSTI.find((x) => x.id === id); if (!n) return;
-    overlay(`<div class="row spread" style="margin-bottom:10px"><div class="row" style="gap:8px">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div><button class="btn ghost sm" data-fxclose>Zatvori</button></div>
+    overlay(`<div class="row spread" style="margin-bottom:10px"><div class="row" style="gap:8px">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div><button class="btn ghost sm xbtn" data-fxclose aria-label="Zatvori">${ic('x', 18)}</button></div>
       <div class="nov-cover" style="border-radius:14px;overflow:hidden"><img src="${novostSlika(n)}" alt=""></div>
       <h2 style="font-size:var(--fs-xl);margin:14px 0 4px">${n.naslov}</h2><div class="meta">${n.dat}</div>${n.tekst ? `<p style="margin-top:12px;line-height:1.55">${n.tekst}</p>` : ''}${n.anketa ? anketaHtml(n) : ''}`, 'news-sheet');
     if (citanoSet().add(id) && nw.classList.contains('unread')) { nw.classList.remove('unread'); const dot = nw.querySelector('.dot'); if (dot) dot.remove(); const sub = $('.app-header .sub'); if (sub) sub.textContent = neprocitano() ? `${neprocitano()} nepročitano` : 'Sve pročitano'; } return; }
   const pr = e.target.closest('[data-profil]');
   if (pr) { state.profil = +pr.dataset.profil; const u = location.hash.slice(1).split('-')[0]; location.hash = u === 'admin' ? 'admin-profil' : `${u}-igracica`; return; }
-  if (e.target.closest('[data-bell]')) { overlay(`<div class="row spread" style="margin-bottom:6px"><h2>Obavijesti</h2><button class="btn ghost sm" data-fxclose>Zatvori</button></div>${bellList()}`); markRead(); return; }
-  if (e.target.closest('[data-bell-admin]')) { modal(`<div class="row spread" style="margin-bottom:6px"><h2 style="font-size:var(--fs-xl)">Obavijesti</h2><button class="btn ghost sm" data-close>Zatvori</button></div>${bellList()}`); markRead(); return; }
+  if (e.target.closest('[data-bell]')) { overlay(`<div class="row spread" style="margin-bottom:6px"><h2>Obavijesti</h2><button class="btn ghost sm xbtn" data-fxclose aria-label="Zatvori">${ic('x', 18)}</button></div>${bellList()}`); markRead(); return; }
+  if (e.target.closest('[data-bell-admin]')) { modal(`<div class="row spread" style="margin-bottom:6px"><h2 style="font-size:var(--fs-xl)">Obavijesti</h2><button class="btn ghost sm xbtn" data-close aria-label="Zatvori">${ic('x', 18)}</button></div>${bellList()}`); markRead(); return; }
   if (e.target.closest('[data-attsave]')) {
     const lista = PLAYERS.slice(0, 8); const n = pravilo('trening'); let dano = 0, vraceno = 0;
     lista.forEach((p) => {
