@@ -1082,10 +1082,10 @@ function novFotoObradi(file, cb) { const r = new FileReader(); r.onload = () => 
   const k = Math.max(W / im.width, H / im.height), w = im.width * k, h = im.height * k; x.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
   cb(c.toDataURL('image/jpeg', 0.82), im.width, im.height); }; im.src = r.result; }; r.readAsDataURL(file); }
 const novostCover = (n) => `<div class="nov-cover"><img src="${novostSlika(n)}" alt=""></div>`;
-const novostKartica = (n) => `<button type="button" class="nov-card" data-novotv="${n.id}">${novostCover(n)}
-  <span class="nov-tag">${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}</span>${n.pin ? `<span class="nov-pin">${ic('bell', 14)} Prikvačeno</span>` : ''}
-  <div class="nov-body"><b>${n.naslov}</b><div class="meta">${n.dat} · ${novPublika(n)}</div>
-  <div class="nov-read"><i style="width:${n.od ? Math.round(n.citalo / n.od * 100) : 0}%"></i></div><small>${n.anketa ? `Anketa · odgovorilo ${anketaOdg(n)} / ${n.od}` : n.citalo ? `Pročitalo ${n.citalo} / ${n.od}` : 'Još nitko nije pročitao'}</small></div></button>`;
+const novostKartica = (n) => `<button type="button" class="card news nov-adm" data-novotv="${n.id}"><div class="news-img"><img src="${novostSlika(n)}" alt=""></div>
+  <div class="news-info"><div class="row" style="gap:8px">${n.pin ? `<span class="pin">${ic('bell', 14)}</span>` : ''}${chip(n.oznaka, OZNAKE[n.oznaka] || 'navy')}${n.grupa !== 'Svi' ? chip(novGrupaOpis(n.grupa)) : ''}</div>
+  <h3>${n.naslov}</h3><span class="meta">${n.dat} · ${novPublika(n)}</span>
+  <div class="nov-read"><i style="width:${n.od ? Math.round((n.anketa ? anketaOdg(n) : n.citalo) / n.od * 100) : 0}%"></i></div><small>${n.anketa ? `Anketa · odgovorilo ${anketaOdg(n)} / ${n.od}` : n.citalo ? `Pročitalo ${n.citalo} / ${n.od}` : 'Još nitko nije pročitao'}</small></div></button>`;
 
 const ADMIN = {
   baza: () => bazaScreen(),

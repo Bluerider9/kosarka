@@ -1272,3 +1272,9 @@ table.baza.liga .input { padding: 6px 8px; font-size: var(--fs-xs); min-width: 1
 /* novost u posebnom prozoru (mobitel) */
 .news-sheet .m-sheet { text-align: left; max-height: 92%; overflow-y: auto; }
 .news-sheet .nov-cover img { width: 100%; display: block; }
+/* admin Novosti: iste kartice kao na mobitelu */
+.nov-gal { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
+button.card.news.nov-adm { width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; display: block; min-height: 132px; transition: transform .15s, box-shadow .15s; }
+button.card.news.nov-adm:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(24,36,84,.14); }
+.nov-adm .nov-read { margin-top: 8px; max-width: 60%; }
+.nov-adm small { display: block; margin-top: 4px; color: var(--muted); font-size: var(--fs-xs); }
