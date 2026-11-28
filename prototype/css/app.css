@@ -1278,3 +1278,7 @@ button.card.news.nov-adm { width: 100%; text-align: left; cursor: pointer; font:
 button.card.news.nov-adm:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(24,36,84,.14); }
 .nov-adm .nov-read { margin-top: 8px; max-width: 60%; }
 .nov-adm small { display: block; margin-top: 4px; color: var(--muted); font-size: var(--fs-xs); }
+/* QR koji se osvježava */
+.qr-frame { width: min(240px, 78%); background: #fff; border: 8px solid #fff; border-radius: 14px; box-shadow: 0 0 0 2px var(--silver-100); }
+.qr-frame .qr-svg { display: block; width: 100%; height: auto; }
+.qr-timer { display: flex; align-items: center; gap: 10px; font-size: var(--fs-sm); color: var(--navy); }

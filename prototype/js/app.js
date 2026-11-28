@@ -669,13 +669,15 @@ const SCREENS = {
   'trener-novosti': () => novostiScreen('trener', tabbar('trener', TRENER_TABS, 'novosti')),
   'igracica-novosti': () => novostiScreen('igracica', tabbar('igracica', IGRACICA_TABS, 'novosti')),
   'trener-qr': () => {
-    const tipovi = [['trening', 'Trening'], ['utakmica', 'Utakmica'], ['turnir', 'Turnir']];
+    const tipovi = [['trening', 'Trening'], ['utakmica', 'Utakmica']];
     return {
       header: mHeader('QR za dolazak', 'U14 · Uto 24.11. · 17:30'),
       tabs: tabbar('trener', TRENER_TABS, 'danas'),
       body: `<a class="link back pf-back" data-go="trener-danas">← Danas</a>
         <div class="seg2">${tipovi.map(([k, l]) => `<button type="button" class="${state.qrTip === k ? 'on' : ''}" data-qrtip="${k}">${l}</button>`).join('')}</div>
-        <div class="card qr-card"><img src="assets/qr-primjer.svg" alt="QR kod za dolazak"><div class="meta">Igračice skeniraju kod u aplikaciji</div>
+        <div class="card qr-card"><div class="qr-frame" id="qrKod" data-qrstart>${qrSvg(qrBr)}</div>
+          <div class="qr-timer"><svg width="34" height="34" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="var(--silver-100)" stroke-width="3"/><circle id="qrArc" cx="18" cy="18" r="16" fill="none" stroke="var(--gold)" stroke-width="3" stroke-dasharray="100.5" stroke-dashoffset="${(1 - qrOstalo / QR_TRAJANJE) * 100.5}" transform="rotate(-90 18 18)" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/></svg><span>Novi kod za <b id="qrOdb">${qrOstalo}</b> s</span></div>
+          <div class="meta">Igračice skeniraju kod u aplikaciji. Kod se sam mijenja svakih ${QR_TRAJANJE} sekundi.</div>
           <div class="fc-badge">${fc('+' + fmt(pravilo(state.qrTip)), 18)}<span>po igračici</span></div></div>
         <div class="card"><div class="row spread"><h3>Skenirano</h3><b id="qrN" style="font-weight:900">5 / 8</b></div><div class="progress" style="margin-top:10px"><i style="width:62%"></i></div>
           <div class="meta" style="margin-top:10px">Kod vrijedi samo za ovaj termin. Tko nema mobitel, označi ga ručno u Dolascima.</div></div>`,
@@ -1198,6 +1200,18 @@ function toast(msg) {
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800);
 }
 
+/* QR koda za dolazak: u prototipu je uzorak izmišljen (nije čitljiv QR); u pravoj aplikaciji je to potpisani token (termin + vrijeme isteka) */
+const QR_TRAJANJE = 30; // sekundi do novog koda
+const qrSvg = (seed) => { const N = 25; let x = (seed * 2654435761) >>> 0; const rnd = () => { x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; };
+  const fin = (a, b) => a < 7 && b < 7 || a > N - 8 && b < 7 || a < 7 && b > N - 8; let r = '';
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { if (fin(i, j)) continue; if (rnd() > 0.52) r += `<rect x="${j}" y="${i}" width="1" height="1"/>`; }
+  const f = (x0, y0) => `<path d="M${x0} ${y0}h7v7h-7z M${x0 + 1} ${y0 + 1}v5h5v-5z" fill-rule="evenodd"/><rect x="${x0 + 2}" y="${y0 + 2}" width="3" height="3"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 ${N + 2} ${N + 2}" class="qr-svg"><rect x="-1" y="-1" width="${N + 2}" height="${N + 2}" fill="#fff"/><g fill="#182454">${r}${f(0, 0)}${f(N - 7, 0)}${f(0, N - 7)}</g></svg>`; };
+let qrBr = 1, qrOstalo = QR_TRAJANJE, qrTimer = null;
+function qrTik() { qrOstalo--; const box = $('#qrKod'); if (!box) { if (qrOstalo <= 0) { qrBr++; qrOstalo = QR_TRAJANJE; } return; }
+  if (qrOstalo <= 0) { qrBr++; qrOstalo = QR_TRAJANJE; box.innerHTML = qrSvg(qrBr); }
+  const t = $('#qrOdb'), a = $('#qrArc'); if (t) t.textContent = qrOstalo; if (a) a.style.strokeDashoffset = (1 - qrOstalo / QR_TRAJANJE) * 100.5; }
+qrTimer = setInterval(qrTik, 1000); // kod se mijenja svake sekunde-brojača, i dok trener nije na ekranu
 function render() {
   const hash = location.hash.slice(1) || 'start-login';
   const [uloga, ...r] = hash.split('-'); const ekran = r.join('-');
